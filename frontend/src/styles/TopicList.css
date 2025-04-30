@@ -1,0 +1,48 @@
+.list-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 16px;
+  gap: 24px;
+}
+
+.topic-card {
+  background: linear-gradient(135deg, #74ebd5, #9face6);
+  border-radius: 16px;
+  width: 90%;
+  max-width: 600px;
+  padding: 24px 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  color: #fff;
+}
+
+.topic-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.25);
+}
+
+.topic-content h2 {
+  font-size: 24px;
+  margin: 0 0 8px 0;
+  font-weight: 600;
+}
+
+.topic-content p {
+  font-size: 16px;
+  margin: 0;
+}
+
+.topic-arrow {
+  font-size: 28px;
+  margin-left: 16px;
+  transition: transform 0.3s;
+}
+
+.topic-card:hover .topic-arrow {
+  transform: translateX(5px);
+}

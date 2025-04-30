@@ -1,0 +1,71 @@
+/* General */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f2f7ff;
+  color: #333;
+}
+
+.homepage {
+  text-align: center;
+  padding: 0;
+}
+
+.header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 40px 10%;
+  background: linear-gradient(to right, #89f7fe, #66a6ff);
+  color: white;
+}
+
+.header img {
+  width: 300px;
+  max-width: 100%;
+}
+
+.header-content h1 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+}
+
+.header-content input {
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  width: 250px;
+}
+
+/* Topic Cards */
+.topic-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 24px;
+  padding: 40px 10%;
+}
+
+.topic-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  transition: transform 0.2s ease;
+}
+
+.topic-card:hover {
+  transform: translateY(-5px);
+}
+
+.topic-card ul {
+  list-style: none;
+  padding: 0;
+}
+
+.topic-card li {
+  background: #e0f7fa;
+  margin: 4px 0;
+  padding: 6px;
+  border-radius: 6px;
+}
