@@ -1,71 +1,75 @@
-/* General */
-body {
-  margin: 0;
-  font-family: 'Segoe UI', sans-serif;
-  background-color: #f2f7ff;
-  color: #333;
-}
-
 .homepage {
-  text-align: center;
-  padding: 0;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #e0f7fa, #f3f4f6);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .header {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  padding: 40px 10%;
-  background: linear-gradient(to right, #89f7fe, #66a6ff);
-  color: white;
+  text-align: center;
+  padding: 60px 20px 40px;
+  background-color: white;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+  border-bottom-left-radius: 30px;
+  border-bottom-right-radius: 30px;
+  animation: fadeInDown 0.6s ease-out;
 }
 
-.header img {
-  width: 300px;
-  max-width: 100%;
+.header h1 {
+  font-size: 3rem;
+  font-weight: 800;
+  color: #00838f;
+  margin-bottom: 12px;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.04);
 }
 
-.header-content h1 {
-  font-size: 2.5rem;
-  margin-bottom: 20px;
+.header p {
+  font-size: 1.1rem;
+  color: #555;
+  max-width: 600px;
+  margin-bottom: 24px;
 }
 
-.header-content input {
-  padding: 12px;
-  border: none;
-  border-radius: 8px;
-  width: 250px;
-}
-
-/* Topic Cards */
-.topic-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 24px;
-  padding: 40px 10%;
-}
-
-.topic-card {
-  background: white;
+.header input {
+  padding: 14px 20px;
+  font-size: 1rem;
+  border: 2px solid #00acc1;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  transition: transform 0.2s ease;
+  width: 320px;
+  max-width: 90%;
+  outline: none;
+  transition: 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0, 172, 193, 0.1);
 }
 
-.topic-card:hover {
-  transform: translateY(-5px);
+.header input:focus {
+  border-color: #007c91;
+  box-shadow: 0 0 0 3px rgba(0, 172, 193, 0.2);
 }
 
-.topic-card ul {
-  list-style: none;
-  padding: 0;
+main {
+  flex: 1;
+  padding: 40px 20px;
 }
 
-.topic-card li {
-  background: #e0f7fa;
-  margin: 4px 0;
-  padding: 6px;
-  border-radius: 6px;
+footer {
+  text-align: center;
+  font-size: 0.85rem;
+  color: #666;
+  padding: 20px 0;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

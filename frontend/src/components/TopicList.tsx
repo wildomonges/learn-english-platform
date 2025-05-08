@@ -1,5 +1,6 @@
 import React from 'react';
 import { Topic } from '../types/Topic';
+import TopicCard from './TopicCard';
 import '../styles/TopicList.css';
 
 interface TopicListProps {
@@ -10,18 +11,8 @@ interface TopicListProps {
 const TopicList: React.FC<TopicListProps> = ({ topics, onSelectTopic }) => {
   return (
     <div className='list-container'>
-      {topics.map((topic: Topic) => (
-        <div
-          className='topic-card'
-          key={topic.id}
-          onClick={() => onSelectTopic(topic)}
-        >
-          <div className='topic-content'>
-            <h2>{topic.name}</h2>
-            <p>{topic.description}</p>
-          </div>
-          <span className='topic-arrow'>➡️</span>
-        </div>
+      {topics.map((topic) => (
+        <TopicCard key={topic.id} topic={topic} onSelect={onSelectTopic} />
       ))}
     </div>
   );

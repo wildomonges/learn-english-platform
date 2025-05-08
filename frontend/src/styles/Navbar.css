@@ -2,32 +2,65 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #0d47a1;
-  color: white;
+  background: linear-gradient(
+    90deg,
+    #00c9a7,
+    #92fe9d
+  ); /* degradado verde-menta */
+  color: #ffffff;
   padding: 16px 10%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
 }
 
 .logo {
-  font-weight: bold;
-  font-size: 1.2rem;
+  font-weight: 800;
+  font-size: 1.5rem;
+  color: #ffffff;
+  letter-spacing: 1px;
 }
 
 .links {
   display: flex;
-  gap: 16px;
+  gap: 20px;
   align-items: center;
 }
 
 .links a {
-  color: white;
+  color: #ffffff;
   text-decoration: none;
-  font-weight: 500;
+  font-weight: 600;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+.links a::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  background: white;
+  left: 0;
+  bottom: -4px;
+  transition: width 0.3s ease;
+}
+
+.links a:hover::after {
+  width: 100%;
 }
 
 .dark-mode-toggle {
-  background: none;
+  background: rgba(255, 255, 255, 0.15);
   border: none;
-  color: white;
-  font-size: 1.2rem;
+  border-radius: 8px;
+  padding: 6px 10px;
+  color: #ffffff;
+  font-size: 1rem;
   cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.dark-mode-toggle:hover {
+  background: rgba(255, 255, 255, 0.25);
 }
