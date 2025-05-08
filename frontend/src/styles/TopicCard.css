@@ -1,0 +1,94 @@
+.topic-card {
+  width: 100%;
+  max-width: 340px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.topic-card:hover {
+  transform: translateY(-5px);
+}
+
+.card-background {
+  background-size: cover;
+  background-position: center;
+  height: 220px;
+  display: flex;
+  align-items: flex-end;
+}
+
+.card-overlay {
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent);
+  color: white;
+  padding: 16px;
+  width: 100%;
+}
+
+.card-overlay h3 {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.card-overlay p {
+  font-size: 0.9rem;
+  margin: 6px 0;
+}
+
+.see-more {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.85rem;
+  margin-top: 8px;
+  color: #ffe680;
+}
+.topic-card {
+  width: 100%;
+  max-width: 340px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.topic-card:hover {
+  transform: translateY(-5px);
+}
+
+.card-background {
+  background-size: cover;
+  background-position: center;
+  height: 220px;
+  display: flex;
+  align-items: flex-end;
+}
+
+.card-overlay {
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent);
+  color: white;
+  padding: 16px;
+  width: 100%;
+}
+
+.card-overlay h3 {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.card-overlay p {
+  font-size: 0.9rem;
+  margin: 6px 0;
+}
+
+.see-more {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.85rem;
+  margin-top: 8px;
+  color: #ffe680;
+}
