@@ -32,7 +32,23 @@ export class AIAgentService {
                        The conversation should include the Student interest ${interest}. 
                        The conversation must be in English in the principal line and Spanish as secondary line,
                        so the student can understand the conversation.
-                       Format the response as a dialogue with Teacher and Student.`;
+                       Return the response in JSON format as follows:
+                       {
+                           "dialog": [
+                               {
+                                   "speaker": "Teacher",
+                                   "textEnglish": "Hello, how are you?",
+                                   "textSpanish": "Hola, ¿cómo estás?"
+                               },
+                               {
+                                   "speaker": "Student",
+                                   "textEnglish": "I'm doing well, thanks.",
+                                   "textSpanish": "Estoy bien, gracias."
+                               },
+                               ...
+                           ]
+                       }
+                       `;
 
         try {
             const command = new InvokeModelCommand({
@@ -49,8 +65,16 @@ export class AIAgentService {
 
             const response = await this.bedrockClient.send(command);
             const responseBody = JSON.parse(new TextDecoder().decode(response.body));
+            const completion = responseBody.completion;
             
-            return responseBody.completion;
+            // Extract JSON from the text response
+            const jsonMatch = completion.match(/\{[\s\S]*\}/); // Match the first JSON object in the text
+            if (!jsonMatch) {
+                throw new Error('No valid JSON found in the response');
+            }
+            
+            const parsedResponse = JSON.parse(jsonMatch[0]);
+            return parsedResponse.dialog;
         } catch (error) {
             console.error('Error generating dialogue:', error);
             throw error;
