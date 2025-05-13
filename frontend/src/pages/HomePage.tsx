@@ -1,172 +1,136 @@
 import React, { useState } from 'react';
 import '../styles/HomePage.css';
-import learnIllustration from '../assets/learn-english.png';
+import welcomeImage from '../assets/image.png';
+import PracticeChat from '../components/PracticeChat';
+
+const topics = {
+  Developer: ['React', 'Java', 'HTML', 'Node.js'],
+  Marketing: ['SEO', 'Email Marketing'],
+};
+
+const dialogues = {
+  React: [
+    {
+      speaker: 'Teacher',
+      textEnglish: 'Hello! My name is Mr. Smith. What is your name?',
+      textSpanish: '¡Hola! Mi nombre es Sr. Smith. ¿Cómo te llamas?',
+    },
+    {
+      speaker: 'Student',
+      textEnglish: 'Nice to meet you Mr. Smith. My name is Juan.',
+      textSpanish: 'Mucho gusto Sr. Smith. Me llamo Juan.',
+    },
+    {
+      speaker: 'Teacher',
+      textEnglish:
+        'I heard you are interested in learning English for developers. Is that right?',
+      textSpanish:
+        'Escuché que estás interesado en aprender inglés para desarrolladores. ¿Es correcto?',
+    },
+    {
+      speaker: 'Student',
+      textEnglish:
+        'Yes, I want to improve my English skills for React development.',
+      textSpanish: 'Sí, quiero mejorar mi inglés para el desarrollo con React.',
+    },
+  ],
+  SEO: [
+    {
+      speaker: 'Teacher',
+      textEnglish: 'Welcome to English for SEO. What do you want to improve?',
+      textSpanish: 'Bienvenido a Inglés para SEO. ¿Qué quieres mejorar?',
+    },
+    {
+      speaker: 'Student',
+      textEnglish: 'I want to learn vocabulary related to search engines.',
+      textSpanish:
+        'Quiero aprender vocabulario relacionado con los motores de búsqueda.',
+    },
+  ],
+};
 
 const HomePage: React.FC = () => {
   const [step, setStep] = useState<
-    'start' | 'language' | 'level' | 'goal' | 'motivation' | 'complete'
-  >('start');
-  const [language, setLanguage] = useState('');
-  const [level, setLevel] = useState('');
-  const [goal, setGoal] = useState('');
-  const [motivation, setMotivation] = useState('');
-  const [style, setStyle] = useState('');
+    'welcome' | 'topics' | 'interests' | 'dialog'
+  >('welcome');
+  const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
+  const [selectedInterest, setSelectedInterest] = useState<string | null>(null);
 
-  const handleReset = () => {
-    setStep('start');
-    setLanguage('');
-    setLevel('');
-    setGoal('');
-    setMotivation('');
-    setStyle('');
+  const handleStart = () => setStep('topics');
+
+  const handleTopicSelect = (topic: string) => {
+    setSelectedTopic(topic);
+    setStep('interests');
+  };
+
+  const handleInterestSelect = (interest: string) => {
+    setSelectedInterest(interest);
+    setStep('dialog');
+  };
+
+  const handleBack = () => {
+    if (step === 'dialog') setStep('interests');
+    else if (step === 'interests') setStep('topics');
+    else setStep('welcome');
   };
 
   return (
-    <div className='homepage-onboarding'>
-      {step === 'start' && (
-        <section className='start-section'>
-          <div className='text-content'>
-            <h1>¡Bienvenido!</h1>
+    <div className='homepage'>
+      {step === 'welcome' && (
+        <section className='welcome-section'>
+          <div className='welcome-text'>
+            <h1>📚 ¡Bienvenido a tu viaje de inglés profesional!</h1>
             <p>
-              Descubre el inglés a tu manera. Aprende según tus intereses y
-              objetivos. 🌟
+              Aprende inglés enfocado en programación o marketing digital.
+              ¡Hazlo a tu ritmo, con situaciones reales!
             </p>
-            <button onClick={() => setStep('language')} className='btn-start'>
-              Empezar
-            </button>
+            <button onClick={handleStart}>🚀 Empezar</button>
           </div>
-          <div className='image-content'>
-            <img src={learnIllustration} alt='Learn English' />
-          </div>
+          <img
+            src={welcomeImage}
+            alt='Estudiar inglés'
+            className='welcome-image'
+          />
         </section>
       )}
 
-      {step === 'language' && (
-        <div className='step-section'>
-          <h2>Elige tu idioma</h2>
-          <div className='options'>
-            <button
-              onClick={() => {
-                setLanguage('english');
-                setStep('level');
-              }}
-            >
-              Inglés
-            </button>
-            <button
-              onClick={() => {
-                setLanguage('spanish');
-                setStep('level');
-              }}
-            >
-              Español
-            </button>
+      {step === 'topics' && (
+        <div className='container'>
+          <div className='button-group'>
+            <h2>¿Qué te interesa aprender?</h2>
+            {Object.keys(topics).map((topic) => (
+              <button key={topic} onClick={() => handleTopicSelect(topic)}>
+                Inglés para {topic}
+              </button>
+            ))}
+            <button onClick={handleBack}>⬅️ Volver</button>
           </div>
         </div>
       )}
 
-      {step === 'level' && (
-        <div className='step-section'>
-          <h2>¿Cuál es tu nivel de inglés?</h2>
-          <div className='options'>
-            <button
-              onClick={() => {
-                setLevel('beginner');
-                setStep('goal');
-              }}
-            >
-              Principiante
-            </button>
-            <button
-              onClick={() => {
-                setLevel('intermediate');
-                setStep('goal');
-              }}
-            >
-              Intermedio
-            </button>
-            <button
-              onClick={() => {
-                setLevel('advanced');
-                setStep('goal');
-              }}
-            >
-              Avanzado
-            </button>
+      {step === 'interests' && selectedTopic && (
+        <div className='container'>
+          <div className='button-group'>
+            <h2>¿Qué área de {selectedTopic} te interesa?</h2>
+            {topics[selectedTopic as keyof typeof topics].map((interest) => (
+              <button
+                key={interest}
+                onClick={() => handleInterestSelect(interest)}
+              >
+                {interest}
+              </button>
+            ))}
+            <button onClick={handleBack}>⬅️ Volver</button>
           </div>
         </div>
       )}
 
-      {step === 'goal' && (
-        <div className='step-section'>
-          <h2>¿Qué quieres conseguir?</h2>
-          <div className='options'>
-            <button
-              onClick={() => {
-                setGoal('job');
-                setStep('motivation');
-              }}
-            >
-              Conseguir un mejor empleo
-            </button>
-            <button
-              onClick={() => {
-                setGoal('fluency');
-                setStep('motivation');
-              }}
-            >
-              Hablar fluidamente
-            </button>
-          </div>
-        </div>
-      )}
-
-      {step === 'motivation' && (
-        <div className='step-section'>
-          <h2>¡Genial! ¡Vamos a empezar!</h2>
-          <button onClick={() => setStep('complete')} className='btn-primary'>
-            Continuar
-          </button>
-        </div>
-      )}
-
-      {step === 'complete' && (
-        <div className='step-section'>
-          <h2>¿Cuál es tu motivo principal para aprender inglés?</h2>
-          <div className='options'>
-            <button onClick={() => setMotivation('conversation')}>
-              Conversaciones
-            </button>
-            <button onClick={() => setMotivation('reading')}>Leer mejor</button>
-            <button onClick={() => setMotivation('none')}>
-              Sin estilo específico
-            </button>
-            <button onClick={() => setMotivation('academic')}>
-              Academia e investigación
-            </button>
-            <button onClick={() => setMotivation('university')}>
-              Universidad y educación
-            </button>
-            <button onClick={() => setMotivation('travel')}>
-              Viajes y Turismo
-            </button>
-            <button onClick={() => setMotivation('career')}>
-              Empleo y carrera
-            </button>
-            <button onClick={() => setMotivation('immigration')}>
-              Inmigración
-            </button>
-            <button onClick={() => setMotivation('friends')}>Amigos</button>
-            <button onClick={() => setMotivation('certificates')}>
-              Certificados
-            </button>
-            <button onClick={() => setMotivation('other')}>Otros</button>
-          </div>
-          <div className='navigation'>
-            <button onClick={() => setStep('goal')} className='btn-secondary'>
-              Atrás
-            </button>
-          </div>
+      {step === 'dialog' && selectedInterest && (
+        <div className='container'>
+          <PracticeChat
+            dialog={dialogues[selectedInterest as keyof typeof dialogues]}
+            onBack={handleBack}
+          />
         </div>
       )}
     </div>

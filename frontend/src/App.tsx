@@ -1,18 +1,19 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import HomePage from './pages/HomePage';
-import LoginPage from './pages/LoginPage';
-import Navbar from './components/Navbar';
-import './styles/App.css';
+import Navbar from './components/Navbar'; // 👈 Importa el Navbar
+import './App.css';
 
-function App() {
+const App: React.FC = () => {
   return (
     <Router>
+      <Navbar /> {/* 👈 Aquí lo incluyes */}
       <Routes>
         <Route path='/' element={<HomePage />} />
-        <Route path='/login' element={<LoginPage />} />
+        {/* Otras rutas si las tienes */}
       </Routes>
     </Router>
   );
-}
+};
 
 export default App;
