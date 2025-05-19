@@ -1,5 +1,5 @@
 .navbar {
-  background-color: #ff6f61;
+  background-color: #1bc47d;
   color: white;
   padding: 1rem 1rem;
   display: flex;
@@ -10,17 +10,12 @@
   width: 98%;
   top: 0;
   z-index: 1000;
+  height: 10%;
 }
 
 .navbar .logo {
   font-size: 1.8rem;
   font-weight: bold;
-}
-
-.navbar .links {
-  display: flex;
-  align-items: center;
-  gap: 2rem;
 }
 
 .navbar a {
@@ -29,24 +24,23 @@
   font-size: 1rem;
 }
 
-.navbar button {
-  background: none;
+.navbar-button {
   border: none;
-  color: white;
-  font-size: 1.2rem;
+  padding: 0.7rem 1.4rem;
+  margin: 0.3rem;
+  border-radius: 8px;
+  font-weight: bold;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-.navbar .language-toggle {
-  background-color: #ffbe0b;
-  padding: 0.5rem 1rem;
-  border-radius: 5px;
+.navbar-language {
+  background-color: #1bc47d;
+  color: white;
+  padding: 0.4rem 2rem;
 }
-
-.navbar .dark-mode-toggle {
+.navbar-toggle {
+  background-color: #1bc47d;
+  color: #ffbe0b;
   font-size: 1.5rem;
-}
-
-.navbar button:hover {
-  opacity: 0.8;
 }

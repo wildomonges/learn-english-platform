@@ -84,7 +84,9 @@ const HomePage: React.FC = () => {
               Aprende inglés enfocado en programación o marketing digital.
               ¡Hazlo a tu ritmo, con situaciones reales!
             </p>
-            <button onClick={handleStart}>🚀 Empezar</button>
+            <button className='btn-start' onClick={handleStart}>
+              🚀 Empezar
+            </button>
           </div>
           <img
             src={welcomeImage}
@@ -96,22 +98,30 @@ const HomePage: React.FC = () => {
 
       {step === 'topics' && (
         <div className='container'>
+          <h2>¿Qué te interesa aprender?</h2>
           <div className='button-group'>
-            <h2>¿Qué te interesa aprender?</h2>
             {Object.keys(topics).map((topic) => (
-              <button key={topic} onClick={() => handleTopicSelect(topic)}>
+              <button
+                className='button-h2'
+                key={topic}
+                onClick={() => handleTopicSelect(topic)}
+              >
                 Inglés para {topic}
               </button>
             ))}
-            <button onClick={handleBack}>⬅️ Volver</button>
           </div>
+          <button className='button-back' onClick={handleBack}>
+            ◀ Volver
+          </button>
         </div>
       )}
 
       {step === 'interests' && selectedTopic && (
         <div className='container'>
+          <h2 className='subtitle'>
+            ¿Qué área de {selectedTopic} te interesa?
+          </h2>
           <div className='button-group'>
-            <h2>¿Qué área de {selectedTopic} te interesa?</h2>
             {topics[selectedTopic as keyof typeof topics].map((interest) => (
               <button
                 key={interest}
@@ -120,8 +130,10 @@ const HomePage: React.FC = () => {
                 {interest}
               </button>
             ))}
-            <button onClick={handleBack}>⬅️ Volver</button>
           </div>
+          <button className='button-back' onClick={handleBack}>
+            ◀ Volver
+          </button>
         </div>
       )}
 

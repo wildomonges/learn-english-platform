@@ -81,57 +81,62 @@ const PracticeChat: React.FC<PracticeChatProps> = ({ dialog, onBack }) => {
 
   return (
     <div className='practice-chat'>
-      <h2>🧑‍🏫 Práctica de conversación</h2>
+      <h2>💬 Práctica de conversación</h2>
 
-      <div className='chat-box'>
-        <p>
-          <strong>{current.speaker}:</strong>
-        </p>
-        <p>{current.textEnglish}</p>
-        <p>
-          <em>{current.textSpanish}</em>
-        </p>
+      <div className='chat-window'>
+        <div
+          className={`chat-bubble ${
+            current.speaker === 'Teacher' ? 'left' : 'right'
+          }`}
+        >
+          <p>
+            <strong>{current.speaker}</strong>
+          </p>
+          <p>{current.textEnglish}</p>
+          <p className='translation'>{current.textSpanish}</p>
+          {current.speaker === 'Teacher' && (
+            <button
+              className='audio-btn'
+              onClick={() => playAudio(current.textEnglish)}
+            >
+              🔊
+            </button>
+          )}
+        </div>
       </div>
 
-      <div className='controls'>
-        <button onClick={() => playAudio(current.textEnglish)}>
-          🔊 Escuchar
+      {current.speaker !== 'Teacher' && (
+        <div className='input-area'>
+          <input
+            type='text'
+            value={userInput}
+            onChange={(e) => setUserInput(e.target.value)}
+            placeholder='Escribe tu respuesta en inglés...'
+          />
+          <button onClick={handleVoiceInput}>
+            🎤 {isListening ? 'Escuchando...' : 'Hablar'}
+          </button>
+          <button onClick={handleUserSubmit}>Enviar</button>
+        </div>
+      )}
+
+      {feedback && (
+        <p
+          className={`feedback ${
+            feedback.startsWith('✅') ? 'success' : 'error'
+          }`}
+        >
+          {feedback}
+        </p>
+      )}
+      {(current.speaker === 'Teacher' || feedback.startsWith('✅')) && (
+        <button className='back-next-btn' onClick={onBack}>
+          ◀ Volver
         </button>
+      )}
 
-        {current.speaker === 'Teacher' ? (
-          <button onClick={handleNext}>➡️ Siguiente</button>
-        ) : (
-          <>
-            <input
-              type='text'
-              value={userInput}
-              onChange={(e) => setUserInput(e.target.value)}
-              placeholder='Escribe tu respuesta en inglés...'
-            />
-            <div className='voice-input'>
-              <button onClick={handleVoiceInput}>
-                🎤 {isListening ? 'Escuchando...' : 'Hablar'}
-              </button>
-            </div>
-            <button onClick={handleUserSubmit}>Enviar</button>
-            {feedback && (
-              <p
-                className={`feedback ${
-                  feedback.startsWith('✅') ? 'success' : 'error'
-                }`}
-              >
-                {feedback}
-              </p>
-            )}
-            {feedback.startsWith('✅') && (
-              <button onClick={handleNext}>➡️ Continuar</button>
-            )}
-          </>
-        )}
-      </div>
-
-      <button className='back-btn' onClick={onBack}>
-        ⬅️ Volver
+      <button className='back-next-btn' onClick={handleNext}>
+        ▶ Siguiente
       </button>
     </div>
   );
