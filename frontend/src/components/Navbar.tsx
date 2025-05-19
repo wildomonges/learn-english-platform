@@ -13,9 +13,10 @@ const Navbar: React.FC = () => {
       <div className='logo'>🌍 Learn English</div>
       <div className='links'>
         <a href='#'>Inicio</a>
-        <button className='dark-mode-toggle'>🌙</button>
-        <button className='language-toggle' onClick={toggleLanguage}>
-          {language === 'en' ? '🇪🇸 Español' : '🇬🇧 English'}
+        <button className='navbar-toggle'>🌙</button>
+
+        <button className='navbar-language' onClick={toggleLanguage}>
+          {language === 'en' ? '🇪🇸 En' : '🇬🇧 Es'}
         </button>
       </div>
     </nav>
