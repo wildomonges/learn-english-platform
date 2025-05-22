@@ -1,62 +1,103 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import '../styles/PracticeChat.css';
+import MicIcon from '@mui/icons-material/Mic';
+import SendIcon from '@mui/icons-material/Send';
+import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 
-interface Line {
+const SpeechRecognition =
+  (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+
+type DialogLine = {
   speaker: string;
   textEnglish: string;
   textSpanish: string;
-}
+};
 
-interface PracticeChatProps {
-  dialog: Line[];
+type Props = {
+  topic: string;
+  interest: string;
   onBack: () => void;
-}
+};
 
-const PracticeChat: React.FC<PracticeChatProps> = ({ dialog, onBack }) => {
-  const [currentLine, setCurrentLine] = useState(0);
-  const [userInput, setUserInput] = useState('');
-  const [feedback, setFeedback] = useState('');
-  const [isListening, setIsListening] = useState(false);
+const PracticeChat: React.FC<Props> = ({ topic, interest, onBack }) => {
+  const [dialog, setDialog] = useState<DialogLine[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [playingIndex, setPlayingIndex] = useState<number | null>(null);
+  const [userResponses, setUserResponses] = useState<{ [key: number]: string }>(
+    {}
+  );
+  const [responseFeedback, setResponseFeedback] = useState<{
+    [key: number]: string;
+  }>({});
+  const [currentPairIndex, setCurrentPairIndex] = useState(0);
+  const recognitionRef = useRef<any>(null);
 
-  const current = dialog[currentLine];
+  const BASE_URL =
+    import.meta.env.VITE_API_URL || 'http://localhost:3000/api/v1';
 
-  const playAudio = (text: string) => {
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'en-US';
-    speechSynthesis.speak(utterance);
+  useEffect(() => {
+    const fetchDialog = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch(
+          `${BASE_URL}/speaking/getDialog?topic=${encodeURIComponent(
+            topic
+          )}&interest=${encodeURIComponent(interest)}`
+        );
+        if (!response.ok) throw new Error(`Error: ${response.status}`);
+        const data = await response.json();
+        setDialog(data.dialog || []);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching dialog:', err);
+        setError('Failed to fetch dialogue. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchDialog();
+  }, [topic, interest]);
+
+  const isSimilarAnswer = (userInput: string, expected: string): boolean => {
+    const normalize = (text: string) =>
+      text
+        .toLowerCase()
+        .replace(/[^\w\s]/gi, '')
+        .trim();
+    return normalize(userInput) === normalize(expected);
   };
 
-  const handleNext = () => {
-    setUserInput('');
-    setFeedback('');
-    if (currentLine < dialog.length - 1) {
-      setCurrentLine(currentLine + 1);
+  const handlePlayAudio = async (text: string, index: number) => {
+    setPlayingIndex(index);
+    try {
+      const response = await fetch(
+        `${BASE_URL}/speaking/getSpeech?text=${encodeURIComponent(text)}`
+      );
+      if (!response.ok) throw new Error('Audio fetch failed');
+      const data = await response.json();
+      const audioBlob = new Blob(
+        [Uint8Array.from(atob(data.audio), (c) => c.charCodeAt(0))],
+        { type: 'audio/mp3' }
+      );
+      const audioUrl = URL.createObjectURL(audioBlob);
+      new Audio(audioUrl).play();
+    } catch (err) {
+      console.error('Error playing audio:', err);
+    } finally {
+      setPlayingIndex(null);
     }
   };
 
-  const handleUserSubmit = () => {
-    const expected = current.textEnglish.toLowerCase().replace(/[^\w\s]/gi, '');
-    const input = userInput
-      .toLowerCase()
-      .trim()
-      .replace(/[^\w\s]/gi, '');
-
-    if (expected === input) {
-      setFeedback('✅ ¡Muy bien! Tu respuesta es correcta.');
-    } else {
-      setFeedback(`❌ Revisa tu respuesta. Esperado: "${current.textEnglish}"`);
-    }
+  const handleTextResponseChange = (index: number, value: string) => {
+    setUserResponses((prev) => ({ ...prev, [index]: value }));
   };
 
-  const handleVoiceInput = () => {
-    const SpeechRecognition =
-      (window as any).SpeechRecognition ||
-      (window as any).webkitSpeechRecognition;
+  const handleStartVoiceRecognition = (index: number) => {
     if (!SpeechRecognition) {
       alert('Tu navegador no soporta reconocimiento de voz.');
       return;
     }
-
     const recognition = new SpeechRecognition();
     recognition.lang = 'en-US';
     recognition.interimResults = false;
@@ -64,80 +105,130 @@ const PracticeChat: React.FC<PracticeChatProps> = ({ dialog, onBack }) => {
 
     recognition.onresult = (event: any) => {
       const transcript = event.results[0][0].transcript;
-      setUserInput(transcript);
-      setIsListening(false);
+      setUserResponses((prev) => ({ ...prev, [index]: transcript }));
     };
 
-    recognition.onerror = () => {
-      alert('Error al capturar la voz');
-      setIsListening(false);
+    recognition.onerror = (event: any) => {
+      console.error('Speech recognition error:', event.error);
     };
-
-    recognition.onend = () => setIsListening(false);
 
     recognition.start();
-    setIsListening(true);
+    recognitionRef.current = recognition;
   };
+
+  const handleSendResponse = (index: number) => {
+    const userResponse = userResponses[index];
+    const correctResponse = dialog[index].textEnglish;
+
+    if (isSimilarAnswer(userResponse, correctResponse)) {
+      setResponseFeedback((prev) => ({ ...prev, [index]: '✅ ¡Correcto!' }));
+    } else {
+      setResponseFeedback((prev) => ({
+        ...prev,
+        [index]: `❌ 🥲 Incorrecto. Respuesta esperada: "${correctResponse}"`,
+      }));
+    }
+  };
+
+  const goToNextPair = () => {
+    setCurrentPairIndex((prev) => prev + 2);
+  };
+
+  const goToPreviousPair = () => {
+    setCurrentPairIndex((prev) => Math.max(prev - 2, 0));
+  };
+
+  const teacherLine = dialog[currentPairIndex];
+  const studentLine = dialog[currentPairIndex + 1];
 
   return (
     <div className='practice-chat'>
-      <h2>💬 Práctica de conversación</h2>
+      <h2>
+        Diálogo: {topic} / {interest}
+      </h2>
+      {loading && <p>Cargando diálogo...</p>}
+      {error && <p className='error'>{error}</p>}
 
-      <div className='chat-window'>
-        <div
-          className={`chat-bubble ${
-            current.speaker === 'Teacher' ? 'left' : 'right'
-          }`}
-        >
-          <p>
-            <strong>{current.speaker}</strong>
-          </p>
-          <p>{current.textEnglish}</p>
-          <p className='translation'>{current.textSpanish}</p>
-          {current.speaker === 'Teacher' && (
+      {!loading && !error && teacherLine && (
+        <div className='dialog-pair'>
+          <div className='chat-bubble teacher'>
+            <strong>Teacher:</strong>
+            <p>{teacherLine.textEnglish}</p>
+            <p className='text-spanish'>({teacherLine.textSpanish})</p>
             <button
-              className='audio-btn'
-              onClick={() => playAudio(current.textEnglish)}
+              onClick={() =>
+                handlePlayAudio(teacherLine.textEnglish, currentPairIndex)
+              }
+              className='icon-button'
             >
-              🔊
+              <VolumeUpIcon />
             </button>
+          </div>
+
+          {studentLine && (
+            <div className='chat-bubble student'>
+              <strong>Student:</strong>
+              <p>{studentLine.textEnglish}</p>
+              <p className='text-spanish'>({studentLine.textSpanish})</p>
+              <button
+                onClick={() =>
+                  handlePlayAudio(studentLine.textEnglish, currentPairIndex + 1)
+                }
+                className='icon-button'
+              >
+                <VolumeUpIcon />
+              </button>
+
+              <div className='response-row'>
+                <input
+                  type='text'
+                  className='response-input'
+                  placeholder='Tu respuesta...'
+                  value={userResponses[currentPairIndex + 1] || ''}
+                  onChange={(e) =>
+                    handleTextResponseChange(
+                      currentPairIndex + 1,
+                      e.target.value
+                    )
+                  }
+                />
+                <button
+                  onClick={() =>
+                    handleStartVoiceRecognition(currentPairIndex + 1)
+                  }
+                  className='icon-button'
+                >
+                  <MicIcon />
+                </button>
+
+                <button
+                  onClick={() => handleSendResponse(currentPairIndex + 1)}
+                  className='icon-button'
+                >
+                  <SendIcon />
+                </button>
+              </div>
+
+              {responseFeedback[currentPairIndex + 1] && (
+                <p className='feedback'>
+                  {responseFeedback[currentPairIndex + 1]}
+                </p>
+              )}
+            </div>
           )}
         </div>
+      )}
+
+      <div className='navigation-buttons'>
+        {currentPairIndex > 0 ? (
+          <button onClick={goToPreviousPair}>⬅ Back</button>
+        ) : (
+          <button onClick={onBack}>⬅ Volver al inicio</button>
+        )}
+        {currentPairIndex + 2 < dialog.length && (
+          <button onClick={goToNextPair}>Next ➡</button>
+        )}
       </div>
-
-      {current.speaker !== 'Teacher' && (
-        <div className='input-area'>
-          <input
-            type='text'
-            value={userInput}
-            onChange={(e) => setUserInput(e.target.value)}
-            placeholder='Escribe tu respuesta en inglés...'
-          />
-          <button onClick={handleVoiceInput}>
-            🎤 {isListening ? 'Escuchando...' : 'Hablar'}
-          </button>
-          <button onClick={handleUserSubmit}>Enviar</button>
-        </div>
-      )}
-
-      {feedback && (
-        <p
-          className={`feedback ${
-            feedback.startsWith('✅') ? 'success' : 'error'
-          }`}
-        >
-          {feedback}
-        </p>
-      )}
-      {(current.speaker === 'Teacher' || feedback.startsWith('✅')) && (
-        <button className='back-next-btn' onClick={onBack}>
-          ◀ Volver
-        </button>
-      )}
-
-      <button className='back-next-btn' onClick={handleNext}>
-        ▶ Siguiente
-      </button>
     </div>
   );
 };
