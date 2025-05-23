@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import '../styles/HomePage.css';
-import welcomeImage from '../assets/image.png';
+import welcomeImage from '../assets/image1.png';
 import PracticeChat from '../components/PracticeChat';
 
 const topics = {
@@ -56,7 +56,7 @@ const HomePage: React.FC = () => {
       )}
       {step === 'topics' && (
         <div className='container'>
-          <h2>¿Qué te interesa aprender?</h2>
+          <h2 className='subtitle'>¿Qué te interesa aprender?</h2>
           <div className='button-group'>
             {Object.keys(topics).map((topic) => (
               <button

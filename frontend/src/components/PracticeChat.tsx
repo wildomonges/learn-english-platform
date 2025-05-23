@@ -3,6 +3,7 @@ import '../styles/PracticeChat.css';
 import MicIcon from '@mui/icons-material/Mic';
 import SendIcon from '@mui/icons-material/Send';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
+import { fetchDialog, fetchSpeech } from '../api/speakingAPI';
 
 const SpeechRecognition =
   (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
@@ -33,30 +34,22 @@ const PracticeChat: React.FC<Props> = ({ topic, interest, onBack }) => {
   const [currentPairIndex, setCurrentPairIndex] = useState(0);
   const recognitionRef = useRef<any>(null);
 
-  const BASE_URL =
-    import.meta.env.VITE_API_URL || 'http://localhost:3000/api/v1';
+  const loadDialog = async () => {
+    setLoading(true);
+    try {
+      const data = await fetchDialog(topic, interest);
+      setDialog(data.dialog || []);
+      setError(null);
+    } catch (err) {
+      console.error('Error fetching dialog:', err);
+      setError('Failed to fetch dialogue. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchDialog = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch(
-          `${BASE_URL}/speaking/getDialog?topic=${encodeURIComponent(
-            topic
-          )}&interest=${encodeURIComponent(interest)}`
-        );
-        if (!response.ok) throw new Error(`Error: ${response.status}`);
-        const data = await response.json();
-        setDialog(data.dialog || []);
-        setError(null);
-      } catch (err) {
-        console.error('Error fetching dialog:', err);
-        setError('Failed to fetch dialogue. Please try again later.');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchDialog();
+    loadDialog();
   }, [topic, interest]);
 
   const isSimilarAnswer = (userInput: string, expected: string): boolean => {
@@ -71,11 +64,7 @@ const PracticeChat: React.FC<Props> = ({ topic, interest, onBack }) => {
   const handlePlayAudio = async (text: string, index: number) => {
     setPlayingIndex(index);
     try {
-      const response = await fetch(
-        `${BASE_URL}/speaking/getSpeech?text=${encodeURIComponent(text)}`
-      );
-      if (!response.ok) throw new Error('Audio fetch failed');
-      const data = await response.json();
+      const data = await fetchSpeech(text);
       const audioBlob = new Blob(
         [Uint8Array.from(atob(data.audio), (c) => c.charCodeAt(0))],
         { type: 'audio/mp3' }
@@ -118,7 +107,7 @@ const PracticeChat: React.FC<Props> = ({ topic, interest, onBack }) => {
 
   const handleSendResponse = (index: number) => {
     const userResponse = userResponses[index];
-    const correctResponse = dialog[index].textEnglish;
+    const correctResponse = dialog[index]?.textEnglish;
 
     if (isSimilarAnswer(userResponse, correctResponse)) {
       setResponseFeedback((prev) => ({ ...prev, [index]: '✅ ¡Correcto!' }));
@@ -142,7 +131,7 @@ const PracticeChat: React.FC<Props> = ({ topic, interest, onBack }) => {
   const studentLine = dialog[currentPairIndex + 1];
 
   return (
-    <div className='practice-chat'>
+    <div className={`practice-chat ${loading ? 'loading-state' : ''}`}>
       <h2>
         Diálogo: {topic} / {interest}
       </h2>
@@ -200,7 +189,6 @@ const PracticeChat: React.FC<Props> = ({ topic, interest, onBack }) => {
                 >
                   <MicIcon />
                 </button>
-
                 <button
                   onClick={() => handleSendResponse(currentPairIndex + 1)}
                   className='icon-button'
@@ -219,16 +207,18 @@ const PracticeChat: React.FC<Props> = ({ topic, interest, onBack }) => {
         </div>
       )}
 
-      <div className='navigation-buttons'>
-        {currentPairIndex > 0 ? (
-          <button onClick={goToPreviousPair}>⬅ Back</button>
-        ) : (
-          <button onClick={onBack}>⬅ Volver al inicio</button>
-        )}
-        {currentPairIndex + 2 < dialog.length && (
-          <button onClick={goToNextPair}>Next ➡</button>
-        )}
-      </div>
+      {!loading && (
+        <div className='navigation-buttons'>
+          {currentPairIndex > 0 ? (
+            <button onClick={goToPreviousPair}>⬅ Back</button>
+          ) : (
+            <button onClick={onBack}>⬅ Volver al inicio</button>
+          )}
+          {currentPairIndex + 2 < dialog.length && (
+            <button onClick={goToNextPair}>Next ➡</button>
+          )}
+        </div>
+      )}
     </div>
   );
 };
