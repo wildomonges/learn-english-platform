@@ -4,6 +4,21 @@
   background-color: #e6f2f2;
   min-height: 100vh;
 }
+.loading-message {
+  margin-top: 1rem;
+  font-size: 1.2rem;
+  color: #5c8a87;
+  text-align: center;
+}
+
+.loading-state {
+  min-height: 200px;
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #5c8a87;
+}
 
 .dialog-pair {
   display: flex;
@@ -78,8 +93,8 @@
 }
 
 .navigation-buttons button {
-  background-color: #9966cc;
-  color: white;
+  background-color: #e6f2f2;
+  color: #8e7cc3;
   padding: 0.6rem 1.2rem;
   border: none;
   border-radius: 6px;
@@ -89,7 +104,7 @@
 }
 
 .navigation-buttons button:hover {
-  background-color: #8e7cc3;
+  color: #5c8a87;
 }
 
 .icon-button {
