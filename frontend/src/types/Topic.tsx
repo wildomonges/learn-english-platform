@@ -1,9 +1,11 @@
+export interface Interest {
+  id: string;
+  name: string;
+  imgUrl: string;
+}
+
 export interface Topic {
   id: number;
   name: string;
-  description: string;
-  translation: string;
-  audioUrl: string;
-  interests: string[];
-  imageUrl: string;
+  interests: Interest[];
 }
