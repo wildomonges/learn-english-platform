@@ -60,6 +60,9 @@ export class AIAgentService {
         accept: 'application/json',
         body: JSON.stringify({
           prompt: `\n\nHuman: Please generate a dialog with 20 interactions between teacher and student for the following scenario: ${prompt}\n\nAssistant:`,
+          max_tokens_to_sample: 2000,
+          temperature: 0.7,
+          top_p: 0.9,
         }),
       });
 

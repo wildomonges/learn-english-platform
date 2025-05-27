@@ -1,32 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../styles/HomePage.css';
 import welcomeImage from '../assets/image1.png';
 import PracticeChat from '../components/PracticeChat';
-
-const topics = {
-  Developer: ['React', 'Java', 'HTML', 'Node.js'],
-  Marketing: ['SEO', 'Email Marketing'],
-};
+import { fetchTopics } from '../api/topicAPI';
+import type { Topic, Interest } from '../types/Topic';
 
 const HomePage: React.FC = () => {
   const [step, setStep] = useState<
     'welcome' | 'topics' | 'interests' | 'dialog'
   >('welcome');
-  const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
-  const [selectedInterest, setSelectedInterest] = useState<string | null>(null);
+  const [topics, setTopics] = useState<Topic[]>([]);
+  const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
+  const [selectedInterest, setSelectedInterest] = useState<Interest | null>(
+    null
+  );
+
+  useEffect(() => {
+    const loadTopics = async () => {
+      try {
+        const data = await fetchTopics();
+        setTopics(data);
+      } catch (error) {
+        console.error('Error cargando los temas:', error);
+      }
+    };
+
+    loadTopics();
+  }, []);
 
   const handleStart = () => setStep('topics');
-
-  const handleTopicSelect = (topic: string) => {
+  const handleTopicSelect = (topic: Topic) => {
     setSelectedTopic(topic);
     setStep('interests');
   };
-
-  const handleInterestSelect = (interest: string) => {
+  const handleInterestSelect = (interest: Interest) => {
     setSelectedInterest(interest);
     setStep('dialog');
   };
-
   const handleBack = () => {
     if (step === 'dialog') setStep('interests');
     else if (step === 'interests') setStep('topics');
@@ -54,17 +64,14 @@ const HomePage: React.FC = () => {
           />
         </section>
       )}
+
       {step === 'topics' && (
         <div className='container'>
           <h2 className='subtitle'>¿Qué te interesa aprender?</h2>
           <div className='button-group'>
-            {Object.keys(topics).map((topic) => (
-              <button
-                className='button-h2'
-                key={topic}
-                onClick={() => handleTopicSelect(topic)}
-              >
-                Inglés para {topic}
+            {topics.map((topic) => (
+              <button key={topic.id} onClick={() => handleTopicSelect(topic)}>
+                {topic.name}
               </button>
             ))}
           </div>
@@ -73,18 +80,24 @@ const HomePage: React.FC = () => {
           </button>
         </div>
       )}
+
       {step === 'interests' && selectedTopic && (
         <div className='container'>
           <h2 className='subtitle'>
-            ¿Qué área de {selectedTopic} te interesa?
+            ¿Qué área de "{selectedTopic.name}" te interesa?
           </h2>
           <div className='button-group'>
-            {topics[selectedTopic as keyof typeof topics].map((interest) => (
+            {selectedTopic.interests.map((interest) => (
               <button
-                key={interest}
+                key={interest.id}
                 onClick={() => handleInterestSelect(interest)}
               >
-                {interest}
+                <img
+                  src={interest.imgUrl}
+                  alt={interest.name}
+                  style={{ width: '40px', height: '40px', marginRight: '8px' }}
+                />
+                {interest.name}
               </button>
             ))}
           </div>
@@ -93,11 +106,12 @@ const HomePage: React.FC = () => {
           </button>
         </div>
       )}
-      {step === 'dialog' && selectedInterest && selectedTopic && (
+
+      {step === 'dialog' && selectedTopic && selectedInterest && (
         <div className='container'>
           <PracticeChat
-            topic={selectedTopic}
-            interest={selectedInterest}
+            topic={selectedTopic.name}
+            interest={selectedInterest.name}
             onBack={handleBack}
           />
         </div>
