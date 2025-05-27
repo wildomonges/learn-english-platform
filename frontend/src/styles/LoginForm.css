@@ -22,6 +22,7 @@
   border-radius: 8px;
   border: 1px solid #ccc;
   background-color: aliceblue;
+  color: #333;
 }
 
 .login-container button {
@@ -38,4 +39,10 @@
 
 .login-container button:hover {
   background: #4338ca;
+}
+.error-text {
+  color: red;
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+  display: block;
 }

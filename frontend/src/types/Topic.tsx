@@ -5,5 +5,5 @@ export interface Topic {
   translation: string;
   audioUrl: string;
   interests: string[];
-  imageUrl?: string;
+  imageUrl: string;
 }

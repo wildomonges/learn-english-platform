@@ -1,9 +1,9 @@
-import { Topic } from '../types/Topic';
+import type { Topic } from '../types/Topic';
 
 const topics: Topic[] = [
   {
     id: 1,
-    name: '',
+    name: 'Developer',
     description: '',
     translation: 'Inglés para desarrollo de software',
     audioUrl: '',
@@ -12,13 +12,13 @@ const topics: Topic[] = [
   },
   {
     id: 2,
-    name: '',
+    name: 'Marketing',
     description: '',
     translation: 'Inglés para marketing digital',
     audioUrl: '',
     interests: ['SEO', 'Email Marketing'],
     imageUrl:
-      'https://static.wixstatic.com/media/9d7372_d68416f464b94ab293b5c30736d7e8b1~mv2.png/v1/fill/w_280,h_168,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/Letras_marketing%20digital-10.png',
+      'https://static.wixstatic.com/media/9d7372_d68416f464b94ab293b5c30736d7e8b1~mv2.png',
   },
 ];
 
