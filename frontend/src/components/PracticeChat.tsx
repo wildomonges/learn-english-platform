@@ -4,6 +4,7 @@ import MicIcon from '@mui/icons-material/Mic';
 import SendIcon from '@mui/icons-material/Send';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import { fetchDialog, fetchSpeech } from '../api/speakingAPI';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const SpeechRecognition =
   (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
@@ -132,10 +133,16 @@ const PracticeChat: React.FC<Props> = ({ topic, interest, onBack }) => {
 
   return (
     <div className={`practice-chat ${loading ? 'loading-state' : ''}`}>
-      <h2>
-        Diálogo: {topic} / {interest}
+      <h2 className='dialog-title'>
+        Diálogo: {interest} / {topic}
       </h2>
-      {loading && <p>Cargando diálogo...</p>}
+
+      {loading && (
+        <div className='loading-spinner'>
+          <CircularProgress size={40} />
+        </div>
+      )}
+
       {error && <p className='error'>{error}</p>}
 
       {!loading && !error && teacherLine && (
