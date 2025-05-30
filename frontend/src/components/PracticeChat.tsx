@@ -5,6 +5,7 @@ import SendIcon from '@mui/icons-material/Send';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import { fetchDialog, fetchSpeech } from '../api/speakingAPI';
 import CircularProgress from '@mui/material/CircularProgress';
+import ProgressBar from './ProgressBar';
 
 const SpeechRecognition =
   (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
@@ -34,6 +35,8 @@ const PracticeChat: React.FC<Props> = ({ topic, interest, onBack }) => {
   }>({});
   const [currentPairIndex, setCurrentPairIndex] = useState(0);
   const recognitionRef = useRef<any>(null);
+  const totalPairs = Math.floor(dialog.length / 2);
+  const currentStep = Math.floor(currentPairIndex / 2);
 
   const loadDialog = async () => {
     setLoading(true);
@@ -136,6 +139,10 @@ const PracticeChat: React.FC<Props> = ({ topic, interest, onBack }) => {
       <h2 className='dialog-title'>
         Diálogo: {interest} / {topic}
       </h2>
+
+      {!loading && !error && (
+        <ProgressBar current={currentStep} total={totalPairs} />
+      )}
 
       {loading && (
         <div className='loading-spinner'>
