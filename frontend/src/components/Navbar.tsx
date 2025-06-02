@@ -23,7 +23,7 @@ const Navbar: React.FC = () => {
       <div className={`navbar-menu ${isOpen ? 'open' : ''}`}>
         <a href='/'>Inicio</a>
         <a href='/features'>Características</a>
-        <button className='navbar-button'>Login</button>
+        <a className='navbar-button'>Login</a>
 
         <div
           className='navbar-language'
@@ -31,9 +31,9 @@ const Navbar: React.FC = () => {
           style={{ cursor: 'pointer' }}
         >
           <img
+            className='image-language'
             src={language === 'es' ? spainFlag : usaFlag}
             alt={language.toUpperCase()}
-            style={{ width: '24px', height: '16px' }}
           />
         </div>
       </div>
