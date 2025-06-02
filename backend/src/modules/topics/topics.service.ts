@@ -7,6 +7,8 @@ export class TopicsService {
       {
         id: 1,
         name: 'English for Developer',
+        imgUrl:
+          'https://cdn.dribbble.com/userupload/16505523/file/original-ead560979b865f6fa8273e27291b810d.jpg?resize=400x0',
         interests: [
           {
             id: '1',
@@ -25,6 +27,9 @@ export class TopicsService {
       {
         id: 2,
         name: 'English for Marketing',
+        imgUrl:
+          'https://cdn.vectorstock.com/i/1000v/57/84/digital-marketing-logo-vector-46455784.jpg',
+
         interests: [
           {
             id: '3',

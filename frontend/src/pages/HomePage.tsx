@@ -4,6 +4,7 @@ import welcomeImage from '../assets/image1.png';
 import PracticeChat from '../components/PracticeChat';
 import { fetchTopics } from '../api/topicAPI';
 import type { Topic, Interest } from '../types/Topic';
+import TopicCard from '../components/TopicCard';
 
 const HomePage: React.FC = () => {
   const [step, setStep] = useState<
@@ -68,11 +69,14 @@ const HomePage: React.FC = () => {
       {step === 'topics' && (
         <div className='container'>
           <h2 className='subtitle'>¿Qué te interesa aprender?</h2>
-          <div className='button-group'>
+          <div className='topic-grid'>
             {topics.map((topic) => (
-              <button key={topic.id} onClick={() => handleTopicSelect(topic)}>
-                {topic.name}
-              </button>
+              <TopicCard
+                key={topic.id}
+                name={topic.name}
+                imgUrl={topic.imgUrl}
+                onClick={() => handleTopicSelect(topic)}
+              />
             ))}
           </div>
           <button className='button-back' onClick={handleBack}>

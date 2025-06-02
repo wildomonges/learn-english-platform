@@ -7,5 +7,6 @@ export interface Interest {
 export interface Topic {
   id: number;
   name: string;
+  imgUrl: string;
   interests: Interest[];
 }
