@@ -22,6 +22,26 @@ export class TopicsService {
             imgUrl:
               'https://miro.medium.com/v2/resize:fit:900/1*0_zl1YRcPy0ymOpgJ0dQKA.jpeg',
           },
+          {
+            id: '3',
+            name: 'Ruby on Rails Junior Interview',
+            imgUrl: 'https://cdn.changelog.com/uploads/icons/topics/qw/icon_large.png'
+          },
+          {
+            id: '4',
+            name: 'Ruby on Rails Mid-Level Interview',
+            imgUrl: 'https://cdn.changelog.com/uploads/icons/topics/qw/icon_large.png'
+          },
+          {
+            id: '5',
+            name: 'Ruby on Rails Senior Interview',
+            imgUrl: 'https://cdn.changelog.com/uploads/icons/topics/qw/icon_large.png'
+          },
+          {
+            id: '6',
+            name: 'AWS Serverless Junior Interview',
+            imgUrl: 'https://lumigo.io/wp-content/uploads/2020/07/AWS-Lambda@4x-190x190.png'
+          }
         ],
       },
       {
