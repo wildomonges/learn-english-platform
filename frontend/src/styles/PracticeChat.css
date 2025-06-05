@@ -100,7 +100,6 @@
   border-radius: 6px;
   font-size: 1rem;
   cursor: pointer;
-  transition: background 0.2s;
 }
 
 .navigation-buttons button:hover {
@@ -124,10 +123,9 @@
   color: #9966cc;
 }
 .dialog-title {
-  text-align: center;
-  font-size: 1.5rem;
-  margin-top: 1.5rem;
-  color: #4b9e9e;
+  font-size: 1.6rem;
+  margin-bottom: 0;
+  color: #8e7cc3;
 }
 
 .loading-text {
@@ -187,9 +185,25 @@
 }
 
 .loading-spinner {
-  display: flex;
-  justify-content: center;
-  margin-top: 13rem;
-  position: absolute;
+  margin-top: 1rem;
+}
+.recording-timer {
+  color: #4b9e9e;
   font-weight: bold;
+  margin-top: 4px;
+}
+.loading-message {
+  font-size: 1.2rem;
+  color: #555;
+  margin-top: 0.5rem;
+}
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 50vh;
+  text-align: center;
+  gap: 1rem;
+  border-bottom: 3px solid#4b9e9e;
 }
