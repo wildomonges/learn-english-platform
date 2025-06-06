@@ -175,7 +175,7 @@ const PracticeChat: React.FC<Props> = ({ topic, interest, onBack }) => {
     } else if (similarity >= 80) {
       setResponseFeedback((prev) => ({
         ...prev,
-        [index]: `✅ ¡Muy bien! Coincidencia del ${similarity}%.`,
+        [index]: `✅ ¡Muy bien! Coincidencia del ${similarity}%. Pero puedes mejorar!`,
       }));
     } else if (similarity >= 60) {
       setResponseFeedback((prev) => ({
@@ -234,6 +234,7 @@ const PracticeChat: React.FC<Props> = ({ topic, interest, onBack }) => {
                 <p>{teacherLine.textEnglish}</p>
                 <p className='text-spanish'>({teacherLine.textSpanish})</p>
                 <button
+                  disabled={playingIndex === currentPairIndex}
                   onClick={() =>
                     handlePlayAudio(teacherLine.textEnglish, currentPairIndex)
                   }
