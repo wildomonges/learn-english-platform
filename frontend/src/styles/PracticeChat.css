@@ -129,7 +129,7 @@
 .icon-button:hover {
   background-color: rgba(92, 138, 135, 0.1);
   border-radius: 50%;
-  color: #9966cc;
+  color: white;
 }
 .dialog-title {
   font-size: 1.6rem;
