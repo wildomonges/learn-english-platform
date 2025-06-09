@@ -64,6 +64,12 @@
   border: 1px solid #5c8a87;
   color: #1a3c6b;
   background-color: #f4f7fb;
+  outline: none;
+  box-shadow: none;
+}
+.response-input:hover {
+  border: 2px solid #5c8a87;
+  background-color: #ffffff;
 }
 
 .response-row button {
@@ -73,11 +79,6 @@
   cursor: pointer;
   color: #4b9e9e;
   transition: transform 0.2s, color 0.2s;
-}
-
-.response-row button:hover {
-  transform: scale(1.1);
-  color: #9966cc;
 }
 
 .feedback {
@@ -90,6 +91,8 @@
   display: flex;
   justify-content: space-between;
   margin-top: 2rem;
+  outline: none;
+  box-shadow: none;
 }
 
 .navigation-buttons button {
@@ -100,6 +103,8 @@
   border-radius: 6px;
   font-size: 1rem;
   cursor: pointer;
+  outline: none;
+  box-shadow: none;
 }
 
 .navigation-buttons button:hover {
@@ -108,19 +113,23 @@
 
 .icon-button {
   background: transparent;
-  border: none;
   cursor: pointer;
   padding: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #4b9e9e;
+  font-size: 1rem;
+  padding: 0.5rem 0.6rem;
+  flex-shrink: 0;
+  outline: none;
+  box-shadow: none;
 }
 
 .icon-button:hover {
   background-color: rgba(92, 138, 135, 0.1);
   border-radius: 50%;
-  color: #9966cc;
+  color: white;
 }
 .dialog-title {
   font-size: 1.6rem;
@@ -143,25 +152,8 @@
   max-width: 100%;
   box-sizing: border-box;
   margin-top: 0.5rem;
-}
-
-.response-input {
-  flex: 1;
-  padding: 0.6rem 1rem;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 1rem;
-  min-width: 0;
-}
-
-.icon-button {
-  color: #4b9e9e;
-  border: none;
-  border-radius: 8px;
-  padding: 0.6rem 0.8rem;
-  font-size: 1.2rem;
-  cursor: pointer;
-  flex-shrink: 0;
+  outline: none;
+  box-shadow: none;
 }
 
 .icon-button:hover {
@@ -174,13 +166,10 @@
     gap: 0.4rem;
   }
 
-  .icon-button {
-    font-size: 1rem;
-    padding: 0.5rem 0.6rem;
-  }
-
   .response-input {
     font-size: 0.95rem;
+    outline: none;
+    box-shadow: none;
   }
 }
 
@@ -192,11 +181,6 @@
   font-weight: bold;
   margin-top: 4px;
 }
-.loading-message {
-  font-size: 1.2rem;
-  color: #555;
-  margin-top: 0.5rem;
-}
 .loading-container {
   display: flex;
   flex-direction: column;
@@ -205,5 +189,20 @@
   height: 50vh;
   text-align: center;
   gap: 1rem;
-  border-bottom: 3px solid#4b9e9e;
+  background: linear-gradient(135deg, #f0f4ff, #e0e7ff);
+  padding: 2rem;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  transition: background 0.3s ease;
+  backdrop-filter: blur(6px);
+}
+button:focus {
+  outline: none;
+  box-shadow: none;
+}
+button:hover,
+.icon-button:hover,
+.response-row button:hover {
+  border: 1px solid #5c8a87;
 }
