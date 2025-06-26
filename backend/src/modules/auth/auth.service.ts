@@ -27,7 +27,13 @@ export class AuthService {
     });
     await this.userRepository.save(user);
 
-    return { message: 'User created', userId: user.id };
+    return {
+      message: 'User created',
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+    };
   }
 
   async signIn({ email, password }): Promise<{ access_token: string }> {
