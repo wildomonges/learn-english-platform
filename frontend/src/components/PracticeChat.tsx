@@ -22,7 +22,14 @@ type Props = {
   onBack: () => void;
 };
 
+interface User {
+  firstName: string;
+  lastName: string;
+  email: string;
+}
+
 const PracticeChat: React.FC<Props> = ({ topic, interest, onBack }) => {
+  const [user, setUser] = useState<User | null>(null);
   const [dialog, setDialog] = useState<DialogLine[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -42,21 +49,42 @@ const PracticeChat: React.FC<Props> = ({ topic, interest, onBack }) => {
   const totalPairs = Math.floor(dialog.length / 2);
   const currentStep = Math.floor(currentPairIndex / 2);
 
-  const loadDialog = async () => {
-    setLoading(true);
-    try {
-      const data = await fetchDialog(topic, interest);
-      setDialog(data.dialog || []);
-      setError(null);
-    } catch (err) {
-      console.error('Error fetching dialog:', err);
-      setError('Failed to fetch dialogue. Please try again later.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    try {
+      const userData = localStorage.getItem('user');
+      if (!userData) {
+        console.warn('No user data found in localStorage.');
+        return;
+      }
+
+      const parsedUser: User = JSON.parse(userData);
+
+      if (!parsedUser.firstName || !parsedUser.email) {
+        console.warn('User data is missing required fields.');
+        return;
+      }
+
+      setUser(parsedUser);
+    } catch (error) {
+      console.error('Error parsing user data from localStorage:', error);
+      localStorage.removeItem('user'); // Limpia si hay datos corruptos
+    }
+
+    // Cargar diálogo
+    const loadDialog = async () => {
+      setLoading(true);
+      try {
+        const data = await fetchDialog(topic, interest);
+        setDialog(data.dialog || []);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching dialog:', err);
+        setError('Failed to fetch dialogue. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
     loadDialog();
   }, [topic, interest]);
 
@@ -88,7 +116,6 @@ const PracticeChat: React.FC<Props> = ({ topic, interest, onBack }) => {
       return;
     }
 
-    // Clear input and feedback before recording
     setUserResponses((prev) => ({ ...prev, [index]: '' }));
     setResponseFeedback((prev) => ({ ...prev, [index]: '' }));
 
@@ -123,6 +150,7 @@ const PracticeChat: React.FC<Props> = ({ topic, interest, onBack }) => {
     recognition.start();
     recognitionRef.current = recognition;
   };
+
   function calculateSimilarity(a: string, b: string): number {
     const normalize = (text: string) =>
       text
@@ -146,13 +174,7 @@ const PracticeChat: React.FC<Props> = ({ topic, interest, onBack }) => {
         if (str1[i - 1] === str2[j - 1]) {
           dp[i][j] = dp[i - 1][j - 1];
         } else {
-          dp[i][j] =
-            1 +
-            Math.min(
-              dp[i - 1][j], // deletion
-              dp[i][j - 1], // insertion
-              dp[i - 1][j - 1] // substitution
-            );
+          dp[i][j] = 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
         }
       }
     }
@@ -217,13 +239,12 @@ const PracticeChat: React.FC<Props> = ({ topic, interest, onBack }) => {
             Diálogo: {interest} / {topic}
           </h2>
 
+          {user && (
+            <p className='greeting-message'>👋 ¡Hola, {user.firstName}!</p>
+          )}
+
           {!loading && !error && (
             <ProgressBar current={currentStep} total={totalPairs} />
-          )}
-          {loading && (
-            <div className='loading-spinner'>
-              <CircularProgress size={40} />
-            </div>
           )}
           {error && <p className='error'>{error}</p>}
 

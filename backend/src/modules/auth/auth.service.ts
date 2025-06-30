@@ -36,7 +36,10 @@ export class AuthService {
     };
   }
 
-  async signIn({ email, password }): Promise<{ access_token: string }> {
+  async signIn({
+    email,
+    password,
+  }): Promise<{ access_token: string; user: any }> {
     const user = await this.userRepository.findOne({ where: { email } });
     if (!user) throw new Error('User not found');
 
@@ -44,8 +47,16 @@ export class AuthService {
     if (!valid) throw new Error('Invalid credentials');
 
     const payload = { email: user.email, sub: user.id };
+    const access_token = this.jwtService.sign(payload);
+
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token,
+      user: {
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+      },
     };
   }
 }

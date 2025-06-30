@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../styles/Navbar.css';
 
 import spainFlag from '../assets/flags/spain.png';
@@ -7,10 +7,29 @@ import usaFlag from '../assets/flags/usa.png';
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [language, setLanguage] = useState<'es' | 'en'>('es');
+  const [user, setUser] = useState<{ firstName: string } | null>(null);
 
-  const toggleMenu = () => setIsOpen((prev: boolean) => !prev);
+  const toggleMenu = () => setIsOpen((prev) => !prev);
   const toggleLanguage = () =>
-    setLanguage((prev: 'es' | 'en') => (prev === 'es' ? 'en' : 'es'));
+    setLanguage((prev) => (prev === 'es' ? 'en' : 'es'));
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch {
+        setUser(null);
+      }
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setUser(null);
+    window.location.reload(); // O redirige si tienes un router
+  };
 
   return (
     <nav className='navbar'>
@@ -22,8 +41,17 @@ const Navbar: React.FC = () => {
 
       <div className={`navbar-menu ${isOpen ? 'open' : ''}`}>
         <a href='/'>Inicio</a>
-        <a href='/features'>Características</a>
-        <a className='navbar-button'>Login</a>
+
+        {user ? (
+          <>
+            <span className='navbar-user'>👋 {user.firstName}</span>
+            <button className='logout-button' onClick={handleLogout}>
+              Cerrar sesión
+            </button>
+          </>
+        ) : (
+          <a className='navbar-button' href='/login'></a>
+        )}
 
         <div
           className='navbar-language'

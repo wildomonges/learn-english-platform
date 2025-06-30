@@ -5,16 +5,31 @@ import PracticeChat from '../components/PracticeChat';
 import { fetchTopics } from '../api/topicAPI';
 import type { Topic, Interest } from '../types/Topic';
 import TopicCard from '../components/TopicCard';
+import LoginForm from '../components/LoginForm';
+import RegisterForm from '../components/RegisterForm';
 
 const HomePage: React.FC = () => {
   const [step, setStep] = useState<
-    'welcome' | 'topics' | 'interests' | 'dialog'
+    'welcome' | 'login' | 'register' | 'topics' | 'interests' | 'dialog'
   >('welcome');
   const [topics, setTopics] = useState<Topic[]>([]);
   const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
   const [selectedInterest, setSelectedInterest] = useState<Interest | null>(
     null
   );
+  const [user, setUser] = useState<{ firstName: string } | null>(null);
+
+  useEffect(() => {
+    const stored = localStorage.getItem('user');
+    if (stored) {
+      try {
+        setUser(JSON.parse(stored));
+        setStep('topics'); // Opcional: redirigir si ya está logueado
+      } catch {
+        setUser(null);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     const loadTopics = async () => {
@@ -29,7 +44,13 @@ const HomePage: React.FC = () => {
     loadTopics();
   }, []);
 
-  const handleStart = () => setStep('topics');
+  const handleStart = () => {
+    if (user) {
+      setStep('topics');
+    } else {
+      setStep('login');
+    }
+  };
   const handleTopicSelect = (topic: Topic) => {
     setSelectedTopic(topic);
     setStep('interests');
@@ -46,6 +67,24 @@ const HomePage: React.FC = () => {
 
   return (
     <div className='homepage'>
+      {step === 'login' && (
+        <LoginForm
+          onSuccess={() => {
+            setStep('topics');
+            const stored = localStorage.getItem('user');
+            if (stored) setUser(JSON.parse(stored));
+          }}
+          onSwitchToRegister={() => setStep('register')}
+        />
+      )}
+
+      {step === 'register' && (
+        <RegisterForm
+          onSuccess={() => setStep('login')}
+          onSwitchToLogin={() => setStep('login')}
+        />
+      )}
+
       {step === 'welcome' && (
         <section className='welcome-section'>
           <div className='welcome-text'>
@@ -57,6 +96,20 @@ const HomePage: React.FC = () => {
             <button className='btn-start' onClick={handleStart}>
               🚀 Empezar
             </button>
+            {!user && (
+              <div style={{ marginTop: '1rem' }}>
+                <button className='btn-login' onClick={() => setStep('login')}>
+                  Iniciar sesión
+                </button>
+
+                <button
+                  className='btn-register'
+                  onClick={() => setStep('register')}
+                >
+                  Registrarse
+                </button>
+              </div>
+            )}
           </div>
           <img
             src={welcomeImage}
