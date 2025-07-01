@@ -175,6 +175,14 @@
   width: 100%;
 }
 
+.btn-login {
+  background-color: #e6f2f2;
+  color: #9966cc;
+}
+.btn-register {
+  background-color: #e6f2f2;
+  color: #9966cc;
+}
 /* Responsive Design */
 @media (max-width: 768px) {
   .title {
