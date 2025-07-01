@@ -39,7 +39,9 @@ const LoginForm: React.FC<Props> = ({ onSuccess, onSwitchToRegister }) => {
     if (!valid) return;
 
     try {
-      const res = await fetch('http://localhost:3000/api/v1/auth/sign_in', {
+      const API_URL = import.meta.env.VITE_API_URL;
+
+      const res = await fetch(`${API_URL}/auth/sign_in`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
