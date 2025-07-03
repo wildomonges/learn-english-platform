@@ -8,6 +8,7 @@ import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import { fetchDialog, fetchSpeech } from '../api/speakingAPI';
 import CircularProgress from '@mui/material/CircularProgress';
 import ProgressBar from './ProgressBar';
+import MoreVertIcon from '@mui/icons-material/MoreVert'; // Tres puntitos
 
 const SpeechRecognition =
   (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
@@ -39,6 +40,8 @@ const PracticeChat: React.FC<Props> = ({ topic, interest, onBack }) => {
   const [userResponses, setUserResponses] = useState<{ [key: number]: string }>(
     {}
   );
+  const [preferredSpeed, setPreferredSpeed] = useState<number>(1);
+
   const [responseFeedback, setResponseFeedback] = useState<{
     [key: number]: string;
   }>({});
@@ -73,6 +76,7 @@ const PracticeChat: React.FC<Props> = ({ topic, interest, onBack }) => {
   };
 
   const handleSelectSpeed = (speed: number) => {
+    setPreferredSpeed(speed);
     if (playbackTarget) {
       handlePlayAudio(playbackTarget.text, playbackTarget.index, speed);
     }
@@ -147,7 +151,6 @@ const PracticeChat: React.FC<Props> = ({ topic, interest, onBack }) => {
       return;
     }
 
-    // Si hay una grabación previa en curso, detenerla
     if (recognitionRef.current) {
       recognitionRef.current.stop();
       recognitionRef.current = null;
@@ -287,18 +290,37 @@ const PracticeChat: React.FC<Props> = ({ topic, interest, onBack }) => {
                 <strong>Teacher:</strong>
                 <p>{teacherLine.textEnglish}</p>
                 <p className='text-spanish'>({teacherLine.textSpanish})</p>
+                {/* 🔊 Reproduce directamente a velocidad normal */}
+                <button
+                  onClick={() =>
+                    handlePlayAudio(
+                      teacherLine.textEnglish,
+                      currentPairIndex,
+                      preferredSpeed
+                    )
+                  }
+                  className='icon-button'
+                  title={`Reproducir (${preferredSpeed}x)`}
+                >
+                  <VolumeUpIcon />
+                </button>{' '}
+                {/* Indicador de reproducción */}
+                {playingIndex === currentPairIndex && (
+                  <span className='playing-indicator'>🔊 Reproduciendo...</span>
+                )}
+                {/* ⚙️ Menú de velocidad */}
                 <button
                   onClick={(e) =>
                     handleOpenSpeedMenu(
                       e,
-                      studentLine.textEnglish,
-                      currentPairIndex + 1
+                      teacherLine.textEnglish,
+                      currentPairIndex
                     )
                   }
                   className='icon-button'
-                  title='Seleccionar velocidad'
+                  title='Opciones de velocidad'
                 >
-                  <VolumeUpIcon />
+                  <MoreVertIcon />
                 </button>
               </div>
 
@@ -307,6 +329,22 @@ const PracticeChat: React.FC<Props> = ({ topic, interest, onBack }) => {
                   <strong>Student:</strong>
                   <p>{studentLine.textEnglish}</p>
                   <p className='text-spanish'>({studentLine.textSpanish})</p>
+                  {/* 🔊 Reproduce directamente */}
+                  <button
+                    onClick={() =>
+                      handlePlayAudio(
+                        studentLine.textEnglish,
+                        currentPairIndex + 1,
+                        preferredSpeed
+                      )
+                    }
+                    className='icon-button'
+                    title={`Reproducir (${preferredSpeed}x)`}
+                  >
+                    <VolumeUpIcon />
+                  </button>
+
+                  {/* ⚙️ Configurar velocidad */}
                   <button
                     onClick={(e) =>
                       handleOpenSpeedMenu(
@@ -316,10 +354,11 @@ const PracticeChat: React.FC<Props> = ({ topic, interest, onBack }) => {
                       )
                     }
                     className='icon-button'
-                    title='Seleccionar velocidad'
+                    title='Opciones de velocidad'
                   >
-                    <VolumeUpIcon />
+                    <MoreVertIcon />
                   </button>
+
                   <div className='response-row'>
                     <textarea
                       className='response-input'

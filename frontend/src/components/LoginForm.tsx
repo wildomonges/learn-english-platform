@@ -63,6 +63,7 @@ const LoginForm: React.FC<Props> = ({ onSuccess, onSwitchToRegister }) => {
       //  token
       localStorage.setItem('token', data.access_token);
       localStorage.setItem('user', JSON.stringify(data.user));
+      window.dispatchEvent(new Event('userLoggedIn'));
 
       onSuccess();
     } catch (err) {

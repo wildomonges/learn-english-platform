@@ -12,8 +12,7 @@ const Navbar: React.FC = () => {
   const toggleMenu = () => setIsOpen((prev) => !prev);
   const toggleLanguage = () =>
     setLanguage((prev) => (prev === 'es' ? 'en' : 'es'));
-
-  useEffect(() => {
+  const loadUserFromStorage = () => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       try {
@@ -22,13 +21,25 @@ const Navbar: React.FC = () => {
         setUser(null);
       }
     }
+  };
+  const handleUserLogin = () => {
+    loadUserFromStorage();
+  };
+  useEffect(() => {
+    loadUserFromStorage();
+
+    window.addEventListener('userLoggedIn', handleUserLogin);
+
+    return () => {
+      window.removeEventListener('userLoggedIn', handleUserLogin);
+    };
   }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     setUser(null);
-    window.location.reload(); // O redirige si tienes un router
+    window.location.reload();
   };
 
   return (

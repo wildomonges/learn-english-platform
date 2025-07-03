@@ -35,6 +35,8 @@ export class AIAgentService {
                        The conversation should include the Student interest ${interest}. 
                        The conversation must be in English in the principal line and Spanish as secondary line,
                        so the student can understand the conversation.
+                       The conversation must include words in English only for the principal line.
+                       Please generate a dialog with 20 interactions between teacher and student 
                        Return the response in JSON format as follows:
                        {
                            "dialog": [
@@ -59,7 +61,7 @@ export class AIAgentService {
         contentType: 'application/json',
         accept: 'application/json',
         body: JSON.stringify({
-          prompt: `\n\nHuman: Please generate a dialog with 20 interactions between teacher and student for the following scenario: ${prompt}\n\nAssistant:`,
+          prompt: `\n\nHuman: ${prompt}\n\nAssistant:`,
           max_tokens_to_sample: 2000,
           temperature: 0.7,
           top_p: 0.9,
