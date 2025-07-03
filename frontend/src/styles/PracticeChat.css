@@ -211,3 +211,25 @@ button:hover,
   margin: 1rem 0;
   color: #8e7cc3;
 }
+
+.speed-button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8rem;
+  padding: 4px 8px;
+  background: #f0f0f0;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.speed-button:hover {
+  background: #e0e0e0;
+}
+
+.speed-label {
+  font-weight: 500;
+  color: #444;
+}
