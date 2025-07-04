@@ -1,45 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../styles/Navbar.css';
-
 import spainFlag from '../assets/flags/spain.png';
 import usaFlag from '../assets/flags/usa.png';
+import { useAuth } from '../context/AuthContext';
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [language, setLanguage] = useState<'es' | 'en'>('es');
-  const [user, setUser] = useState<{ firstName: string } | null>(null);
+  const { user, setUser } = useAuth();
+  const navigate = useNavigate(); // ✅ Usa navigate correctamente
 
   const toggleMenu = () => setIsOpen((prev) => !prev);
   const toggleLanguage = () =>
     setLanguage((prev) => (prev === 'es' ? 'en' : 'es'));
-  const loadUserFromStorage = () => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch {
-        setUser(null);
-      }
-    }
-  };
-  const handleUserLogin = () => {
-    loadUserFromStorage();
-  };
-  useEffect(() => {
-    loadUserFromStorage();
-
-    window.addEventListener('userLoggedIn', handleUserLogin);
-
-    return () => {
-      window.removeEventListener('userLoggedIn', handleUserLogin);
-    };
-  }, []);
 
   const handleLogout = () => {
+    console.log('logout llamado');
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    setUser(null);
-    window.location.reload();
+    setUser(null); //
+    navigate('/'); //
   };
 
   return (
@@ -60,9 +41,7 @@ const Navbar: React.FC = () => {
               Cerrar sesión
             </button>
           </>
-        ) : (
-          <a className='navbar-button' href='/login'></a>
-        )}
+        ) : null}
 
         <div
           className='navbar-language'
