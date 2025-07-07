@@ -13,7 +13,8 @@ const LoginForm: React.FC<Props> = ({ onSuccess, onSwitchToRegister }) => {
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
-  const { setUser } = useAuth();
+
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const validateEmail = (email: string) => {
@@ -54,22 +55,16 @@ const LoginForm: React.FC<Props> = ({ onSuccess, onSwitchToRegister }) => {
       const data = await res.json();
       console.log('Respuesta del backend:', data);
 
-      if (!res.ok) {
-        alert(data.message || 'Error del servidor al iniciar sesión.');
+      if (!res.ok || !data.access_token || !data.user) {
+        alert(data.message || 'No se pudo iniciar sesión.');
         return;
       }
 
-      if (!data.access_token) {
-        alert('Respuesta incompleta del servidor. No se pudo iniciar sesión.');
-        return;
-      }
+      // The context login is used
+      login(data.user, data.access_token);
 
-      localStorage.setItem('token', data.access_token);
-      localStorage.setItem('user', JSON.stringify(data.user));
-
-      setUser(data.user);
-      onSuccess?.(); // llamada segura
-      navigate('/'); // redirige automáticamente
+      onSuccess?.();
+      navigate('/');
     } catch (err) {
       console.error('Error al iniciar sesión:', err);
       alert('Error al iniciar sesión. Verifica tus datos o intenta más tarde.');
