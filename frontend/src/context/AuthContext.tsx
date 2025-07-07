@@ -1,22 +1,19 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-// Define la interfaz del usuario
 interface User {
   firstName: string;
   lastName: string;
   email: string;
 }
 
-// Define el tipo del contexto
 interface AuthContextType {
   user: User | null;
   setUser: (user: User | null) => void;
+  getUser: () => User | null;
 }
 
-// Crea el contexto
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Componente proveedor
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
@@ -34,14 +31,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, []);
 
+  const getUser = () => user;
+
   return (
-    <AuthContext.Provider value={{ user, setUser }}>
+    <AuthContext.Provider value={{ user, setUser, getUser }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-// Hook personalizado para usar el contexto
+// Hook
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (!context) {
@@ -49,3 +48,5 @@ export const useAuth = (): AuthContextType => {
   }
   return context;
 };
+
+export { AuthContext };

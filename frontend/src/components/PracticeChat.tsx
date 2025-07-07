@@ -9,6 +9,7 @@ import { fetchDialog, fetchSpeech } from '../api/speakingAPI';
 import CircularProgress from '@mui/material/CircularProgress';
 import ProgressBar from './ProgressBar';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { useAuth } from '../context/AuthContext';
 
 const SpeechRecognition =
   (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
@@ -25,14 +26,7 @@ type Props = {
   onBack: () => void;
 };
 
-interface User {
-  firstName: string;
-  lastName: string;
-  email: string;
-}
-
 const PracticeChat: React.FC<Props> = ({ topic, interest, onBack }) => {
-  const [user, setUser] = useState<User | null>(null);
   const [dialog, setDialog] = useState<DialogLine[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -51,14 +45,33 @@ const PracticeChat: React.FC<Props> = ({ topic, interest, onBack }) => {
   const recognitionRef = useRef<any>(null);
   const recordingTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-
-  const totalPairs = Math.floor(dialog.length / 2);
-  const currentStep = Math.floor(currentPairIndex / 2);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [playbackTarget, setPlaybackTarget] = useState<{
     text: string;
     index: number;
   } | null>(null);
+
+  const totalPairs = Math.floor(dialog.length / 2);
+  const currentStep = Math.floor(currentPairIndex / 2);
+
+  const { user } = useAuth();
+
+  useEffect(() => {
+    const loadDialog = async () => {
+      setLoading(true);
+      try {
+        const data = await fetchDialog(topic, interest);
+        setDialog(data.dialog || []);
+      } catch (err) {
+        console.error('Error fetching dialog:', err);
+        setError('Failed to fetch dialogue. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadDialog();
+  }, [topic, interest]);
 
   const handleOpenSpeedMenu = (
     event: React.MouseEvent<HTMLElement>,
@@ -82,44 +95,12 @@ const PracticeChat: React.FC<Props> = ({ topic, interest, onBack }) => {
     handleCloseSpeedMenu();
   };
 
-  useEffect(() => {
-    try {
-      const userData = localStorage.getItem('user');
-      if (userData) {
-        const parsedUser: User = JSON.parse(userData);
-        if (parsedUser.firstName && parsedUser.email) {
-          setUser(parsedUser);
-        }
-      }
-    } catch (error) {
-      console.error('Error parsing user data:', error);
-      localStorage.removeItem('user');
-    }
-
-    const loadDialog = async () => {
-      setLoading(true);
-      try {
-        const data = await fetchDialog(topic, interest);
-        setDialog(data.dialog || []);
-      } catch (err) {
-        console.error('Error fetching dialog:', err);
-        setError('Failed to fetch dialogue. Please try again later.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadDialog();
-  }, [topic, interest]);
-
   const handlePlayAudio = async (
     text: string,
     index: number,
     rate: number = 1
   ) => {
-    if (playingIndex === index) {
-      return;
-    }
+    if (playingIndex === index) return;
 
     if (audioRef.current) {
       audioRef.current.pause();

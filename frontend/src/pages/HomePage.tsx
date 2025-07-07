@@ -75,8 +75,6 @@ const HomePage: React.FC = () => {
         <LoginForm
           onSuccess={() => {
             setStep('topics');
-            const stored = localStorage.getItem('user');
-            if (stored) JSON.parse(stored);
           }}
           onSwitchToRegister={() => setStep('register')}
         />
