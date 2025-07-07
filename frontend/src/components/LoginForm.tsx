@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import '../styles/LoginForm.css';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 interface Props {
-  onSuccess: () => void;
-  onSwitchToRegister: () => void;
+  onSuccess?: () => void;
+  onSwitchToRegister?: () => void;
 }
 
 const LoginForm: React.FC<Props> = ({ onSuccess, onSwitchToRegister }) => {
@@ -11,6 +13,8 @@ const LoginForm: React.FC<Props> = ({ onSuccess, onSwitchToRegister }) => {
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const { setUser } = useAuth();
+  const navigate = useNavigate();
 
   const validateEmail = (email: string) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -60,12 +64,12 @@ const LoginForm: React.FC<Props> = ({ onSuccess, onSwitchToRegister }) => {
         return;
       }
 
-      //  token
       localStorage.setItem('token', data.access_token);
       localStorage.setItem('user', JSON.stringify(data.user));
-      window.dispatchEvent(new Event('userLoggedIn'));
 
-      onSuccess();
+      setUser(data.user);
+      onSuccess?.(); // llamada segura
+      navigate('/'); // redirige automáticamente
     } catch (err) {
       console.error('Error al iniciar sesión:', err);
       alert('Error al iniciar sesión. Verifica tus datos o intenta más tarde.');

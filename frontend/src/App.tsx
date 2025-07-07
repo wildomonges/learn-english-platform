@@ -8,21 +8,28 @@ import {
 import HomePage from './pages/HomePage';
 import Navbar from './components/Navbar';
 
-import LoginForm from './components/LoginForm';
 import './App.css';
+import { AuthProvider } from './context/AuthContext';
 
-const App: React.FC = () => {
+const AppContent: React.FC = () => {
   return (
-    <Router>
+    <>
       <Navbar />
       <Routes>
         <Route path='/' element={<HomePage />} />
-        <Route path='/login' element={<LoginForm />} />
 
         <Route path='/practice' element={<Navigate to='/' />} />
       </Routes>
-    </Router>
+    </>
   );
 };
+
+const App: React.FC = () => (
+  <Router>
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
+  </Router>
+);
 
 export default App;

@@ -7,6 +7,7 @@ import type { Topic, Interest } from '../types/Topic';
 import TopicCard from '../components/TopicCard';
 import LoginForm from '../components/LoginForm';
 import RegisterForm from '../components/RegisterForm';
+import { useAuth } from '../context/AuthContext';
 
 const HomePage: React.FC = () => {
   const [step, setStep] = useState<
@@ -17,19 +18,22 @@ const HomePage: React.FC = () => {
   const [selectedInterest, setSelectedInterest] = useState<Interest | null>(
     null
   );
-  const [user, setUser] = useState<{ firstName: string } | null>(null);
+  const { user } = useAuth();
 
   useEffect(() => {
     const stored = localStorage.getItem('user');
     if (stored) {
       try {
-        setUser(JSON.parse(stored));
-        setStep('topics'); // Opcional: redirigir si ya está logueado
-      } catch {
-        setUser(null);
-      }
+        setStep('topics');
+      } catch {}
     }
   }, []);
+
+  useEffect(() => {
+    if (!user) {
+      setStep('welcome');
+    }
+  }, [user]);
 
   useEffect(() => {
     const loadTopics = async () => {
@@ -71,8 +75,6 @@ const HomePage: React.FC = () => {
         <LoginForm
           onSuccess={() => {
             setStep('topics');
-            const stored = localStorage.getItem('user');
-            if (stored) setUser(JSON.parse(stored));
           }}
           onSwitchToRegister={() => setStep('register')}
         />

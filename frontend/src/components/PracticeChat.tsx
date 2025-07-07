@@ -8,7 +8,8 @@ import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import { fetchDialog, fetchSpeech } from '../api/speakingAPI';
 import CircularProgress from '@mui/material/CircularProgress';
 import ProgressBar from './ProgressBar';
-import MoreVertIcon from '@mui/icons-material/MoreVert'; // Tres puntitos
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { useAuth } from '../context/AuthContext';
 
 const SpeechRecognition =
   (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
@@ -25,14 +26,7 @@ type Props = {
   onBack: () => void;
 };
 
-interface User {
-  firstName: string;
-  lastName: string;
-  email: string;
-}
-
 const PracticeChat: React.FC<Props> = ({ topic, interest, onBack }) => {
-  const [user, setUser] = useState<User | null>(null);
   const [dialog, setDialog] = useState<DialogLine[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -41,7 +35,6 @@ const PracticeChat: React.FC<Props> = ({ topic, interest, onBack }) => {
     {}
   );
   const [preferredSpeed, setPreferredSpeed] = useState<number>(1);
-
   const [responseFeedback, setResponseFeedback] = useState<{
     [key: number]: string;
   }>({});
@@ -52,14 +45,33 @@ const PracticeChat: React.FC<Props> = ({ topic, interest, onBack }) => {
   const recognitionRef = useRef<any>(null);
   const recordingTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-
-  const totalPairs = Math.floor(dialog.length / 2);
-  const currentStep = Math.floor(currentPairIndex / 2);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [playbackTarget, setPlaybackTarget] = useState<{
     text: string;
     index: number;
   } | null>(null);
+
+  const totalPairs = Math.floor(dialog.length / 2);
+  const currentStep = Math.floor(currentPairIndex / 2);
+
+  const { user } = useAuth();
+
+  useEffect(() => {
+    const loadDialog = async () => {
+      setLoading(true);
+      try {
+        const data = await fetchDialog(topic, interest);
+        setDialog(data.dialog || []);
+      } catch (err) {
+        console.error('Error fetching dialog:', err);
+        setError('Failed to fetch dialogue. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadDialog();
+  }, [topic, interest]);
 
   const handleOpenSpeedMenu = (
     event: React.MouseEvent<HTMLElement>,
@@ -83,45 +95,21 @@ const PracticeChat: React.FC<Props> = ({ topic, interest, onBack }) => {
     handleCloseSpeedMenu();
   };
 
-  useEffect(() => {
-    try {
-      const userData = localStorage.getItem('user');
-      if (!userData) return;
-      const parsedUser: User = JSON.parse(userData);
-      if (!parsedUser.firstName || !parsedUser.email) return;
-      setUser(parsedUser);
-    } catch (error) {
-      console.error('Error parsing user data:', error);
-      localStorage.removeItem('user');
-    }
-
-    const loadDialog = async () => {
-      setLoading(true);
-      try {
-        const data = await fetchDialog(topic, interest);
-        setDialog(data.dialog || []);
-      } catch (err) {
-        console.error('Error fetching dialog:', err);
-        setError('Failed to fetch dialogue. Please try again later.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadDialog();
-  }, [topic, interest]);
-
   const handlePlayAudio = async (
     text: string,
     index: number,
     rate: number = 1
   ) => {
+    if (playingIndex === index) return;
+
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
+      audioRef.current = null;
     }
 
     setPlayingIndex(index);
+
     try {
       const data = await fetchSpeech(text);
       const audioBlob = new Blob(
@@ -172,10 +160,7 @@ const PracticeChat: React.FC<Props> = ({ topic, interest, onBack }) => {
 
     recognition.onresult = (event: any) => {
       const transcript = event.results[0][0].transcript;
-      setUserResponses((prev) => ({
-        ...prev,
-        [index]: transcript.trim(), // limpio y directo
-      }));
+      setUserResponses((prev) => ({ ...prev, [index]: transcript.trim() }));
     };
 
     recognition.onerror = (event: any) => {
@@ -192,10 +177,8 @@ const PracticeChat: React.FC<Props> = ({ topic, interest, onBack }) => {
     };
 
     recognitionRef.current = recognition;
-
     setUserResponses((prev) => ({ ...prev, [index]: '' }));
     setResponseFeedback((prev) => ({ ...prev, [index]: '' }));
-
     recognition.start();
   };
 
@@ -245,6 +228,7 @@ const PracticeChat: React.FC<Props> = ({ topic, interest, onBack }) => {
     } else {
       feedback = `❌ No fue muy preciso. Coincidencia del ${similarity}%. Intenta de nuevo.`;
     }
+
     setResponseFeedback((prev) => ({ ...prev, [index]: feedback }));
   };
 
@@ -279,62 +263,24 @@ const PracticeChat: React.FC<Props> = ({ topic, interest, onBack }) => {
             <p className='greeting-message'>👋 ¡Hola, {user.firstName}!</p>
           )}
 
-          {!loading && !error && (
-            <ProgressBar current={currentStep} total={totalPairs} />
-          )}
+          <ProgressBar current={currentStep} total={totalPairs} />
           {error && <p className='error'>{error}</p>}
 
-          {!loading && !error && teacherLine && (
+          {teacherLine && (
             <div className='dialog-pair'>
               <div className='chat-bubble teacher'>
                 <strong>Teacher:</strong>
                 <p>{teacherLine.textEnglish}</p>
                 <p className='text-spanish'>({teacherLine.textSpanish})</p>
-                {/* 🔊 Reproduce directamente a velocidad normal */}
-                <button
-                  onClick={() =>
-                    handlePlayAudio(
-                      teacherLine.textEnglish,
-                      currentPairIndex,
-                      preferredSpeed
-                    )
-                  }
-                  className='icon-button'
-                  title={`Reproducir (${preferredSpeed}x)`}
-                >
-                  <VolumeUpIcon />
-                </button>{' '}
-                {/* Indicador de reproducción */}
-                {playingIndex === currentPairIndex && (
-                  <span className='playing-indicator'>🔊 Reproduciendo...</span>
-                )}
-                {/* ⚙️ Menú de velocidad */}
-                <button
-                  onClick={(e) =>
-                    handleOpenSpeedMenu(
-                      e,
-                      teacherLine.textEnglish,
-                      currentPairIndex
-                    )
-                  }
-                  className='icon-button'
-                  title='Opciones de velocidad'
-                >
-                  <MoreVertIcon />
-                </button>
-              </div>
 
-              {studentLine && (
-                <div className='chat-bubble student'>
-                  <strong>Student:</strong>
-                  <p>{studentLine.textEnglish}</p>
-                  <p className='text-spanish'>({studentLine.textSpanish})</p>
-                  {/* 🔊 Reproduce directamente */}
+                <div
+                  style={{ display: 'flex', alignItems: 'center', gap: '4px' }}
+                >
                   <button
                     onClick={() =>
                       handlePlayAudio(
-                        studentLine.textEnglish,
-                        currentPairIndex + 1,
+                        teacherLine.textEnglish,
+                        currentPairIndex,
                         preferredSpeed
                       )
                     }
@@ -344,13 +290,12 @@ const PracticeChat: React.FC<Props> = ({ topic, interest, onBack }) => {
                     <VolumeUpIcon />
                   </button>
 
-                  {/* ⚙️ Configurar velocidad */}
                   <button
                     onClick={(e) =>
                       handleOpenSpeedMenu(
                         e,
-                        studentLine.textEnglish,
-                        currentPairIndex + 1
+                        teacherLine.textEnglish,
+                        currentPairIndex
                       )
                     }
                     className='icon-button'
@@ -358,6 +303,62 @@ const PracticeChat: React.FC<Props> = ({ topic, interest, onBack }) => {
                   >
                     <MoreVertIcon />
                   </button>
+
+                  {playingIndex === currentPairIndex && (
+                    <span className='playing-indicator'>
+                      🔊 Reproduciendo...
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {studentLine && (
+                <div className='chat-bubble student'>
+                  <strong>Student:</strong>
+                  <p>{studentLine.textEnglish}</p>
+                  <p className='text-spanish'>({studentLine.textSpanish})</p>
+
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                    }}
+                  >
+                    <button
+                      onClick={() =>
+                        handlePlayAudio(
+                          studentLine.textEnglish,
+                          currentPairIndex + 1,
+                          preferredSpeed
+                        )
+                      }
+                      className='icon-button'
+                      title={`Reproducir (${preferredSpeed}x)`}
+                    >
+                      <VolumeUpIcon />
+                    </button>
+
+                    <button
+                      onClick={(e) =>
+                        handleOpenSpeedMenu(
+                          e,
+                          studentLine.textEnglish,
+                          currentPairIndex + 1
+                        )
+                      }
+                      className='icon-button'
+                      title='Opciones de velocidad'
+                    >
+                      <MoreVertIcon />
+                    </button>
+
+                    {playingIndex === currentPairIndex + 1 && (
+                      <span className='playing-indicator'>
+                        🔊 Reproduciendo...
+                      </span>
+                    )}
+                  </div>
 
                   <div className='response-row'>
                     <textarea
@@ -403,6 +404,7 @@ const PracticeChat: React.FC<Props> = ({ topic, interest, onBack }) => {
                       <SendIcon />
                     </button>
                   </div>
+
                   {isRecording && (
                     <div className='recording-indicator'>
                       <p>🎙 Grabando... {recordingTime}s</p>
@@ -418,18 +420,16 @@ const PracticeChat: React.FC<Props> = ({ topic, interest, onBack }) => {
             </div>
           )}
 
-          {!loading && (
-            <div className='navigation-buttons'>
-              {currentPairIndex > 0 ? (
-                <button onClick={goToPreviousPair}>⬅ Back</button>
-              ) : (
-                <button onClick={onBack}>⬅ Volver al inicio</button>
-              )}
-              {currentPairIndex + 2 < dialog.length && (
-                <button onClick={goToNextPair}>Next ➡</button>
-              )}
-            </div>
-          )}
+          <div className='navigation-buttons'>
+            {currentPairIndex > 0 ? (
+              <button onClick={goToPreviousPair}>⬅ Back</button>
+            ) : (
+              <button onClick={onBack}>⬅ Volver al inicio</button>
+            )}
+            {currentPairIndex + 2 < dialog.length && (
+              <button onClick={goToNextPair}>Next ➡</button>
+            )}
+          </div>
         </>
       )}
     </div>
