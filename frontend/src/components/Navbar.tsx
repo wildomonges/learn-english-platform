@@ -8,19 +8,16 @@ import { useAuth } from '../context/AuthContext';
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [language, setLanguage] = useState<'es' | 'en'>('es');
-  const { user, setUser } = useAuth();
-  const navigate = useNavigate(); // ✅ Usa navigate correctamente
+  const { user, logout } = useAuth(); // use logout
+  const navigate = useNavigate(); //
 
   const toggleMenu = () => setIsOpen((prev) => !prev);
   const toggleLanguage = () =>
     setLanguage((prev) => (prev === 'es' ? 'en' : 'es'));
 
   const handleLogout = () => {
-    console.log('logout llamado');
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    setUser(null); //
-    navigate('/'); //
+    logout(); // we call the context method
+    navigate('/'); //  we redirect
   };
 
   return (
