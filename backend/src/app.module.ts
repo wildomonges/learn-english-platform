@@ -5,6 +5,7 @@ import { TopicsModule } from './modules/topics/topics.module';
 import { SpeakingModule } from './modules/speaking/speaking.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
+import { PracticeModule } from './practice/practice.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { UsersModule } from './modules/users/users.module';
     SpeakingModule,
     AuthModule,
     UsersModule,
+    PracticeModule,
   ],
   controllers: [],
   providers: [],
