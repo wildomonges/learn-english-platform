@@ -5,6 +5,7 @@ import { Practice } from './entities/practice.entity';
 import { Dialog } from './entities/dialog.entity';
 import { CreatePracticeDto } from './dto/create-practice.dto';
 import { User } from 'src/modules/users/user.entity';
+import { instanceToPlain } from 'class-transformer';
 
 @Injectable()
 export class PracticeService {
@@ -19,7 +20,7 @@ export class PracticeService {
     private dialogRepo: Repository<Dialog>,
   ) {}
 
-  async create(createDto: CreatePracticeDto): Promise<Practice> {
+  async create(createDto: CreatePracticeDto): Promise<any> {
     const user = await this.userRepo.findOneByOrFail({ id: createDto.userId });
 
     const practice = this.practiceRepo.create({
@@ -37,10 +38,13 @@ export class PracticeService {
       ),
     });
 
-    return this.practiceRepo.save(practice);
+    const savedPractice = await this.practiceRepo.save(practice);
+
+    return instanceToPlain(savedPractice);
   }
-  async findAll(): Promise<Practice[]> {
-    return this.practiceRepo.find({
+
+  async findAll(): Promise<any[]> {
+    const practices = await this.practiceRepo.find({
       relations: ['dialogs', 'user'],
       order: {
         createdAt: 'DESC',
@@ -49,5 +53,7 @@ export class PracticeService {
         },
       },
     });
+
+    return practices.map((p) => instanceToPlain(p));
   }
 }
