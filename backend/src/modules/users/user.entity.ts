@@ -1,4 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Practice } from 'src/practice/entities/practice.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity('users')
 export class User {
@@ -14,6 +16,9 @@ export class User {
   @Column({ unique: true })
   email: string;
 
+  @Exclude()
   @Column()
   password: string;
+  @OneToMany(() => Practice, (practice) => practice.user)
+  practices: Practice[];
 }
