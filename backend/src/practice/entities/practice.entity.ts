@@ -21,7 +21,7 @@ export class Practice {
   topic: string;
 
   @Column()
-  interests: string;
+  interest: string;
 
   @ManyToOne(() => User, (user) => user.practices, { eager: true })
   user: User;

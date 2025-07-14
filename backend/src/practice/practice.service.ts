@@ -26,7 +26,7 @@ export class PracticeService {
     const practice = this.practiceRepo.create({
       name: createDto.name,
       topic: createDto.topic,
-      interests: createDto.interests,
+      interest: createDto.interests,
       user,
       dialogs: createDto.dialogs.map((d) =>
         this.dialogRepo.create({
