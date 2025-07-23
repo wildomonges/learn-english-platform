@@ -233,3 +233,24 @@ button:hover,
   font-weight: 500;
   color: #444;
 }
+.practice-summary {
+  padding: 20px;
+  background: #f4f6fa;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.practice-summary h2 {
+  margin-bottom: 10px;
+}
+
+.practice-summary ul {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0;
+}
+
+.practice-summary li {
+  margin: 4px 0;
+  font-size: 16px;
+}

@@ -56,4 +56,30 @@ export class PracticeService {
 
     return practices.map((p) => instanceToPlain(p));
   }
+
+  // ✅ OBTENER PRÁCTICAS DE UN USUARIO POR ID
+  async findByUserId(userId: number): Promise<any[]> {
+    const practices = await this.practiceRepo.find({
+      where: { user: { id: userId } },
+      relations: ['dialogs', 'user'],
+      order: {
+        createdAt: 'DESC',
+        dialogs: {
+          order: 'ASC',
+        },
+      },
+    });
+
+    return practices.map((p) => instanceToPlain(p));
+  }
+
+  // ✅ OBTENER UNA PRÁCTICA POR ID
+  async findOne(id: number): Promise<any> {
+    const practice = await this.practiceRepo.findOne({
+      where: { id },
+      relations: ['dialogs', 'user'],
+    });
+
+    return instanceToPlain(practice);
+  }
 }
