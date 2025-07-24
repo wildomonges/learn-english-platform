@@ -10,6 +10,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import ProgressBar from './ProgressBar';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useAuth } from '../context/AuthContext';
+import { useFetchWithAuth } from '../api/authFetch';
 
 const SpeechRecognition =
   (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
@@ -53,6 +54,7 @@ const PracticeChat: React.FC<Props> = ({ topic, interest, onBack }) => {
 
   const totalPairs = Math.floor(dialog.length / 2);
   const currentStep = Math.floor(currentPairIndex / 2);
+  const fetchWithAuth = useFetchWithAuth();
 
   const { user } = useAuth();
 
@@ -238,6 +240,51 @@ const PracticeChat: React.FC<Props> = ({ topic, interest, onBack }) => {
 
   const teacherLine = dialog[currentPairIndex];
   const studentLine = dialog[currentPairIndex + 1];
+
+  const submitPractice = async () => {
+    if (!user) return;
+
+    const practiceData = {
+      userId: user.id,
+      name: `Practice on ${topic}`,
+      topic,
+      interests: interest,
+      dialogs: dialog
+        .filter((_, i) => i % 2 === 1)
+        .map((line, i) => {
+          const response = userResponses[i * 2 + 1] || '';
+          const correct = line.textEnglish;
+          const similarity = calculateSimilarity(response, correct);
+
+          return {
+            dialog: `Teacher: ${
+              dialog[i * 2]?.textEnglish || ''
+            } Student: ${response}`,
+            order: i + 1,
+            score: similarity,
+            completed: !!response,
+          };
+        }),
+    };
+
+    try {
+      const res = await fetchWithAuth(
+        'http://localhost:3000/api/v1/practices',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(practiceData),
+        }
+      );
+
+      const json = await res.json();
+      console.log('✅ Práctica enviada:', json);
+    } catch (err) {
+      console.error('❌ Error:', err);
+    }
+  };
 
   return (
     <div className={`practice-chat ${loading ? 'loading-state' : ''}`}>
@@ -428,6 +475,11 @@ const PracticeChat: React.FC<Props> = ({ topic, interest, onBack }) => {
             )}
             {currentPairIndex + 2 < dialog.length && (
               <button onClick={goToNextPair}>Next ➡</button>
+            )}
+            {currentPairIndex + 2 >= dialog.length && (
+              <button onClick={submitPractice} className='submit-button'>
+                📝 Guardar práctica
+              </button>
             )}
           </div>
         </>
