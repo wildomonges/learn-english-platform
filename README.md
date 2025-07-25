@@ -1,4 +1,5 @@
 # NG English Platform
+English Platform, a web application designed to help people learn and practice English, especially focusing on conversations by topic or interest.
 
 This is an English learning platform project, developed with the following technologies:
 - React
@@ -8,12 +9,15 @@ This is an English learning platform project, developed with the following techn
 - AWS Bedrock
 - AWS Polly
 
-## Run the project
-To run the project, follow these steps:
-1. Clone the repository to your local machine.
-2. Enter the backend directory and run the `npm install` command to install dependencies.
-3. Create a `.env` file in the backend directory and add the necessary environment variables.
-4. Run the `npm run start:dev` command to start the development server.
-5. Open your browser and visit the API Swagger documentation at `http://localhost:3000/api/v1/docs`.
-6. Execute the API requests.
+## Home Page
+<img width="1419" height="709" alt="image" src="https://github.com/user-attachments/assets/19462db6-8f39-40e7-81d8-e03a0096aba7" />
+
+## Topics
+<img width="1424" height="678" alt="image" src="https://github.com/user-attachments/assets/694f5231-5709-4ca2-9eb7-5cdf4362bd98" />
+
+## Interests
+<img width="1423" height="685" alt="image" src="https://github.com/user-attachments/assets/d7a59b42-dcd1-4b2f-a69b-9a592b25def7" />
+
+
+
 
