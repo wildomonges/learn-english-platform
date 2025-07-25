@@ -20,7 +20,8 @@ This is an English learning platform project, developed with the following techn
 <img width="1423" height="685" alt="image" src="https://github.com/user-attachments/assets/d7a59b42-dcd1-4b2f-a69b-9a592b25def7" />
 
 ## Dialog
-<img width="1429" height="666" alt="image" src="https://github.com/user-attachments/assets/cbc2c051-39f9-4eda-8db9-004483a88af4" />
+
+<img width="1440" height="794" alt="image" src="https://github.com/user-attachments/assets/d1e6a951-0921-49fe-9f09-c3900b493e5a" />
 
 
 
