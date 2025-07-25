@@ -4,9 +4,10 @@ English Platform, a web application designed to help people learn and practice E
 This is an English learning platform project, developed with the following technologies:
 - React
 - Typescript
-- TailwindCSS
+- CSS
+- Material UI
 - Nestjs
-- AWS Bedrock
+- AWS Bedrock (IA)
 - AWS Polly
 
 ## Home Page
