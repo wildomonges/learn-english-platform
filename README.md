@@ -17,11 +17,14 @@ This is an English learning platform project, developed with the following techn
 <img width="1424" height="678" alt="image" src="https://github.com/user-attachments/assets/694f5231-5709-4ca2-9eb7-5cdf4362bd98" />
 
 ## Interests
-<img width="1423" height="685" alt="image" src="https://github.com/user-attachments/assets/d7a59b42-dcd1-4b2f-a69b-9a592b25def7" />
+<img width="1420" height="703" alt="image" src="https://github.com/user-attachments/assets/03bc8886-edad-4ce8-b4eb-3bedbd611c5c" />
+
 
 ## Dialog
 
-<img width="1440" height="794" alt="image" src="https://github.com/user-attachments/assets/d1e6a951-0921-49fe-9f09-c3900b493e5a" />
+<img width="992" height="678" alt="image" src="https://github.com/user-attachments/assets/923bbffb-dd2f-4a91-8f62-810cb58e2072" />
+
+
 
 
 
