@@ -10,6 +10,7 @@ import Navbar from './components/Navbar';
 
 import './App.css';
 import { AuthProvider } from './context/AuthContext';
+import PracticeChatFromId from './components/PracticeChatFromId';
 
 const AppContent: React.FC = () => {
   return (
@@ -19,6 +20,7 @@ const AppContent: React.FC = () => {
         <Route path='/' element={<HomePage />} />
 
         <Route path='/practice' element={<Navigate to='/' />} />
+        <Route path='/practicas/:id' element={<PracticeChatFromId />} />
       </Routes>
     </>
   );

@@ -1,0 +1,28 @@
+.practice-title {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #9966cc;
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  .practice-title {
+    font-size: 1.1rem;
+  }
+
+  .practice-button {
+    font-size: 0.85rem;
+    padding: 8px;
+  }
+}
+
+.practice-list {
+  padding: 0.5rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.practice-card-summary {
+  font-size: 0.95rem;
+  line-height: 1.2;
+}
