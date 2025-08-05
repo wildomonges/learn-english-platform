@@ -57,29 +57,31 @@ const PracticeTree: React.FC = () => {
   const navigate = useNavigate();
   const isMobile = useMediaQuery('(max-width:768px)');
 
+  const fetchPractices = async () => {
+    try {
+      const token = getToken();
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/practices`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!res.ok) throw new Error('Error al cargar prácticas');
+
+      const data = await res.json();
+
+      const sorted = [...data].sort(
+        (a: Practice, b: Practice) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+
+      setPractices(sorted);
+    } catch (err) {
+      setError((err as Error).message || 'Error inesperado');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchPractices = async () => {
-      try {
-        const token = getToken();
-        const res = await fetch('http://localhost:3000/api/v1/practices', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (!res.ok) throw new Error('Error al cargar prácticas');
-        const data = await res.json();
-
-        const sorted = [...data].sort(
-          (a: Practice, b: Practice) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        );
-
-        setPractices(sorted);
-      } catch (err) {
-        setError((err as Error).message || 'Error inesperado');
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchPractices();
   }, [getToken]);
 
@@ -269,7 +271,7 @@ const PracticeTree: React.FC = () => {
     <Box
       sx={{
         marginTop: '10%',
-        width: '80%',
+        width: '100%',
         maxWidth: 700,
         mx: 'auto',
         p: { xs: 1, sm: 2 },
