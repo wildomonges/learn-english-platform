@@ -142,6 +142,7 @@ const HomePage: React.FC = () => {
               <PracticeChat
                 topic={selectedTopic.name}
                 interest={selectedInterest.name}
+                existingDialog={[]}
                 onBack={handleBack}
               />
             </div>

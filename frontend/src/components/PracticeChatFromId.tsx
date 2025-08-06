@@ -9,11 +9,12 @@ const PracticeChatFromId = () => {
   const navigate = useNavigate();
 
   const [practice, setPractice] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const fetchPractice = async (practiceId: string) => {
     try {
+      setLoading(true);
       const res = await fetchWithAuth(
         `${import.meta.env.VITE_API_URL}/practices/${practiceId}`
       );
@@ -21,6 +22,8 @@ const PracticeChatFromId = () => {
       if (!res.ok) throw new Error(`Error: ${res.status}`);
 
       const data = await res.json();
+      console.log('fetch practice');
+      console.log(data);
       setPractice(data);
     } catch (err) {
       console.error('Error al cargar la práctica', err);
@@ -48,11 +51,14 @@ const PracticeChatFromId = () => {
   }
 
   return (
-    <PracticeChat
-      topic={practice.topic}
-      interest={practice.interest}
-      onBack={() => navigate('/')}
-    />
+    <div className='homepage'>
+      <PracticeChat
+        topic={practice.topic}
+        interest={practice.interest}
+        existingDialog={practice.dialogs}
+        onBack={() => navigate('/')}
+      />
+    </div>
   );
 };
 

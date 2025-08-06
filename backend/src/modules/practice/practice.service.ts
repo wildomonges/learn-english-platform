@@ -30,7 +30,10 @@ export class PracticeService {
       user,
       dialogs: createDto.dialogs.map((d) =>
         this.dialogRepo.create({
-          dialog: d.dialog,
+          speaker: d.speaker,
+          textEnglish: d.textEnglish,
+          textSpanish: d.textSpanish,
+          response: d.response,
           order: d.order,
           score: d.score,
           completed: d.completed ?? false,
