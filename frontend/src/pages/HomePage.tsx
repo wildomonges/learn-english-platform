@@ -144,6 +144,7 @@ const HomePage: React.FC = () => {
                 interest={selectedInterest.name}
                 existingDialog={[]}
                 onBack={handleBack}
+                practiceId=''
               />
             </div>
           )}

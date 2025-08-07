@@ -17,6 +17,7 @@ const SpeechRecognition =
 
 // types.ts o donde definas el tipo DialogLine
 export interface DialogLine {
+  id: string;
   speaker: string;
   textEnglish: string;
   textSpanish: string;
@@ -31,6 +32,7 @@ type Props = {
   interest: string;
   existingDialog: DialogLine[];
   onBack: () => void;
+  practiceId: string;
 };
 
 const PracticeChat: React.FC<Props> = ({
@@ -38,6 +40,7 @@ const PracticeChat: React.FC<Props> = ({
   interest,
   existingDialog,
   onBack,
+  practiceId,
 }) => {
   const [dialog, setDialog] = useState<DialogLine[]>(existingDialog);
   const [loading, setLoading] = useState(false);
@@ -82,18 +85,23 @@ const PracticeChat: React.FC<Props> = ({
     }
   };
   useEffect(() => {
-    if (existingDialog.length === 0) {
+    if (!existingDialog || existingDialog.length === 0) {
       loadDialog();
     } else {
-      // Encontrar el primer paso incompleto
-      const firstIncompleteIndex = existingDialog.findIndex(
-        (d) => !d.completed
-      );
-      const startingIndex =
-        firstIncompleteIndex !== -1
-          ? firstIncompleteIndex - (firstIncompleteIndex % 2)
-          : 0;
+      const studentDialogIndexes = existingDialog
+        .map((item, index) => ({ ...item, index }))
+        .filter((_, index) => index % 2 === 1); // solo los turnos del estudiante
 
+      const firstIncompleteStudent = studentDialogIndexes.find(
+        (d) => !d.response || d.response.trim() === ''
+      );
+
+      const startingIndex = Math.max(
+        (firstIncompleteStudent?.index ?? 1) - 1,
+        0
+      );
+
+      setDialog(existingDialog);
       setCurrentPairIndex(startingIndex);
     }
   }, [topic, interest]);
@@ -322,7 +330,7 @@ const PracticeChat: React.FC<Props> = ({
       console.error('❌ Error:', err);
     }
   };
-  const handleGuardarYContinuar = async () => {
+  const handleSaveAndContinue = async () => {
     if (!user) return;
 
     const dialogStudent = dialog[currentPairIndex + 1];
@@ -371,6 +379,36 @@ const PracticeChat: React.FC<Props> = ({
       console.log('✅ Paso guardado:', json);
 
       goToNextPair(); // Avanzar al siguiente par
+      try {
+        const studentDialogLine = dialog[currentPairIndex + 1];
+        const dialogId = studentDialogLine?.id;
+
+        if (practiceId && dialogId) {
+          await fetchWithAuth(
+            `/api/practices/${practiceId}/dialogs/${dialogId}/complete`,
+            {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ response }), // ✅ importante: manda la respuesta
+            }
+          );
+          console.log('✅ Diálogo marcado como completo.');
+
+          // ✅ NUEVO: Marcar la práctica completa si es el último par
+          const isLastPair = currentPairIndex + 1 >= totalPairs - 1;
+          if (isLastPair) {
+            await fetchWithAuth(`/api/practices/${practiceId}/complete`, {
+              method: 'PATCH',
+            });
+            console.log('🎉 Práctica marcada como completada.');
+          }
+        }
+      } catch (err) {
+        console.error(
+          '❌ Error al marcar diálogo como completo o práctica:',
+          err
+        );
+      }
     } catch (err) {
       console.error('❌ Error al guardar paso:', err);
     }
@@ -388,6 +426,7 @@ const PracticeChat: React.FC<Props> = ({
   console.log('indice de studend', currentPairIndex + 1);
   console.log('currentStep', currentStep);
   console.log('totalPairs', totalPairs);
+
   return (
     <div className={`practice-chat ${loading ? 'loading-state' : ''}`}>
       {loading ? (
@@ -412,7 +451,7 @@ const PracticeChat: React.FC<Props> = ({
             <p className='greeting-message'>👋 ¡Hola, {user.firstName}!</p>
           )}
 
-          <ProgressBar current={currentStep} total={dialog.length} />
+          <ProgressBar current={currentStep} total={totalPairs} />
           {error && <p className='error'>{error}</p>}
 
           {teacherLine && (
@@ -576,7 +615,7 @@ const PracticeChat: React.FC<Props> = ({
               <button onClick={onBack}>⬅ Volver al inicio</button>
             )}
             {currentPairIndex + 2 < dialog.length && (
-              <button onClick={handleGuardarYContinuar}>
+              <button onClick={handleSaveAndContinue}>
                 💾 Guardar y continuar
               </button>
             )}

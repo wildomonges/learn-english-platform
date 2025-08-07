@@ -22,6 +22,8 @@ export class Practice {
 
   @Column()
   interest: string;
+  @Column({ default: false })
+  completed: boolean;
 
   @ManyToOne(() => User, (user) => user.practices, { eager: true })
   user: User;
