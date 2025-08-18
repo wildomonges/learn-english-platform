@@ -3,7 +3,16 @@ import { Type } from 'class-transformer';
 
 class DialogDto {
   @IsString()
-  dialog: string;
+  speaker: string;
+
+  @IsString()
+  textEnglish: string;
+
+  @IsString()
+  textSpanish: string;
+
+  @IsString()
+  response: string;
 
   @IsInt()
   order: number;

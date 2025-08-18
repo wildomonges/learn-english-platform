@@ -7,13 +7,22 @@ export class Dialog {
   id: number;
 
   @Column('text')
-  dialog: string;
+  speaker: string;
+
+  @Column('text')
+  textEnglish: string;
+
+  @Column('text')
+  textSpanish: string;
+
+  @Column('text')
+  response: string;
 
   @Column()
   order: number;
 
   @Column()
-  score: number;
+  score: number; // cuando es teacher no tiene score 0
 
   @Column({ default: false })
   completed: boolean;

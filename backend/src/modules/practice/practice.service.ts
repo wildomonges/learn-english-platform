@@ -30,7 +30,10 @@ export class PracticeService {
       user,
       dialogs: createDto.dialogs.map((d) =>
         this.dialogRepo.create({
-          dialog: d.dialog,
+          speaker: d.speaker,
+          textEnglish: d.textEnglish,
+          textSpanish: d.textSpanish,
+          response: d.response,
           order: d.order,
           score: d.score,
           completed: d.completed ?? false,
@@ -81,5 +84,48 @@ export class PracticeService {
     });
 
     return instanceToPlain(practice);
+  }
+
+  // ✅ MARCAR UN DIÁLOGO COMO COMPLETADO
+  async markDialogAsCompleted(
+    practiceId: number,
+    dialogId: number,
+    response?: string, // ✅ opcional
+  ): Promise<any> {
+    const dialog = await this.dialogRepo.findOne({
+      where: {
+        id: dialogId,
+        practice: { id: practiceId },
+      },
+    });
+
+    if (!dialog) {
+      throw new Error(
+        'Dialog not found or does not belong to the specified practice',
+      );
+    }
+
+    dialog.completed = true;
+
+    if (response) {
+      dialog.response = response;
+    }
+
+    const updated = await this.dialogRepo.save(dialog);
+    return instanceToPlain(updated);
+  }
+
+  async markPracticeAsCompleted(practiceId: number): Promise<any> {
+    const practice = await this.practiceRepo.findOne({
+      where: { id: practiceId },
+    });
+
+    if (!practice) {
+      throw new Error('Practice not found');
+    }
+
+    practice.completed = true;
+    const updated = await this.practiceRepo.save(practice);
+    return instanceToPlain(updated);
   }
 }

@@ -15,21 +15,35 @@ import { useFetchWithAuth } from '../api/authFetch';
 const SpeechRecognition =
   (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
-type DialogLine = {
+// types.ts o donde definas el tipo DialogLine
+export interface DialogLine {
+  id: string;
   speaker: string;
   textEnglish: string;
   textSpanish: string;
-};
+  response: string;
+  order: number;
+  score: number;
+  completed: boolean; // <-- agregar esta línea
+}
 
 type Props = {
   topic: string;
   interest: string;
+  existingDialog: DialogLine[];
   onBack: () => void;
+  practiceId: string;
 };
 
-const PracticeChat: React.FC<Props> = ({ topic, interest, onBack }) => {
-  const [dialog, setDialog] = useState<DialogLine[]>([]);
-  const [loading, setLoading] = useState(true);
+const PracticeChat: React.FC<Props> = ({
+  topic,
+  interest,
+  existingDialog,
+  onBack,
+  practiceId,
+}) => {
+  const [dialog, setDialog] = useState<DialogLine[]>(existingDialog);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [playingIndex, setPlayingIndex] = useState<number | null>(null);
   const [userResponses, setUserResponses] = useState<{ [key: number]: string }>(
@@ -58,21 +72,38 @@ const PracticeChat: React.FC<Props> = ({ topic, interest, onBack }) => {
 
   const { user } = useAuth();
 
+  const loadDialog = async () => {
+    setLoading(true);
+    try {
+      const data = await fetchDialog(topic, interest);
+      setDialog(data.dialog || []);
+    } catch (err) {
+      console.error('Error fetching dialog:', err);
+      setError('Failed to fetch dialogue. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
-    const loadDialog = async () => {
-      setLoading(true);
-      try {
-        const data = await fetchDialog(topic, interest);
-        setDialog(data.dialog || []);
-      } catch (err) {
-        console.error('Error fetching dialog:', err);
-        setError('Failed to fetch dialogue. Please try again later.');
-      } finally {
-        setLoading(false);
-      }
-    };
+    if (!existingDialog || existingDialog.length === 0) {
+      loadDialog();
+    } else {
+      const studentDialogIndexes = existingDialog
+        .map((item, index) => ({ ...item, index }))
+        .filter((_, index) => index % 2 === 1); // solo los turnos del estudiante
 
-    loadDialog();
+      const firstIncompleteStudent = studentDialogIndexes.find(
+        (d) => !d.response || d.response.trim() === ''
+      );
+
+      const startingIndex = Math.max(
+        (firstIncompleteStudent?.index ?? 1) - 1,
+        0
+      );
+
+      setDialog(existingDialog);
+      setCurrentPairIndex(startingIndex);
+    }
   }, [topic, interest]);
 
   const handleOpenSpeedMenu = (
@@ -238,34 +269,48 @@ const PracticeChat: React.FC<Props> = ({ topic, interest, onBack }) => {
   const goToPreviousPair = () =>
     setCurrentPairIndex((prev) => Math.max(prev - 2, 0));
 
-  const teacherLine = dialog[currentPairIndex];
-  const studentLine = dialog[currentPairIndex + 1];
-
   const submitPractice = async () => {
     if (!user) return;
-
+    console.log('dialog original');
+    console.log(dialog);
     const practiceData = {
       userId: user.id,
       name: `Practice on ${topic}`,
       topic,
       interests: interest,
       dialogs: dialog
-        .filter((_, i) => i % 2 === 1)
+        .filter((line) => line.textEnglish && line.textSpanish)
         .map((line, i) => {
-          const response = userResponses[i * 2 + 1] || '';
-          const correct = line.textEnglish;
-          const similarity = calculateSimilarity(response, correct);
+          if (line.speaker === 'Teacher') {
+            return {
+              speaker: 'Teacher',
+              textEnglish: line.textEnglish,
+              textSpanish: line.textSpanish,
+              response: '',
+              order: i,
+              score: 0,
+              completed: true,
+            };
+          } else {
+            const response = userResponses[i] || '';
+            const correct = line.textEnglish;
+            const similarity = calculateSimilarity(response, correct);
 
-          return {
-            dialog: `Teacher: ${
-              dialog[i * 2]?.textEnglish || ''
-            } Student: ${response}`,
-            order: i + 1,
-            score: similarity,
-            completed: !!response,
-          };
+            return {
+              speaker: 'Student',
+              textEnglish: line.textEnglish,
+              textSpanish: line.textSpanish,
+              response: response,
+              order: i,
+              score: similarity,
+              completed: !!response,
+            };
+          }
         }),
     };
+
+    console.log('practiceData');
+    console.log(practiceData);
 
     try {
       const res = await fetchWithAuth(
@@ -285,6 +330,102 @@ const PracticeChat: React.FC<Props> = ({ topic, interest, onBack }) => {
       console.error('❌ Error:', err);
     }
   };
+  const handleSaveAndContinue = async () => {
+    if (!user) return;
+
+    const dialogStudent = dialog[currentPairIndex + 1];
+    const response = userResponses[currentPairIndex + 1] || '';
+    const correct = dialogStudent?.textEnglish || '';
+    const similarity = calculateSimilarity(response, correct);
+
+    const practiceStep = {
+      userId: user.id,
+      name: `Practice on ${topic}`,
+      topic,
+      interests: interest,
+      dialogs: [
+        {
+          speaker: 'Teacher',
+          textEnglish: dialog[currentPairIndex]?.textEnglish,
+          textSpanish: dialog[currentPairIndex]?.textSpanish,
+          response: '',
+          order: currentPairIndex,
+          score: 0,
+          completed: true,
+        },
+        {
+          speaker: 'Student',
+          textEnglish: dialog[currentPairIndex + 1]?.textEnglish,
+          textSpanish: dialog[currentPairIndex + 1]?.textSpanish,
+          response,
+          order: currentPairIndex + 1,
+          score: similarity,
+          completed: !!response,
+        },
+      ],
+    };
+
+    try {
+      const res = await fetchWithAuth(
+        'http://localhost:3000/api/v1/practices',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(practiceStep),
+        }
+      );
+
+      const json = await res.json();
+      console.log('✅ Paso guardado:', json);
+
+      goToNextPair(); // Avanzar al siguiente par
+      try {
+        const studentDialogLine = dialog[currentPairIndex + 1];
+        const dialogId = studentDialogLine?.id;
+
+        if (practiceId && dialogId) {
+          await fetchWithAuth(
+            `/api/practices/${practiceId}/dialogs/${dialogId}/complete`,
+            {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ response }), // ✅ importante: manda la respuesta
+            }
+          );
+          console.log('✅ Diálogo marcado como completo.');
+
+          // ✅ NUEVO: Marcar la práctica completa si es el último par
+          const isLastPair = currentPairIndex + 1 >= totalPairs - 1;
+          if (isLastPair) {
+            await fetchWithAuth(`/api/practices/${practiceId}/complete`, {
+              method: 'PATCH',
+            });
+            console.log('🎉 Práctica marcada como completada.');
+          }
+        }
+      } catch (err) {
+        console.error(
+          '❌ Error al marcar diálogo como completo o práctica:',
+          err
+        );
+      }
+    } catch (err) {
+      console.error('❌ Error al guardar paso:', err);
+    }
+  };
+
+  const teacherLine = dialog[currentPairIndex];
+  const studentLine = dialog[currentPairIndex + 1];
+  console.log('dialog');
+  console.log(dialog);
+  console.log('teacher line');
+  console.log(teacherLine);
+  console.log('student line');
+  console.log(studentLine);
+  console.log('indice de teacher', currentPairIndex);
+  console.log('indice de studend', currentPairIndex + 1);
+  console.log('currentStep', currentStep);
+  console.log('totalPairs', totalPairs);
 
   return (
     <div className={`practice-chat ${loading ? 'loading-state' : ''}`}>
@@ -474,8 +615,11 @@ const PracticeChat: React.FC<Props> = ({ topic, interest, onBack }) => {
               <button onClick={onBack}>⬅ Volver al inicio</button>
             )}
             {currentPairIndex + 2 < dialog.length && (
-              <button onClick={goToNextPair}>Next ➡</button>
+              <button onClick={handleSaveAndContinue}>
+                💾 Guardar y continuar
+              </button>
             )}
+
             {currentPairIndex + 2 >= dialog.length && (
               <button onClick={submitPractice} className='submit-button'>
                 📝 Guardar práctica
