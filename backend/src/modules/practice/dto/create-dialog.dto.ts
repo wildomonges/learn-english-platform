@@ -1,6 +1,22 @@
+import { IsString, IsInt } from 'class-validator';
 export class CreateDialogDto {
-  dialog: string;
+  @IsString()
+  speaker: string;
+
+  @IsString()
+  textEnglish: string;
+
+  @IsString()
+  textSpanish: string;
+
+  @IsString()
+  response: string;
+
+  @IsInt()
   order: number;
-  score?: number;
+
+  @IsInt()
+  score: number;
+
   completed?: boolean;
 }

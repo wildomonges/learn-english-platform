@@ -20,30 +20,29 @@ export class PracticeService {
     private dialogRepo: Repository<Dialog>,
   ) {}
 
-  async create(createDto: CreatePracticeDto): Promise<any> {
+  async create(createDto: CreatePracticeDto): Promise<Practice> {
     const user = await this.userRepo.findOneByOrFail({ id: createDto.userId });
 
-    const practice = this.practiceRepo.create({
-      name: createDto.name,
-      topic: createDto.topic,
-      interest: createDto.interests,
-      user,
-      dialogs: createDto.dialogs.map((d) =>
-        this.dialogRepo.create({
-          speaker: d.speaker,
-          textEnglish: d.textEnglish,
-          textSpanish: d.textSpanish,
-          response: d.response,
-          order: d.order,
-          score: d.score,
-          completed: d.completed ?? false,
-        }),
-      ),
-    });
+    // const practice = this.practiceRepo.create({
+    //   name: createDto.name,
+    //   topic: createDto.topic,
+    //   interest: createDto.interests,
+    //   user,
+    //   dialogs: createDto.dialogs.map((d) =>
+    //     this.dialogRepo.create({
+    //       speaker: d.speaker,
+    //       textEnglish: d.textEnglish,
+    //       textSpanish: d.textSpanish,
+    //       response: d.response,
+    //       order: d.order,
+    //       score: d.score,
+    //       completed: d.completed ?? false,
+    //     }),
+    //   ),
+    // });
+    const practice = await this.practiceRepo.save(createDto);
 
-    const savedPractice = await this.practiceRepo.save(practice);
-
-    return instanceToPlain(savedPractice);
+    return practice;
   }
 
   async findAll(): Promise<any[]> {

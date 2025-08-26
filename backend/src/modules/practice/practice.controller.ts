@@ -14,6 +14,7 @@ import { Practice } from './entities/practice.entity';
 @Controller('practices')
 export class PracticeController {
   constructor(private readonly practiceService: PracticeService) {}
+
   @Patch(':id/dialogs/:dialogId/complete')
   async completeDialog(
     @Param('id') practiceId: number,
