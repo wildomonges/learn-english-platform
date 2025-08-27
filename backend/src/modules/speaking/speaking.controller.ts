@@ -1,7 +1,7 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { AIAgentService } from './aiAgent.service';
 import { ApiQuery, ApiResponse } from '@nestjs/swagger';
-import { DialogResponse } from './interfaces/dialogResponse.interface';
+import { DialogsResponse } from './interfaces/dialogsResponse.interface';
 import { SpeechResponse } from './interfaces/speechResponse.interface';
 
 @Controller('speaking')
@@ -9,19 +9,19 @@ export class SpeakingController {
 
     constructor(private readonly aiAgentService: AIAgentService) {}
 
-    @Get('/getDialog')
+    @Get('/getDialogs')
     @ApiQuery({ name: 'topic', required: true, description: 'The main topic for the dialogue' })
     @ApiQuery({ name: 'interest', required: true, description: 'The specific interest or context' })
-    @ApiResponse({ status: 200, type: DialogResponse })
-    async getDialog(
+    @ApiResponse({ status: 200, type: DialogsResponse })
+    async getDialogs(
         @Query('topic') topic: string,
         @Query('interest') interest: string
-    ): Promise<DialogResponse> {
-        const dialog = await this.aiAgentService.generateDialog(topic, interest);
+    ): Promise<DialogsResponse> {
+        const dialogs = await this.aiAgentService.generateDialogs(topic, interest);
         return {
             topic,
             interest,
-            dialog,
+            dialogs,
             timestamp: new Date().toISOString(),
         };
     }

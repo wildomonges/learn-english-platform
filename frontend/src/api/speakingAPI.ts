@@ -1,8 +1,8 @@
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api/v1';
 
-export const fetchDialog = async (topic: string, interest: string) => {
+export const fetchDialogs = async (topic: string, interest: string) => {
   const response = await fetch(
-    `${BASE_URL}/speaking/getDialog?topic=${encodeURIComponent(
+    `${BASE_URL}/speaking/getDialogs?topic=${encodeURIComponent(
       topic
     )}&interest=${encodeURIComponent(interest)}`
   );

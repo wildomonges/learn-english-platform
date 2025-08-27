@@ -5,12 +5,13 @@ import SendIcon from '@mui/icons-material/Send';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
-import { fetchDialog, fetchSpeech } from '../api/speakingAPI';
+import { fetchDialogs, fetchSpeech } from '../api/speakingAPI';
 import CircularProgress from '@mui/material/CircularProgress';
 import ProgressBar from './ProgressBar';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useAuth } from '../context/AuthContext';
 import { useFetchWithAuth } from '../api/authFetch';
+import type { Dialog } from '../types/Dialog';
 
 const SpeechRecognition =
   (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
@@ -42,7 +43,7 @@ const PracticeChat: React.FC<Props> = ({
   onBack,
   practiceId,
 }) => {
-  const [dialog, setDialog] = useState<DialogLine[]>(existingDialog);
+  const [dialogs, setDialogs] = useState<DialogLine[]>(existingDialog);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [playingIndex, setPlayingIndex] = useState<number | null>(null);
@@ -66,17 +67,18 @@ const PracticeChat: React.FC<Props> = ({
     index: number;
   } | null>(null);
 
-  const totalPairs = Math.floor(dialog.length / 2);
+  const totalPairs = Math.floor(dialogs.length / 2);
   const currentStep = Math.floor(currentPairIndex / 2);
   const fetchWithAuth = useFetchWithAuth();
 
   const { user } = useAuth();
 
-  const loadDialog = async () => {
+  const loadDialogs = async () => {
     setLoading(true);
     try {
-      const data = await fetchDialog(topic, interest);
-      setDialog(data.dialog || []);
+      const data = await fetchDialogs(topic, interest);
+      setDialogs(data.dialogs || []);
+      await submitPractice(data.dialogs);
     } catch (err) {
       console.error('Error fetching dialog:', err);
       setError('Failed to fetch dialogue. Please try again later.');
@@ -86,7 +88,7 @@ const PracticeChat: React.FC<Props> = ({
   };
   useEffect(() => {
     if (!existingDialog || existingDialog.length === 0) {
-      loadDialog();
+      loadDialogs();
     } else {
       const studentDialogIndexes = existingDialog
         .map((item, index) => ({ ...item, index }))
@@ -101,7 +103,7 @@ const PracticeChat: React.FC<Props> = ({
         0
       );
 
-      setDialog(existingDialog);
+      setDialogs(existingDialog);
       setCurrentPairIndex(startingIndex);
     }
   }, [topic, interest]);
@@ -248,7 +250,7 @@ const PracticeChat: React.FC<Props> = ({
 
   const handleSendResponse = (index: number) => {
     const userResponse = userResponses[index];
-    const correctResponse = dialog[index]?.textEnglish;
+    const correctResponse = dialogs[index]?.textEnglish;
     const similarity = calculateSimilarity(userResponse, correctResponse);
 
     let feedback = '';
@@ -269,16 +271,17 @@ const PracticeChat: React.FC<Props> = ({
   const goToPreviousPair = () =>
     setCurrentPairIndex((prev) => Math.max(prev - 2, 0));
 
-  const submitPractice = async () => {
+  // This function is called only to save the practice data in the database
+  // right after loading the dialogs
+  const submitPractice = async (dialogsData: Dialog[]) => {
     if (!user) return;
-    console.log('dialog original');
-    console.log(dialog);
+  
     const practiceData = {
       userId: user.id,
       name: `Practice on ${topic}`,
       topic,
-      interests: interest,
-      dialogs: dialog
+      interest,
+      dialogs: dialogsData
         .filter((line) => line.textEnglish && line.textSpanish)
         .map((line, i) => {
           if (line.speaker === 'Teacher') {
@@ -292,18 +295,14 @@ const PracticeChat: React.FC<Props> = ({
               completed: true,
             };
           } else {
-            const response = userResponses[i] || '';
-            const correct = line.textEnglish;
-            const similarity = calculateSimilarity(response, correct);
-
             return {
               speaker: 'Student',
               textEnglish: line.textEnglish,
               textSpanish: line.textSpanish,
-              response: response,
+              response: '',
               order: i,
-              score: similarity,
-              completed: !!response,
+              score: 0,
+              completed: false,
             };
           }
         }),
@@ -330,10 +329,11 @@ const PracticeChat: React.FC<Props> = ({
       console.error('❌ Error:', err);
     }
   };
+
   const handleSaveAndContinue = async () => {
     if (!user) return;
 
-    const dialogStudent = dialog[currentPairIndex + 1];
+    const dialogStudent = dialogs[currentPairIndex + 1];
     const response = userResponses[currentPairIndex + 1] || '';
     const correct = dialogStudent?.textEnglish || '';
     const similarity = calculateSimilarity(response, correct);
@@ -346,8 +346,8 @@ const PracticeChat: React.FC<Props> = ({
       dialogs: [
         {
           speaker: 'Teacher',
-          textEnglish: dialog[currentPairIndex]?.textEnglish,
-          textSpanish: dialog[currentPairIndex]?.textSpanish,
+          textEnglish: dialogs[currentPairIndex]?.textEnglish,
+          textSpanish: dialogs[currentPairIndex]?.textSpanish,
           response: '',
           order: currentPairIndex,
           score: 0,
@@ -355,8 +355,8 @@ const PracticeChat: React.FC<Props> = ({
         },
         {
           speaker: 'Student',
-          textEnglish: dialog[currentPairIndex + 1]?.textEnglish,
-          textSpanish: dialog[currentPairIndex + 1]?.textSpanish,
+          textEnglish: dialogs[currentPairIndex + 1]?.textEnglish,
+          textSpanish: dialogs[currentPairIndex + 1]?.textSpanish,
           response,
           order: currentPairIndex + 1,
           score: similarity,
@@ -380,7 +380,7 @@ const PracticeChat: React.FC<Props> = ({
 
       goToNextPair(); // Avanzar al siguiente par
       try {
-        const studentDialogLine = dialog[currentPairIndex + 1];
+        const studentDialogLine = dialogs[currentPairIndex + 1];
         const dialogId = studentDialogLine?.id;
 
         if (practiceId && dialogId) {
@@ -414,10 +414,10 @@ const PracticeChat: React.FC<Props> = ({
     }
   };
 
-  const teacherLine = dialog[currentPairIndex];
-  const studentLine = dialog[currentPairIndex + 1];
-  console.log('dialog');
-  console.log(dialog);
+  const teacherLine = dialogs[currentPairIndex];
+  const studentLine = dialogs[currentPairIndex + 1];
+  console.log('dialogs');
+  console.log(dialogs);
   console.log('teacher line');
   console.log(teacherLine);
   console.log('student line');
@@ -614,14 +614,14 @@ const PracticeChat: React.FC<Props> = ({
             ) : (
               <button onClick={onBack}>⬅ Volver al inicio</button>
             )}
-            {currentPairIndex + 2 < dialog.length && (
+            {currentPairIndex + 2 < dialogs.length && (
               <button onClick={handleSaveAndContinue}>
                 💾 Guardar y continuar
               </button>
             )}
 
-            {currentPairIndex + 2 >= dialog.length && (
-              <button onClick={submitPractice} className='submit-button'>
+            {currentPairIndex + 2 >= dialogs.length && (
+              <button onClick={() => {}} className='submit-button'>
                 📝 Guardar práctica
               </button>
             )}

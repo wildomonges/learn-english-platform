@@ -28,7 +28,7 @@ export class AIAgentService {
     });
   }
 
-  async generateDialog(topic: string, interest: string): Promise<any> {
+  async generateDialogs(topic: string, interest: string): Promise<any> {
     const prompt = `Act as a helpful English teacher.
                        Generate a natural English conversation between you and the student about ${topic}.
                        Include a few questions and answers in the conversation.

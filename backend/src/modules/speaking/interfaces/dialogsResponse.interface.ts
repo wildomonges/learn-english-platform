@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Dialog } from './dialog.interface';
 
-export class DialogResponse {
+export class DialogsResponse {
     @ApiProperty({ description: 'The main topic of the dialogue' })
     topic: string;
 
@@ -8,7 +9,7 @@ export class DialogResponse {
     interest: string;
 
     @ApiProperty({ description: 'The generated dialogue content' })
-    dialog: string;
+    dialogs: Array<Dialog>;
 
     @ApiProperty({ description: 'The timestamp when the dialogue was generated' })
     timestamp: string;
