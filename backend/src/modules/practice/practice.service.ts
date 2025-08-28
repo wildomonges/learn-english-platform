@@ -6,6 +6,7 @@ import { Dialog } from './entities/dialog.entity';
 import { CreatePracticeDto } from './dto/create-practice.dto';
 import { User } from 'src/modules/users/user.entity';
 import { instanceToPlain } from 'class-transformer';
+import { UpdateDialogDto } from './dto/update-dialog.dto';
 
 @Injectable()
 export class PracticeService {
@@ -86,10 +87,10 @@ export class PracticeService {
   }
 
   // ✅ MARCAR UN DIÁLOGO COMO COMPLETADO
-  async markDialogAsCompleted(
+  async updateDialog(
     practiceId: number,
     dialogId: number,
-    response?: string, // ✅ opcional
+    updateDto: UpdateDialogDto,
   ): Promise<any> {
     const dialog = await this.dialogRepo.findOne({
       where: {
@@ -104,14 +105,19 @@ export class PracticeService {
       );
     }
 
-    dialog.completed = true;
-
-    if (response) {
-      dialog.response = response;
+    //Actualizamos los valores
+    if (updateDto.response !== undefined) {
+      dialog.response = updateDto.response;
+    }
+    if (updateDto.score !== undefined) {
+      dialog.score = updateDto.score;
+    }
+    if (updateDto.completed !== undefined) {
+      dialog.completed = updateDto.completed;
     }
 
     const updated = await this.dialogRepo.save(dialog);
-    return instanceToPlain(updated);
+    return updated;
   }
 
   async markPracticeAsCompleted(practiceId: number): Promise<any> {

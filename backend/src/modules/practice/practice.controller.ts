@@ -10,22 +10,19 @@ import {
 import { PracticeService } from './practice.service';
 import { CreatePracticeDto } from './dto/create-practice.dto';
 import { Practice } from './entities/practice.entity';
+import { UpdateDialogDto } from './dto/update-dialog.dto';
 
 @Controller('practices')
 export class PracticeController {
   constructor(private readonly practiceService: PracticeService) {}
 
-  @Patch(':id/dialogs/:dialogId/complete')
-  async completeDialog(
+  @Patch(':id/dialogs/:dialogId')
+  async updateDialog(
     @Param('id') practiceId: number,
     @Param('dialogId') dialogId: number,
-    @Body('response') response: string,
+    @Body() updateDto: UpdateDialogDto,
   ) {
-    return this.practiceService.markDialogAsCompleted(
-      +practiceId,
-      +dialogId,
-      response,
-    );
+    return this.practiceService.updateDialog(+practiceId, +dialogId, updateDto);
   }
 
   @Patch(':id/complete')

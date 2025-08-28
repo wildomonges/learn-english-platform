@@ -309,53 +309,60 @@ const PracticeChat: React.FC<Props> = ({
   };
 
   // Save step with PATCH if practiceId exists
+  // Save step with PATCH if practiceId exists
   const handleSaveAndContinue = async () => {
     if (!user) return;
 
     const dialogStudent = dialogs[currentPairIndex + 1];
-    const response = userResponses[currentPairIndex + 1] || '';
-    const similarity = calculateSimilarity(
-      response,
-      dialogStudent?.textEnglish || ''
-    );
 
-    const practiceStep = {
-      dialogs: [
-        {
-          speaker: 'Teacher',
-          textEnglish: dialogs[currentPairIndex]?.textEnglish,
-          textSpanish: dialogs[currentPairIndex]?.textSpanish,
-          response: '',
-          order: currentPairIndex,
-          score: 0,
-          completed: true,
-        },
-        {
-          speaker: 'Student',
-          textEnglish: dialogStudent?.textEnglish,
-          textSpanish: dialogStudent?.textSpanish,
-          response,
-          order: currentPairIndex + 1,
-          score: similarity,
-          completed: !!response,
-        },
-      ],
-    };
+    // Si no hay diálogo estudiante, es el último paso
+    if (!dialogStudent?.id) {
+      console.log(
+        '✅ Último diálogo alcanzado, no hay estudiante que guardar.'
+      );
+      // Opcional: marcar práctica completa
+      if (localPracticeId) {
+        try {
+          await fetchWithAuth(
+            `http://localhost:3000/api/v1/practices/${localPracticeId}/complete`,
+            {
+              method: 'PATCH',
+            }
+          );
+          console.log('✅ Práctica marcada como completada');
+        } catch (err) {
+          console.error('❌ Error al completar la práctica:', err);
+        }
+      }
+      return;
+    }
+
+    const response = userResponses[currentPairIndex + 1] || '';
+    const similarity = calculateSimilarity(response, dialogStudent.textEnglish);
 
     try {
       if (localPracticeId) {
-        await fetchWithAuth(`/api/v1/practices/${localPracticeId}/steps`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(practiceStep),
-        });
+        await fetchWithAuth(
+          `http://localhost:3000/api/v1/practices/${localPracticeId}/dialogs/${dialogStudent.id}`,
+          {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              response,
+              score: similarity,
+              completed: true,
+            }),
+          }
+        );
+        console.log(`✅ Diálogo ${dialogStudent.id} actualizado correctamente`);
       } else {
         await submitPractice(dialogs);
       }
 
       goToNextPair();
     } catch (err) {
-      console.error('❌ Error guardando paso:', err);
+      console.error('❌ Error actualizando diálogo:', err);
+      setError('No se pudo guardar tu respuesta. Intenta nuevamente.');
     }
   };
 
