@@ -1,15 +1,12 @@
-import { IsString, IsNumber, IsBoolean, IsOptional } from 'class-validator';
+import { IsString, IsNumber, IsBoolean } from 'class-validator';
 
 export class UpdateDialogDto {
-  @IsOptional()
   @IsString()
-  response?: string;
+  response: string;
 
-  @IsOptional()
   @IsNumber()
-  score?: number;
+  score: number;
 
-  @IsOptional()
   @IsBoolean()
-  completed?: boolean;
+  completed: boolean;
 }

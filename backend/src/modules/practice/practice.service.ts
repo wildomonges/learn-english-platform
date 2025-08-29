@@ -91,7 +91,7 @@ export class PracticeService {
     practiceId: number,
     dialogId: number,
     updateDto: UpdateDialogDto,
-  ): Promise<any> {
+  ): Promise<Dialog> {
     const dialog = await this.dialogRepo.findOne({
       where: {
         id: dialogId,

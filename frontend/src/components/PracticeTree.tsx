@@ -139,26 +139,49 @@ const PracticeTree: React.FC = () => {
               </Box>
             </AccordionSummary>
             <AccordionDetails sx={{ py: 1 }}>
-              <Button
-                fullWidth
-                variant='contained'
-                size='small'
-                sx={{
-                  backgroundColor: '#9966cc',
-                  color: '#fff',
-                  fontSize: '0.75rem',
-                  py: 1,
-                  '&:hover': {
-                    backgroundColor: '#8e7cc3',
-                  },
-                }}
-                onClick={() => {
-                  if (isMobile) setDrawerOpen(false);
-                  navigate(`/practicas/${p.id}`);
-                }}
-              >
-                {done === total ? 'Ver resultado' : 'Continuar'}
-              </Button>
+              {done === total ? (
+                <Button
+                  fullWidth
+                  variant='contained'
+                  size='small'
+                  sx={{
+                    backgroundColor: '#9966cc',
+                    color: '#fff',
+                    fontSize: '0.75rem',
+                    py: 1,
+                    '&:hover': {
+                      backgroundColor: '#8e7cc3',
+                    },
+                  }}
+                  onClick={() => {
+                    if (isMobile) setDrawerOpen(false);
+                    navigate(`/practice/${p.id}/result`); // 👈 Ruta para resultados
+                  }}
+                >
+                  Ver resultado
+                </Button>
+              ) : (
+                <Button
+                  fullWidth
+                  variant='contained'
+                  size='small'
+                  sx={{
+                    backgroundColor: '#9966cc',
+                    color: '#fff',
+                    fontSize: '0.75rem',
+                    py: 1,
+                    '&:hover': {
+                      backgroundColor: '#8e7cc3',
+                    },
+                  }}
+                  onClick={() => {
+                    if (isMobile) setDrawerOpen(false);
+                    navigate(`/practicas/${p.id}`); // 👈 Ruta para continuar práctica
+                  }}
+                >
+                  Continuar
+                </Button>
+              )}
             </AccordionDetails>
           </Accordion>
         );

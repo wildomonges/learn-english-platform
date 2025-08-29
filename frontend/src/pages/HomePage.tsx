@@ -7,6 +7,7 @@ import type { Topic, Interest } from '../types/Topic';
 import TopicCard from '../components/TopicCard';
 import LoginForm from '../components/LoginForm';
 import RegisterForm from '../components/RegisterForm';
+
 import { useAuth } from '../context/AuthContext';
 import PracticeTree from '../components/PracticeTree';
 
@@ -20,6 +21,14 @@ const HomePage: React.FC = () => {
     null
   );
   const { user } = useAuth();
+  const [localPracticeId, setLocalPracticeId] = useState<number | null>(null);
+
+  // ejemplo de creación de práctica
+  const createPractice = async () => {
+    const response = await fetch('/api/practices', { method: 'POST' });
+    const data = await response.json();
+    setLocalPracticeId(data.id); // guarda el ID de la práctica
+  };
 
   useEffect(() => {
     const stored = localStorage.getItem('user');
@@ -142,9 +151,9 @@ const HomePage: React.FC = () => {
               <PracticeChat
                 topic={selectedTopic.name}
                 interest={selectedInterest.name}
-                existingDialog={[]}
+                existingDialogs={[]}
                 onBack={handleBack}
-                practiceId=''
+                practiceId={localPracticeId ?? 0}
               />
             </div>
           )}

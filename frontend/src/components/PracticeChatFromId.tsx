@@ -58,7 +58,7 @@ const PracticeChatFromId = () => {
       <PracticeChat
         topic={practice.topic}
         interest={practice.interest}
-        existingDialog={practice.dialogs}
+        existingDialogs={practice.dialogs}
         onBack={() => navigate('/')}
         practiceId={practice.id}
       />

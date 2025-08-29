@@ -17,7 +17,7 @@ const SpeechRecognition =
   (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
 export interface DialogLine {
-  id: string;
+  id: number;
   speaker: string;
   textEnglish: string;
   textSpanish: string;
@@ -30,19 +30,19 @@ export interface DialogLine {
 type Props = {
   topic: string;
   interest: string;
-  existingDialog: DialogLine[];
+  existingDialogs: DialogLine[];
   onBack: () => void;
-  practiceId: string;
+  practiceId: number;
 };
 
 const PracticeChat: React.FC<Props> = ({
   topic,
   interest,
-  existingDialog,
+  existingDialogs,
   onBack,
   practiceId,
 }) => {
-  const [dialogs, setDialogs] = useState<DialogLine[]>(existingDialog);
+  const [dialogs, setDialogs] = useState<DialogLine[]>(existingDialogs);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [playingIndex, setPlayingIndex] = useState<number | null>(null);
@@ -70,17 +70,16 @@ const PracticeChat: React.FC<Props> = ({
   const currentStep = Math.floor(currentPairIndex / 2);
   const fetchWithAuth = useFetchWithAuth();
   const { user } = useAuth();
-  const [localPracticeId, setLocalPracticeId] = useState<string | null>(
-    practiceId || null
-  );
+  const [localPracticeId, setLocalPracticeId] = useState<string | null>();
 
   const loadDialogs = async () => {
     setLoading(true);
     try {
       const data = await fetchDialogs(topic, interest);
       setDialogs(data.dialogs || []);
-      // ✅ solo crear práctica si no existe
-      if (!practiceId) {
+
+      // ✅ solo crear práctica si no existe en ningún lado
+      if (!practiceId && !localPracticeId) {
         await submitPractice(data.dialogs);
       }
     } catch (err) {
@@ -92,10 +91,10 @@ const PracticeChat: React.FC<Props> = ({
   };
 
   useEffect(() => {
-    if (!existingDialog || existingDialog.length === 0) {
+    if (!existingDialogs || existingDialogs.length === 0) {
       loadDialogs();
     } else {
-      const studentDialogIndexes = existingDialog
+      const studentDialogIndexes = existingDialogs
         .map((item, index) => ({ ...item, index }))
         .filter((_, index) => index % 2 === 1);
       const firstIncompleteStudent = studentDialogIndexes.find(
@@ -105,7 +104,7 @@ const PracticeChat: React.FC<Props> = ({
         (firstIncompleteStudent?.index ?? 1) - 1,
         0
       );
-      setDialogs(existingDialog);
+      setDialogs(existingDialogs);
       setCurrentPairIndex(startingIndex);
     }
   }, [topic, interest]);
@@ -267,11 +266,9 @@ const PracticeChat: React.FC<Props> = ({
   const goToNextPair = () => setCurrentPairIndex((prev) => prev + 2);
   const goToPreviousPair = () =>
     setCurrentPairIndex((prev) => Math.max(prev - 2, 0));
-  // This function is called only to save the practice data in the database
-  // right after loading the dialogs
 
   const submitPractice = async (dialogsData: Dialog[]) => {
-    if (!user || localPracticeId) return; // si ya existe, no crear
+    if (!user || localPracticeId) return;
 
     const practiceData = {
       userId: user.id,
@@ -307,63 +304,33 @@ const PracticeChat: React.FC<Props> = ({
       console.error('❌ Error:', err);
     }
   };
-
-  // Save step with PATCH if practiceId exists
-  // Save step with PATCH if practiceId exists
-  const handleSaveAndContinue = async () => {
-    if (!user) return;
-
-    const dialogStudent = dialogs[currentPairIndex + 1];
-
-    // Si no hay diálogo estudiante, es el último paso
-    if (!dialogStudent?.id) {
-      console.log(
-        '✅ Último diálogo alcanzado, no hay estudiante que guardar.'
-      );
-      // Opcional: marcar práctica completa
-      if (localPracticeId) {
-        try {
-          await fetchWithAuth(
-            `http://localhost:3000/api/v1/practices/${localPracticeId}/complete`,
-            {
-              method: 'PATCH',
-            }
-          );
-          console.log('✅ Práctica marcada como completada');
-        } catch (err) {
-          console.error('❌ Error al completar la práctica:', err);
-        }
-      }
-      return;
-    }
+  const updateDialog = async (
+    practiceId: number,
+    dialogId: number
+  ): Promise<Boolean> => {
+    console.log(`practiceId: ${practiceId}, dialogId: ${dialogId}`);
 
     const response = userResponses[currentPairIndex + 1] || '';
-    const similarity = calculateSimilarity(response, dialogStudent.textEnglish);
+    const dialogStudent = dialogs[currentPairIndex + 1];
+    const score = calculateSimilarity(response, dialogStudent.textEnglish);
 
     try {
-      if (localPracticeId) {
-        await fetchWithAuth(
-          `http://localhost:3000/api/v1/practices/${localPracticeId}/dialogs/${dialogStudent.id}`,
-          {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              response,
-              score: similarity,
-              completed: true,
-            }),
-          }
-        );
-        console.log(`✅ Diálogo ${dialogStudent.id} actualizado correctamente`);
-      } else {
-        await submitPractice(dialogs);
-      }
-
-      goToNextPair();
+      await fetchWithAuth(
+        `http://localhost:3000/api/v1/practices/${practiceId}/dialogs/${dialogId}`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            response,
+            score,
+            completed: true,
+          }),
+        }
+      );
     } catch (err) {
-      console.error('❌ Error actualizando diálogo:', err);
-      setError('No se pudo guardar tu respuesta. Intenta nuevamente.');
+      console.log('Error:', err);
     }
+    return true;
   };
 
   const teacherLine = dialogs[currentPairIndex];
@@ -569,13 +536,20 @@ const PracticeChat: React.FC<Props> = ({
               <button onClick={onBack}>⬅ Volver al inicio</button>
             )}
             {currentPairIndex + 2 < dialogs.length && (
-              <button onClick={handleSaveAndContinue}>
+              <button
+                onClick={async () => {
+                  try {
+                    await updateDialog(
+                      practiceId,
+                      dialogs[currentPairIndex + 1].id
+                    );
+                    goToNextPair(); // 👈 avanza al siguiente par
+                  } catch (error) {
+                    console.error('Error guardando el diálogo:', error);
+                  }
+                }}
+              >
                 💾 Guardar y continuar
-              </button>
-            )}
-            {currentPairIndex + 2 >= dialogs.length && (
-              <button onClick={handleSaveAndContinue} className='submit-button'>
-                📝 Guardar práctica
               </button>
             )}
           </div>
