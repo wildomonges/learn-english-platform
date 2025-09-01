@@ -21,14 +21,7 @@ const HomePage: React.FC = () => {
     null
   );
   const { user } = useAuth();
-  const [localPracticeId, setLocalPracticeId] = useState<number | null>(null);
-
-  // ejemplo de creación de práctica
-  const createPractice = async () => {
-    const response = await fetch('/api/practices', { method: 'POST' });
-    const data = await response.json();
-    setLocalPracticeId(data.id); // guarda el ID de la práctica
-  };
+  const [localPracticeId] = useState<number | null>(null);
 
   useEffect(() => {
     const stored = localStorage.getItem('user');

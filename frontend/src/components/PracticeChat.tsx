@@ -78,7 +78,7 @@ const PracticeChat: React.FC<Props> = ({
       const data = await fetchDialogs(topic, interest);
       setDialogs(data.dialogs || []);
 
-      // ✅ solo crear práctica si no existe en ningún lado
+      // Only create practice if it doesn't exist anywhere
       if (!practiceId && !localPracticeId) {
         await submitPractice(data.dialogs);
       }
@@ -94,18 +94,15 @@ const PracticeChat: React.FC<Props> = ({
     if (!existingDialogs || existingDialogs.length === 0) {
       loadDialogs();
     } else {
-      const studentDialogIndexes = existingDialogs
-        .map((item, index) => ({ ...item, index }))
-        .filter((_, index) => index % 2 === 1);
-      const firstIncompleteStudent = studentDialogIndexes.find(
-        (d) => !d.response || d.response.trim() === ''
-      );
-      const startingIndex = Math.max(
-        (firstIncompleteStudent?.index ?? 1) - 1,
-        0
-      );
-      setDialogs(existingDialogs);
-      setCurrentPairIndex(startingIndex);
+      const startingIndex =
+        existingDialogs.find((d) => d.speaker === 'Student' && !d.completed)
+          ?.order || 1;
+
+      setCurrentPairIndex(startingIndex - 1);
+
+      const savedResponse: { [key: number]: string } = {};
+      existingDialogs.forEach((d) => (savedResponse[d.order] = d.response));
+      setUserResponses(savedResponse);
     }
   }, [topic, interest]);
 
@@ -269,7 +266,8 @@ const PracticeChat: React.FC<Props> = ({
 
   const submitPractice = async (dialogsData: Dialog[]) => {
     if (!user || localPracticeId) return;
-
+    console.log('Dialog data');
+    console.log(dialogsData);
     const practiceData = {
       userId: user.id,
       name: `Practice on ${topic}`,
@@ -287,7 +285,8 @@ const PracticeChat: React.FC<Props> = ({
           completed: line.speaker === 'Teacher',
         })),
     };
-
+    console.log('practice data');
+    console.log(practiceData);
     try {
       const res = await fetchWithAuth(
         'http://localhost:3000/api/v1/practices',
@@ -543,7 +542,7 @@ const PracticeChat: React.FC<Props> = ({
                       practiceId,
                       dialogs[currentPairIndex + 1].id
                     );
-                    goToNextPair(); // 👈 avanza al siguiente par
+                    goToNextPair(); // advence to the next pair
                   } catch (error) {
                     console.error('Error guardando el diálogo:', error);
                   }
