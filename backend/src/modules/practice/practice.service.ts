@@ -6,6 +6,7 @@ import { Dialog } from './entities/dialog.entity';
 import { CreatePracticeDto } from './dto/create-practice.dto';
 import { User } from 'src/modules/users/user.entity';
 import { instanceToPlain } from 'class-transformer';
+import { UpdateDialogDto } from './dto/update-dialog.dto';
 
 @Injectable()
 export class PracticeService {
@@ -20,30 +21,29 @@ export class PracticeService {
     private dialogRepo: Repository<Dialog>,
   ) {}
 
-  async create(createDto: CreatePracticeDto): Promise<any> {
+  async create(createDto: CreatePracticeDto): Promise<Practice> {
     const user = await this.userRepo.findOneByOrFail({ id: createDto.userId });
 
-    const practice = this.practiceRepo.create({
-      name: createDto.name,
-      topic: createDto.topic,
-      interest: createDto.interests,
-      user,
-      dialogs: createDto.dialogs.map((d) =>
-        this.dialogRepo.create({
-          speaker: d.speaker,
-          textEnglish: d.textEnglish,
-          textSpanish: d.textSpanish,
-          response: d.response,
-          order: d.order,
-          score: d.score,
-          completed: d.completed ?? false,
-        }),
-      ),
-    });
+    // const practice = this.practiceRepo.create({
+    //   name: createDto.name,
+    //   topic: createDto.topic,
+    //   interest: createDto.interests,
+    //   user,
+    //   dialogs: createDto.dialogs.map((d) =>
+    //     this.dialogRepo.create({
+    //       speaker: d.speaker,
+    //       textEnglish: d.textEnglish,
+    //       textSpanish: d.textSpanish,
+    //       response: d.response,
+    //       order: d.order,
+    //       score: d.score,
+    //       completed: d.completed ?? false,
+    //     }),
+    //   ),
+    // });
+    const practice = await this.practiceRepo.save(createDto);
 
-    const savedPractice = await this.practiceRepo.save(practice);
-
-    return instanceToPlain(savedPractice);
+    return practice;
   }
 
   async findAll(): Promise<any[]> {
@@ -87,11 +87,11 @@ export class PracticeService {
   }
 
   // ✅ MARCAR UN DIÁLOGO COMO COMPLETADO
-  async markDialogAsCompleted(
+  async updateDialog(
     practiceId: number,
     dialogId: number,
-    response?: string, // ✅ opcional
-  ): Promise<any> {
+    updateDto: UpdateDialogDto,
+  ): Promise<Dialog> {
     const dialog = await this.dialogRepo.findOne({
       where: {
         id: dialogId,
@@ -105,14 +105,19 @@ export class PracticeService {
       );
     }
 
-    dialog.completed = true;
-
-    if (response) {
-      dialog.response = response;
+    //Actualizamos los valores
+    if (updateDto.response !== undefined) {
+      dialog.response = updateDto.response;
+    }
+    if (updateDto.score !== undefined) {
+      dialog.score = updateDto.score;
+    }
+    if (updateDto.completed !== undefined) {
+      dialog.completed = updateDto.completed;
     }
 
     const updated = await this.dialogRepo.save(dialog);
-    return instanceToPlain(updated);
+    return updated;
   }
 
   async markPracticeAsCompleted(practiceId: number): Promise<any> {

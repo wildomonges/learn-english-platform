@@ -21,9 +21,12 @@ const PracticeChatFromId = () => {
 
       if (!res.ok) throw new Error(`Error: ${res.status}`);
 
-      const data = await res.json();
-      console.log('fetch practice');
-      console.log(data);
+      const text = await res.text();
+      const data = text ? JSON.parse(text) : null;
+
+      if (!data) throw new Error('La respuesta está vacía');
+
+      console.log('fetch practice', data);
       setPractice(data);
     } catch (err) {
       console.error('Error al cargar la práctica', err);
@@ -55,7 +58,7 @@ const PracticeChatFromId = () => {
       <PracticeChat
         topic={practice.topic}
         interest={practice.interest}
-        existingDialog={practice.dialogs}
+        existingDialogs={practice.dialogs}
         onBack={() => navigate('/')}
         practiceId={practice.id}
       />

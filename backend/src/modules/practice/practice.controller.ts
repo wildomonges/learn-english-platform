@@ -6,24 +6,29 @@ import {
   Param,
   Query,
   Patch,
+  ParseIntPipe,
+  NotFoundException,
 } from '@nestjs/common';
 import { PracticeService } from './practice.service';
 import { CreatePracticeDto } from './dto/create-practice.dto';
 import { Practice } from './entities/practice.entity';
+import { UpdateDialogDto } from './dto/update-dialog.dto';
+import { Dialog } from './entities/dialog.entity';
 
 @Controller('practices')
 export class PracticeController {
   constructor(private readonly practiceService: PracticeService) {}
-  @Patch(':id/dialogs/:dialogId/complete')
-  async completeDialog(
+
+  @Patch(':id/dialogs/:dialogId')
+  async updateDialog(
     @Param('id') practiceId: number,
     @Param('dialogId') dialogId: number,
-    @Body('response') response: string,
-  ) {
-    return this.practiceService.markDialogAsCompleted(
+    @Body() updateDto: UpdateDialogDto,
+  ): Promise<Dialog> {
+    return await this.practiceService.updateDialog(
       +practiceId,
       +dialogId,
-      response,
+      updateDto,
     );
   }
 
@@ -50,5 +55,25 @@ export class PracticeController {
   @Get(':id')
   findOne(@Param('id') id: number): Promise<Practice> {
     return this.practiceService.findOne(id);
+  }
+  @Get(':id/result')
+  async getPracticeResult(@Param('id', ParseIntPipe) id: number) {
+    const practice = await this.practiceService.findOne(id);
+
+    if (!practice) {
+      throw new NotFoundException('Practice not found');
+    }
+
+    return {
+      id: practice.id,
+      name: practice.name,
+      interest: practice.interest,
+      totalDialogs: practice.totalDialogs,
+      dialogsCompleted: practice.dialogsCompleted,
+      completed: practice.completed,
+      score:
+        practice.score ??
+        Math.round((practice.dialogsCompleted / practice.totalDialogs) * 100),
+    };
   }
 }
