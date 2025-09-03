@@ -23,24 +23,6 @@ export class PracticeService {
 
   async create(createDto: CreatePracticeDto): Promise<Practice> {
     const user = await this.userRepo.findOneByOrFail({ id: createDto.userId });
-
-    // const practice = this.practiceRepo.create({
-    //   name: createDto.name,
-    //   topic: createDto.topic,
-    //   interest: createDto.interests,
-    //   user,
-    //   dialogs: createDto.dialogs.map((d) =>
-    //     this.dialogRepo.create({
-    //       speaker: d.speaker,
-    //       textEnglish: d.textEnglish,
-    //       textSpanish: d.textSpanish,
-    //       response: d.response,
-    //       order: d.order,
-    //       score: d.score,
-    //       completed: d.completed ?? false,
-    //     }),
-    //   ),
-    // });
     const practice = await this.practiceRepo.save(createDto);
 
     return practice;
@@ -86,7 +68,6 @@ export class PracticeService {
     return instanceToPlain(practice);
   }
 
-  // ✅ MARCAR UN DIÁLOGO COMO COMPLETADO
   async updateDialog(
     practiceId: number,
     dialogId: number,
@@ -105,7 +86,6 @@ export class PracticeService {
       );
     }
 
-    //Actualizamos los valores
     if (updateDto.response !== undefined) {
       dialog.response = updateDto.response;
     }

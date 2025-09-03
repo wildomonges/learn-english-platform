@@ -551,6 +551,14 @@ const PracticeChat: React.FC<Props> = ({
                 💾 Guardar y continuar
               </button>
             )}
+            {currentPairIndex + 2 >= dialogs.length && (
+              <button
+                onClick={() => submitPractice(dialogs)}
+                className='submit-button'
+              >
+                📝 Guardar práctica
+              </button>
+            )}
           </div>
         </>
       )}
