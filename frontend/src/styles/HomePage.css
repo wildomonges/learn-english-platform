@@ -10,76 +10,6 @@
   overflow-x: hidden;
 }
 
-.welcome-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  max-width: 800px;
-  width: 100%;
-  padding: 1rem;
-  gap: 1rem;
-  margin-top: 2%;
-  animation: fadeIn 0.8s ease-in-out;
-}
-
-.title {
-  font-size: 2.5rem;
-  margin-bottom: 1rem;
-  color: #9966cc;
-}
-
-.subtitle {
-  font-size: 1.4rem;
-  margin-bottom: 1rem;
-  color: #9966cc;
-}
-
-.welcome-text {
-  margin-top: 3%;
-  max-width: 600px;
-  color: #9966cc;
-}
-
-.welcome-text h1 {
-  font-size: 1.8rem;
-  color: #9966cc;
-}
-
-.welcome-text p {
-  font-size: 1.1rem;
-  margin-top: 3%;
-  color: #9966cc;
-}
-
-.welcome-image {
-  width: 100%;
-  max-width: 500px;
-  height: auto;
-  max-height: 300px;
-  object-fit: contain;
-  margin-top: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(92, 138, 135, 0.2);
-}
-
-.btn-start {
-  background-color: #9966cc;
-  color: white;
-  padding: 0.8rem 1.5rem;
-  font-size: 1.1rem;
-  margin-top: 1rem;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  max-width: 300px;
-  width: 100%;
-}
-
-.btn-start:hover {
-  background-color: #8e7cc3;
-}
-
 .container {
   background-color: #e6f2f2;
   padding: 2rem;
@@ -94,25 +24,35 @@
 .button-group {
   display: flex;
   flex-wrap: wrap;
+  gap: 16px;
   justify-content: center;
-  gap: 1rem;
-  margin-top: 1.5rem;
 }
 
 .button-group button {
-  background-color: white;
-  color: #9966cc;
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  border: 2px solid #ddd;
+  border-radius: 12px;
+  padding: 10px 14px;
   font-size: 1rem;
-  padding: 0.8rem 1.5rem;
-  border: none;
-  border-radius: 8px;
-  min-width: 160px;
-  max-width: 300px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  min-width: 240px;
+  color: #9966cc;
 }
 
 .button-group button:hover {
-  background-color: #8e7cc3;
-  color: white;
+  transform: scale(1.03);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.button-group button img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-right: 12px;
 }
 
 .button-back {
@@ -132,38 +72,8 @@
   background-color: #9966cc;
   color: white;
 }
-.button-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  justify-content: center;
-}
 
-.button-group button {
-  display: flex;
-  align-items: center;
-  background-color: #fff;
-  border: 2px solid #ddd;
-  border-radius: 12px;
-  padding: 10px 14px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  min-width: 240px;
-}
-
-.button-group button:hover {
-  transform: scale(1.03);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-}
-
-.button-group button img {
-  width: 40px;
-  height: 40px;
-  object-fit: cover;
-  border-radius: 8px;
-  margin-right: 12px;
-}
+/* Grid para topics */
 .topic-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -175,76 +85,15 @@
   width: 100%;
 }
 
-.btn-login {
-  background-color: #e6f2f2;
-  color: #9966cc;
-}
-.btn-register {
-  background-color: #e6f2f2;
-  color: #9966cc;
-}
-/* Responsive Design */
+/* Responsive */
 @media (max-width: 768px) {
-  .title {
-    font-size: 2rem;
-  }
-
-  .subtitle {
-    font-size: 1.2rem;
-  }
-
-  .welcome-text h1 {
-    font-size: 1.5rem;
-  }
-
-  .welcome-text p {
-    font-size: 1rem;
-  }
-
-  .welcome-image {
-    max-width: 90%;
-    max-height: 200px;
-  }
-
-  .btn-start {
-    font-size: 1rem;
-    padding: 0.7rem 1.2rem;
+  .button-group button {
+    min-width: 180px;
   }
 }
 
 @media (max-width: 480px) {
-  .title {
-    font-size: 1.6rem;
-  }
-
-  .subtitle {
-    font-size: 1rem;
-  }
-
-  .welcome-text h1 {
-    font-size: 1.3rem;
-  }
-
-  .welcome-text p {
-    font-size: 0.95rem;
-  }
-
-  .welcome-image {
-    max-height: 180px;
-  }
-
-  .btn-start {
-    font-size: 0.95rem;
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  .button-group button {
+    min-width: 140px;
   }
 }
