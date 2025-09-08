@@ -5,6 +5,7 @@ import {
   ManyToOne,
   OneToMany,
   CreateDateColumn,
+  JoinColumn,
 } from 'typeorm';
 import { User } from 'src/modules/users/user.entity';
 import { Dialog } from './dialog.entity';
@@ -22,10 +23,15 @@ export class Practice {
 
   @Column()
   interest: string;
+
   @Column({ default: false })
   completed: boolean;
 
+  @Column({ nullable: false })
+  userId: number;
+
   @ManyToOne(() => User, (user) => user.practices, { eager: true })
+  @JoinColumn({ name: 'userId' })
   user: User;
 
   @OneToMany(() => Dialog, (dialog) => dialog.practice, {

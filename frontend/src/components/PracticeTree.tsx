@@ -138,8 +138,8 @@ const PracticeTree: React.FC = () => {
               </Box>
               <PracticeList
                 practices={practices}
-                isMobile
-                onCloseDrawer={() => setDrawerOpen(false)}
+                isMobile={true}
+                setDrawerOpen={setDrawerOpen}
               />
             </Box>
           </Drawer>
