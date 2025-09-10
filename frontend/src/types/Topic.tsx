@@ -1,5 +1,5 @@
 export interface Interest {
-  id: string;
+  id: number;
   name: string;
   imgUrl: string;
 }
