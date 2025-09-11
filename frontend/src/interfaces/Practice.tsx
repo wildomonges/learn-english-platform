@@ -7,3 +7,10 @@ export interface Practice {
   createdAt: string;
   dialogs: Dialog[];
 }
+export interface CreatePracticePayload {
+  userId: number;
+  name: string;
+  topic: string;
+  interest: string;
+  dialogs: Dialog[];
+}
