@@ -1,6 +1,7 @@
 import React from 'react';
 import { Menu, MenuItem, IconButton } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import '../styles/AudioSpeed.css';
 
 type Props = {
   anchorEl: HTMLElement | null;
@@ -15,8 +16,8 @@ export const AudioSpeed: React.FC<Props> = ({
   onClose,
   onSelectSpeed,
 }) => (
-  <>
-    <IconButton onClick={onOpen}>
+  <div className='audio-speed'>
+    <IconButton onClick={onOpen} className='speed-button' aria-label='speed'>
       <MoreVertIcon />
     </IconButton>
     <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={onClose}>
@@ -26,5 +27,5 @@ export const AudioSpeed: React.FC<Props> = ({
         </MenuItem>
       ))}
     </Menu>
-  </>
+  </div>
 );
