@@ -1,0 +1,45 @@
+.audio-speed {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.audio-speed .speed-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: 0.9rem;
+  padding: 6px;
+  background: #f0f0f0;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.18s ease, transform 0.12s ease;
+  color: #444;
+}
+
+.audio-speed .speed-button:hover {
+  background: #e0e0e0;
+  transform: translateY(-1px);
+}
+
+.audio-speed .speed-label {
+  font-weight: 500;
+  color: #444;
+  font-size: 0.9rem;
+}
+
+.audio-speed .MuiMenu-paper {
+  border-radius: 8px;
+  padding: 4px 0;
+}
+
+.audio-speed .MuiMenuItem-root {
+  font-size: 0.95rem;
+  min-width: 80px;
+}
+
+.audio-speed .MuiMenuItem-root:hover {
+  background-color: rgba(92, 138, 135, 0.06);
+}

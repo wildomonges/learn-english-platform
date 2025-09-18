@@ -1,3 +1,5 @@
+import '../styles/audio.css';
+
 const SpeechRecognition =
   (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 

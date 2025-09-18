@@ -20,6 +20,7 @@ type Props = {
   onBack: () => void;
   practiceId: number;
 };
+
 const PracticeChat: React.FC<Props> = ({
   topic,
   interest,
@@ -40,12 +41,12 @@ const PracticeChat: React.FC<Props> = ({
   const [responseFeedback, setResponseFeedback] = useState<
     Record<number, string>
   >({});
-
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [localPracticeId, setLocalPracticeId] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
   const totalPairs = Math.floor(dialogs.length / 2);
   const currentStep = Math.floor(currentPairIndex / 2);
   const activePracticeIdNumber: number | null =
@@ -89,14 +90,14 @@ const PracticeChat: React.FC<Props> = ({
 
     try {
       const practice = await createPractice({
-        userId: Number(user.id), // 🔹
+        userId: Number(user.id),
         name: `Practice on ${topic}`,
         topic,
         interest,
         dialogs: dialogsData
           .filter((line) => line.textEnglish && line.textSpanish)
           .map((line, i) => ({
-            id: line.id ?? i, // 🔹
+            id: line.id ?? i,
             speaker: line.speaker,
             textEnglish: line.textEnglish,
             textSpanish: line.textSpanish,
@@ -114,7 +115,7 @@ const PracticeChat: React.FC<Props> = ({
     }
   };
 
-  //  Actualizar un solo diálogo
+  // Actualizar un solo diálogo
   const updateDialog = async () => {
     if (!activePracticeIdNumber) {
       setError('No se encontró la práctica activa para actualizar.');
@@ -126,6 +127,7 @@ const PracticeChat: React.FC<Props> = ({
     const dialogStudent = dialogs[idx];
     if (!dialogStudent) return;
     const response = userResponses[idx] || '';
+
     const score = calculateSimilarity(response, dialogStudent.textEnglish);
 
     try {
@@ -150,7 +152,7 @@ const PracticeChat: React.FC<Props> = ({
     }
   };
 
-  //  Verificar respuesta manualmente
+  // Verificar respuesta manualmente
   const handleSendResponse = (index: number) => {
     const userResponse = userResponses[index] || '';
     const correct = dialogs[index]?.textEnglish || '';
@@ -212,8 +214,15 @@ const PracticeChat: React.FC<Props> = ({
     };
   }, [topic, interest, existingDialogs, practiceId, localPracticeId]);
 
-  const teacherLine = dialogs[currentPairIndex];
-  const studentLine = dialogs[currentPairIndex + 1];
+  const teacherLine = dialogs
+    .slice(currentPairIndex, currentPairIndex + 2)
+    .find((d) => d.speaker === 'Teacher');
+
+  const studentLine = dialogs
+    .slice(currentPairIndex, currentPairIndex + 2)
+    .find((d) => d.speaker === 'Student');
+
+  const userResponse = userResponses[studentLine?.order || -1]?.trim();
 
   return (
     <div className={`practice-chat ${loading ? 'loading-state' : ''}`}>
@@ -302,19 +311,36 @@ const PracticeChat: React.FC<Props> = ({
             )}
 
             {currentPairIndex + 2 < dialogs.length && (
-              <button onClick={updateDialog}>💾 Guardar y continuar</button>
+              <div className='next-action'>
+                {!userResponse && (
+                  <p className='hint-message'>
+                    Completa tu respuesta para avanzar
+                  </p>
+                )}
+                <button onClick={updateDialog} disabled={!userResponse}>
+                  💾 Guardar y continuar
+                </button>
+              </div>
             )}
 
             {currentPairIndex + 2 >= dialogs.length && (
-              <button
-                onClick={() =>
-                  activePracticeIdNumber
-                    ? updateDialog()
-                    : handleCreatePractice(dialogs)
-                }
-              >
-                📝 Guardar práctica
-              </button>
+              <div className='next-action'>
+                {!userResponse && (
+                  <p className='hint-message'>
+                    Completa tu respuesta antes de guardar
+                  </p>
+                )}
+                <button
+                  onClick={() =>
+                    activePracticeIdNumber
+                      ? updateDialog()
+                      : handleCreatePractice(dialogs)
+                  }
+                  disabled={!userResponse}
+                >
+                  📝 Guardar práctica
+                </button>
+              </div>
             )}
           </div>
         </>

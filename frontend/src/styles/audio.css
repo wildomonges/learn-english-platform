@@ -1,0 +1,16 @@
+.recording-indicator {
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
+  color: #d9534f;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.recording-timer {
+  color: #4b9e9e;
+  font-weight: bold;
+  margin-top: 4px;
+  font-size: 0.9rem;
+}
