@@ -4,7 +4,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import MicIcon from '@mui/icons-material/Mic';
 import SendIcon from '@mui/icons-material/Send';
 import { Menu, MenuItem } from '@mui/material';
-import '../styles/PracticeChat.css';
+import '../styles/DialogLineBubble.css';
 
 type Props = {
   speaker: 'Teacher' | 'Student';
