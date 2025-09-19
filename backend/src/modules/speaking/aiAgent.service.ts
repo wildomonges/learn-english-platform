@@ -36,6 +36,9 @@ export class AIAgentService {
                        The conversation must be in English in the principal line and Spanish as secondary line,
                        so the student can understand the conversation.
                        The conversation must include words in English only for the principal line.
+                       Return ONLY valid JSON. Do not include explanations or extra text. 
+                       If you cannot follow the schema, return an empty array in "dialog".
+
                        Please generate a dialog with 20 interactions between teacher and student 
                        Return the response in JSON format as follows:
                        {
@@ -49,30 +52,37 @@ export class AIAgentService {
                                    "speaker": "Student",
                                    "textEnglish": "I'm doing well, thanks.",
                                    "textSpanish": "Estoy bien, gracias."
-                               },
-                               ...
+                               }
                            ]
-                       }
-                       `;
+                       }`;
 
     try {
       const command = new InvokeModelCommand({
-        modelId: 'anthropic.claude-v2',
+        modelId: 'anthropic.claude-3-sonnet-20240229-v1:0', // 👈 usar Claude 3
         contentType: 'application/json',
         accept: 'application/json',
         body: JSON.stringify({
-          prompt: `\n\nHuman: ${prompt}\n\nAssistant:`,
-          max_tokens_to_sample: 2000,
+          anthropic_version: 'bedrock-2023-05-31',
+          max_tokens: 2000,
           temperature: 0.7,
-          top_p: 0.9,
+          messages: [
+            {
+              role: 'user',
+              content: prompt,
+            },
+          ],
         }),
       });
 
       const response = await this.bedrockClient.send(command);
       const responseBody = JSON.parse(new TextDecoder().decode(response.body));
-      const completion = responseBody.completion;
 
-      // Extract JSON from the text response
+      const completion = responseBody.content?.[0]?.text;
+      if (!completion) {
+        throw new Error('No completion text found in Claude response');
+      }
+
+      // Extraer el JSON del texto generado
       const jsonMatch = completion.match(/\{[\s\S]*\}/); // Match the first JSON object in the text
       if (!jsonMatch) {
         throw new Error('No valid JSON found in the response');
