@@ -1,7 +1,6 @@
 import React from 'react';
 import { Menu, MenuItem, IconButton } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import '../styles/AudioSpeed.css';
 
 type Props = {
   anchorEl: HTMLElement | null;

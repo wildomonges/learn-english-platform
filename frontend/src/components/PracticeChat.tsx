@@ -325,18 +325,13 @@ const PracticeChat: React.FC<Props> = ({
 
             {currentPairIndex + 2 >= dialogs.length && (
               <div className='next-action'>
-                {!userResponse && (
-                  <p className='hint-message'>
-                    Completa tu respuesta antes de guardar
-                  </p>
-                )}
+                {!userResponse && <p className='hint-message'></p>}
                 <button
                   onClick={() =>
                     activePracticeIdNumber
                       ? updateDialog()
                       : handleCreatePractice(dialogs)
                   }
-                  disabled={!userResponse}
                 >
                   📝 Guardar práctica
                 </button>
