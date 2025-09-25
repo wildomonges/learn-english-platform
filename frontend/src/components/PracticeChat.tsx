@@ -11,14 +11,15 @@ import {
 } from '../utils/practiceUtils';
 import DialogLineBubble from './DialogLineBubble';
 import { useAuth } from '../context/AuthContext';
-import type { DialogLine } from '../types/Dialog';
+import type { DialogLine } from '../types/DialogLine';
+import { useNavigate } from 'react-router-dom';
 
 type Props = {
   topic: string;
   interest: string;
   existingDialogs: DialogLine[];
   onBack: () => void;
-  practiceId: number;
+  practiceId: number | undefined;
 };
 
 const PracticeChat: React.FC<Props> = ({
@@ -28,6 +29,8 @@ const PracticeChat: React.FC<Props> = ({
   onBack,
   practiceId,
 }) => {
+  const navigate = useNavigate();
+
   const { user } = useAuth();
   const [dialogs, setDialogs] = useState<DialogLine[]>(existingDialogs || []);
   const [loading, setLoading] = useState(false);
@@ -44,15 +47,11 @@ const PracticeChat: React.FC<Props> = ({
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-  const [localPracticeId, setLocalPracticeId] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const totalPairs = Math.floor(dialogs.length / 2);
   const currentStep = Math.floor(currentPairIndex / 2);
-  const activePracticeIdNumber: number | null =
-    practiceId ?? (localPracticeId ? Number(localPracticeId) : null);
 
-  // Reproducir audio
   const handlePlayAudio = useCallback(
     async (text: string, index: number, rate: number = 1) => {
       if (playingIndex === index) return;
@@ -86,7 +85,7 @@ const PracticeChat: React.FC<Props> = ({
   );
 
   const handleCreatePractice = async (dialogsData: DialogLine[]) => {
-    if (!user || localPracticeId) return;
+    if (!user || practiceId) return;
 
     try {
       const practice = await createPractice({
@@ -94,30 +93,29 @@ const PracticeChat: React.FC<Props> = ({
         name: `Practice on ${topic}`,
         topic,
         interest,
-        dialogs: dialogsData
-          .filter((line) => line.textEnglish && line.textSpanish)
-          .map((line, i) => ({
-            id: line.id ?? i,
-            speaker: line.speaker,
-            textEnglish: line.textEnglish,
-            textSpanish: line.textSpanish,
-            response: '',
-            order: i,
-            score: 0,
-            completed: line.speaker === 'Teacher',
-            dialog: line.textEnglish,
-          })),
+        dialogs: dialogsData.map((line, i) => ({
+          id: line.id ?? i,
+          speaker: line.speaker,
+          textEnglish: line.textEnglish,
+          textSpanish: line.textSpanish,
+          response: '',
+          order: i,
+          score: 0,
+          completed: line.speaker === 'Teacher',
+          dialog: line.textEnglish,
+        })),
       });
 
-      setLocalPracticeId(practice.id.toString());
-    } catch {
+      navigate(`/practicas/${practice.id}`);
+    } catch (error) {
+      console.error(error);
       setError('Error al crear la práctica.');
     }
   };
 
-  // Actualizar un solo diálogo
+  // Actualizar diálogo Student en BD
   const updateDialog = async () => {
-    if (!activePracticeIdNumber) {
+    if (!practiceId) {
       setError('No se encontró la práctica activa para actualizar.');
       goToNextPair();
       return;
@@ -126,12 +124,12 @@ const PracticeChat: React.FC<Props> = ({
     const idx = currentPairIndex + 1;
     const dialogStudent = dialogs[idx];
     if (!dialogStudent) return;
-    const response = userResponses[idx] || '';
 
+    const response = userResponses[idx] || '';
     const score = calculateSimilarity(response, dialogStudent.textEnglish);
 
     try {
-      await updatePracticeDialog(activePracticeIdNumber, dialogStudent.id!, {
+      await updatePracticeDialog(practiceId, dialogStudent.id!, {
         response,
         score,
         completed: true,
@@ -152,7 +150,7 @@ const PracticeChat: React.FC<Props> = ({
     }
   };
 
-  // Verificar respuesta manualmente
+  // Verificar similitud manualmente
   const handleSendResponse = (index: number) => {
     const userResponse = userResponses[index] || '';
     const correct = dialogs[index]?.textEnglish || '';
@@ -165,7 +163,6 @@ const PracticeChat: React.FC<Props> = ({
     setCurrentPairIndex((prev) => Math.max(prev - 2, 0));
   const goToNextPair = () => setCurrentPairIndex((prev) => prev + 2);
 
-  // Cargar diálogos
   useEffect(() => {
     let cancelled = false;
 
@@ -173,6 +170,7 @@ const PracticeChat: React.FC<Props> = ({
       if (existingDialogs && existingDialogs.length > 0) {
         setDialogs(existingDialogs);
 
+        // Arrancar en el primer Student no completado
         const startingOrder =
           existingDialogs.find((d) => d.speaker === 'Student' && !d.completed)
             ?.order ?? 1;
@@ -186,13 +184,15 @@ const PracticeChat: React.FC<Props> = ({
 
       setLoading(true);
       try {
+        // cuando se crea una practica se genera nuevos dialogos y luego se crea la practica
         const data = await fetchDialogs(topic, interest);
         if (cancelled) return;
 
         const fetched: DialogLine[] = data.dialogs || [];
+        // dialogo de la ia {textEnglish, textSpanish, speaker}
         setDialogs(fetched);
 
-        if (!practiceId && !localPracticeId) {
+        if (!practiceId) {
           await handleCreatePractice(fetched);
         }
       } catch {
@@ -212,8 +212,9 @@ const PracticeChat: React.FC<Props> = ({
         audioRef.current = null;
       }
     };
-  }, [topic, interest, existingDialogs, practiceId, localPracticeId]);
+  }, [topic, interest, existingDialogs, practiceId]);
 
+  // Diálogo actual Teacher / Student
   const teacherLine = dialogs
     .slice(currentPairIndex, currentPairIndex + 2)
     .find((d) => d.speaker === 'Teacher');
@@ -223,6 +224,7 @@ const PracticeChat: React.FC<Props> = ({
     .find((d) => d.speaker === 'Student');
 
   const userResponse = userResponses[studentLine?.order || -1]?.trim();
+  const isLastPair = currentPairIndex + 2 >= dialogs.length;
 
   return (
     <div className={`practice-chat ${loading ? 'loading-state' : ''}`}>
@@ -310,7 +312,7 @@ const PracticeChat: React.FC<Props> = ({
               <button onClick={onBack}>⬅ Volver al inicio</button>
             )}
 
-            {currentPairIndex + 2 < dialogs.length && (
+            {studentLine && !isLastPair && (
               <div className='next-action'>
                 {!userResponse && (
                   <p className='hint-message'>
@@ -323,13 +325,12 @@ const PracticeChat: React.FC<Props> = ({
               </div>
             )}
 
-            {currentPairIndex + 2 >= dialogs.length && (
+            {isLastPair && studentLine && (
               <div className='next-action'>
-                {!userResponse && <p className='hint-message'></p>}
                 <button
                   onClick={() =>
-                    activePracticeIdNumber
-                      ? updateDialog()
+                    practiceId
+                      ? console.log('✅ Práctica ya guardada')
                       : handleCreatePractice(dialogs)
                   }
                 >

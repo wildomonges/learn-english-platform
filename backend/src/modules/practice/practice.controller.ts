@@ -14,6 +14,7 @@ import { CreatePracticeDto } from './dto/create-practice.dto';
 import { Practice } from './entities/practice.entity';
 import { UpdateDialogDto } from './dto/update-dialog.dto';
 import { Dialog } from './entities/dialog.entity';
+import { instanceToPlain } from 'class-transformer';
 
 @Controller('practices')
 export class PracticeController {
@@ -24,56 +25,62 @@ export class PracticeController {
     @Param('id') practiceId: number,
     @Param('dialogId') dialogId: number,
     @Body() updateDto: UpdateDialogDto,
-  ): Promise<Dialog> {
-    return await this.practiceService.updateDialog(
+  ) {
+    const dialog: Dialog = await this.practiceService.updateDialog(
       +practiceId,
       +dialogId,
       updateDto,
     );
+    return instanceToPlain(dialog)
   }
 
   @Patch(':id/complete')
   async completePractice(@Param('id') practiceId: number) {
-    return this.practiceService.markPracticeAsCompleted(+practiceId);
+    const practice: Practice = await this.practiceService.markPracticeAsCompleted(+practiceId);
+    return instanceToPlain(practice);
   }
 
   @Post()
-  create(@Body() createDto: CreatePracticeDto): Promise<Practice> {
-    return this.practiceService.create(createDto);
+  async create(@Body() createDto: CreatePracticeDto) {
+    const practice: Practice = await this.practiceService.create(createDto);
+    return instanceToPlain(practice);
   }
 
   // ✅ GET /practices?userId=4
   @Get()
-  findAll(@Query('userId') userId?: number): Promise<Practice[]> {
-    if (userId) {
-      return this.practiceService.findByUserId(userId);
-    }
-    return this.practiceService.findAll();
+  async findAll(@Query('userId') userId: number) {
+    const practices: Practice[] = await this.practiceService.findByUserId(userId);
+    return instanceToPlain(practices)
   }
 
   // ✅ GET /practices/:id (práctica específica)
   @Get(':id')
-  findOne(@Param('id') id: number): Promise<Practice> {
-    return this.practiceService.findOne(id);
+  async findOne(@Param('id') id: number) {
+    const practice: Practice | null = await  this.practiceService.findOne(id);
+
+    if (!practice){
+      throw new NotFoundException('Practice not found');
+    }
+    return instanceToPlain(practice);
   }
+
   @Get(':id/result')
   async getPracticeResult(@Param('id', ParseIntPipe) id: number) {
-    const practice = await this.practiceService.findOne(id);
+    const practice: Practice | null = await this.practiceService.findOne(id);
 
     if (!practice) {
       throw new NotFoundException('Practice not found');
     }
-
-    return {
+    const totalDialogs = practice.dialogs.length;
+    const dialogsCompleted = practice.dialogs.filter((dialog) => dialog.completed).length;
+    return instanceToPlain({
       id: practice.id,
       name: practice.name,
       interest: practice.interest,
-      totalDialogs: practice.totalDialogs,
-      dialogsCompleted: practice.dialogsCompleted,
+      totalDialogs: totalDialogs,
+      dialogsCompleted: dialogsCompleted,
       completed: practice.completed,
-      score:
-        practice.score ??
-        Math.round((practice.dialogsCompleted / practice.totalDialogs) * 100),
-    };
+      score: Math.round((dialogsCompleted / totalDialogs) * 100),
+    });
   }
 }
