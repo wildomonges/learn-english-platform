@@ -1,84 +1,70 @@
 .chat-bubble {
-  padding: 1rem;
+  background: #fff;
   border-radius: 12px;
-  background-color: #ffffff;
-  box-shadow: 0 4px 8px rgba(92, 138, 135, 0.2);
-  margin-bottom: 1rem;
+  padding: 12px;
+  margin: 10px 0;
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
 }
 
-.teacher {
-  color: #8e7cc3;
-  border-left: 6px solid #8e7cc3;
-  padding-left: 8px;
+.chat-bubble.teacher {
+  border-left: 4px solid #1976d2;
 }
 
-.student {
-  color: #4b9e9e;
-  border-left: 6px solid #4b9e9e;
-  padding-left: 8px;
+.chat-bubble.student {
+  border-left: 4px solid #4caf50;
 }
 
-.text-spanish {
-  font-size: 0.9em;
+.bubble-header {
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+.bubble-content {
+  margin-bottom: 8px;
+}
+
+.text-en {
+  font-size: 16px;
+  margin: 0;
+}
+
+.text-es {
+  font-size: 14px;
   color: #666;
-  margin-top: 0.25rem;
+  margin: 0;
+}
+
+.bubble-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .response-row {
   display: flex;
-  flex-wrap: nowrap;
-  align-items: center;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-  width: 100%;
-  max-width: 100%;
-  box-sizing: border-box;
+  align-items: flex-start;
+  gap: 6px;
+  margin-top: 10px;
 }
 
 .response-input {
   flex: 1;
+  padding: 8px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
   resize: none;
-  padding: 0.8rem;
-  font-size: 1rem;
-  border-radius: 8px;
-  border: 1px solid #5c8a87;
-  color: #1a3c6b;
-  background-color: #f4f7fb;
-  outline: none;
-  box-shadow: none;
 }
 
-.response-input:hover {
-  border: 2px solid #5c8a87;
-  background-color: #ffffff;
+.icon-button {
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 
 .feedback {
-  margin-top: 0.5rem;
-  font-weight: bold;
-  color: #9966cc;
-}
-
-.playing-indicator {
-  margin-left: 8px;
-  font-size: 0.9rem;
-  color: #4b9e9e;
-}
-
-.recording-indicator {
-  margin-top: 0.5rem;
-  font-size: 0.9rem;
-  color: #d9534f;
-  font-weight: bold;
-}
-
-@media (max-width: 480px) {
-  .response-row {
-    flex-wrap: nowrap;
-    gap: 0.4rem;
-  }
-
-  .response-input {
-    font-size: 0.95rem;
-  }
+  margin-top: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1976d2;
 }

@@ -1,11 +1,12 @@
 import type { Dialog } from './Dialog';
+import type { DialogLine } from '../types/DialogLine';
 
 export interface Practice {
   id: number;
   name: string;
   interest: string;
   createdAt: string;
-  dialogs: Dialog[];
+  dialogs: DialogLine[];
 }
 export interface CreatePracticePayload {
   userId: number;

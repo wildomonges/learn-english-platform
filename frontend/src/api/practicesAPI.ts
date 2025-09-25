@@ -1,4 +1,4 @@
-import type { DialogLine } from '../types/Dialog';
+import type { DialogLine } from '../types/DialogLine';
 
 import type { Practice, CreatePracticePayload } from '../interfaces/Practice';
 

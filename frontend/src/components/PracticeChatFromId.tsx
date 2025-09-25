@@ -9,6 +9,8 @@ const PracticeChatFromId = () => {
   const navigate = useNavigate();
 
   const [practice, setPractice] = useState<any>(null);
+  const [practiceId, setPracticeId] = useState<number | undefined>(undefined);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,6 +30,7 @@ const PracticeChatFromId = () => {
 
       console.log('fetch practice', data);
       setPractice(data);
+      setPracticeId(data.id);
     } catch (err) {
       console.error('Error al cargar la práctica', err);
       setError('No se pudo cargar la práctica. Intenta más tarde.');
@@ -60,7 +63,8 @@ const PracticeChatFromId = () => {
         interest={practice.interest}
         existingDialogs={practice.dialogs}
         onBack={() => navigate('/')}
-        practiceId={practice.id}
+        practiceId={practiceId}
+        setPracticeId={setPracticeId}
       />
     </div>
   );

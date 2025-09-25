@@ -1,9 +1,18 @@
 import React from 'react';
+import {
+  Card,
+  CardContent,
+  Typography,
+  IconButton,
+  Menu,
+  MenuItem,
+  TextField,
+  Box,
+} from '@mui/material';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import MicIcon from '@mui/icons-material/Mic';
 import SendIcon from '@mui/icons-material/Send';
-import { Menu, MenuItem } from '@mui/material';
 
 type Props = {
   speaker: 'Teacher' | 'Student';
@@ -55,75 +64,122 @@ const DialogLineBubble: React.FC<Props> = ({
   responseFeedback,
 }) => {
   return (
-    <div className={`chat-bubble ${speaker.toLowerCase()}`}>
-      <strong>{speaker}:</strong>
-      <p>{textEnglish}</p>
-      <p className='text-spanish'>({textSpanish})</p>
+    <Card
+      sx={{
+        mb: 2,
+        borderLeft: `6px solid ${
+          speaker === 'Teacher' ? '#1976d2' : '#4caf50'
+        }`,
+        borderRadius: 2,
+        boxShadow: 2,
+      }}
+    >
+      <CardContent>
+        {/* Header */}
+        <Typography variant='subtitle2' color='text.secondary'>
+          {speaker}
+        </Typography>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-        <button
-          onClick={() => onPlayAudio(textEnglish, order, preferredSpeed)}
-          className='icon-button'
-          title={`Reproducir (${preferredSpeed}x)`}
-        >
-          <VolumeUpIcon />
-        </button>
+        {/* English */}
+        <Typography variant='body1' sx={{ fontWeight: 500, mt: 1 }}>
+          {textEnglish}
+        </Typography>
 
-        <button
-          onClick={(e) => onOpenSpeedMenu(e, textEnglish, order)}
-          className='icon-button'
-          title='Opciones de velocidad'
-        >
-          <MoreVertIcon />
-        </button>
+        {/* Spanish */}
+        <Typography variant='body2' color='text.secondary'>
+          ({textSpanish})
+        </Typography>
 
-        {playingIndex === order && (
-          <span className='playing-indicator'>🔊 Reproduciendo...</span>
-        )}
-      </div>
+        {/* Audio controls */}
+        <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
+          <IconButton
+            onClick={() => onPlayAudio(textEnglish, order, preferredSpeed)}
+            title={`Reproducir (${preferredSpeed}x)`}
+          >
+            <VolumeUpIcon />
+          </IconButton>
 
-      {/* SOLO PARA STUDENT */}
-      {isStudent && (
-        <>
-          <div className='response-row'>
-            <textarea
-              className='response-input'
-              rows={2}
-              placeholder='Tu respuesta...'
-              value={responseValue || ''}
-              onChange={(e) => onResponseChange?.(e.target.value)}
-            />
+          <IconButton
+            onClick={(e) => onOpenSpeedMenu(e, textEnglish, order)}
+            title='Opciones de velocidad'
+          >
+            <MoreVertIcon />
+          </IconButton>
 
-            <Menu
-              anchorEl={anchorEl}
-              open={Boolean(anchorEl)}
-              onClose={onCloseSpeedMenu}
+          {playingIndex === order && (
+            <Typography
+              variant='caption'
+              color='primary'
+              sx={{ ml: 1, fontWeight: 500 }}
             >
-              {[0.75, 1, 1.25].map((s) => (
-                <MenuItem key={s} onClick={() => onSelectSpeed(s)}>
-                  {s}x
-                </MenuItem>
-              ))}
-            </Menu>
-
-            <button onClick={onMicClick} className='icon-button'>
-              <MicIcon />
-            </button>
-            <button onClick={onSendClick} className='icon-button'>
-              <SendIcon />
-            </button>
-          </div>
-
-          {isRecording && (
-            <div className='recording-indicator'>
-              <p>🎙 Grabando... {recordingTime}s</p>
-            </div>
+              🔊 Reproduciendo...
+            </Typography>
           )}
 
-          {responseFeedback && <p className='feedback'>{responseFeedback}</p>}
-        </>
-      )}
-    </div>
+          {/* Menú de velocidad */}
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={onCloseSpeedMenu}
+          >
+            {[0.75, 1, 1.25, 1.5].map((s) => (
+              <MenuItem key={s} onClick={() => onSelectSpeed(s)}>
+                {s}x
+              </MenuItem>
+            ))}
+          </Menu>
+        </Box>
+
+        {/* Student response */}
+        {isStudent && (
+          <>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: 1,
+                mt: 2,
+              }}
+            >
+              <TextField
+                fullWidth
+                multiline
+                minRows={2}
+                variant='outlined'
+                placeholder='Tu respuesta...'
+                value={responseValue || ''}
+                onChange={(e) => onResponseChange?.(e.target.value)}
+              />
+
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                <IconButton onClick={onMicClick} color='primary'>
+                  <MicIcon />
+                </IconButton>
+                <IconButton onClick={onSendClick} color='success'>
+                  <SendIcon />
+                </IconButton>
+              </Box>
+            </Box>
+
+            {isRecording && (
+              <Typography variant='body2' color='error' sx={{ mt: 1 }}>
+                🎙 Grabando... {recordingTime}s
+              </Typography>
+            )}
+
+            {responseFeedback && (
+              <Typography
+                variant='body2'
+                color='primary'
+                sx={{ mt: 1, fontWeight: 500 }}
+              >
+                {responseFeedback}
+              </Typography>
+            )}
+          </>
+        )}
+      </CardContent>
+    </Card>
   );
 };
 

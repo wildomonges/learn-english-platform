@@ -22,7 +22,7 @@ const HomePage: React.FC = () => {
     null
   );
   const { user } = useAuth();
-  const [localPracticeId] = useState<number | null>(null);
+  const [practiceId, setPracticeId] = useState<number | undefined>(undefined);
 
   useEffect(() => {
     const stored = localStorage.getItem('user');
@@ -107,7 +107,8 @@ const HomePage: React.FC = () => {
                 interest={selectedInterest.name}
                 existingDialogs={[]}
                 onBack={handleBack}
-                practiceId={localPracticeId ?? 0}
+                practiceId={practiceId ?? 0}
+                setPracticeId={setPracticeId}
               />
             </div>
           )}

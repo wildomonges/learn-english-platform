@@ -63,6 +63,11 @@ export class PracticeService {
     const practice = await this.practiceRepo.findOne({
       where: { id },
       relations: ['dialogs', 'user'],
+      order: {
+        dialogs: {
+          order: 'ASC',
+        },
+      },
     });
 
     return instanceToPlain(practice);

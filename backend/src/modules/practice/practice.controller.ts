@@ -14,6 +14,7 @@ import { CreatePracticeDto } from './dto/create-practice.dto';
 import { Practice } from './entities/practice.entity';
 import { UpdateDialogDto } from './dto/update-dialog.dto';
 import { Dialog } from './entities/dialog.entity';
+import { instanceToPlain } from 'class-transformer';
 
 @Controller('practices')
 export class PracticeController {
@@ -38,8 +39,9 @@ export class PracticeController {
   }
 
   @Post()
-  create(@Body() createDto: CreatePracticeDto): Promise<Practice> {
-    return this.practiceService.create(createDto);
+  async create(@Body() createDto: CreatePracticeDto): Promise<any> {
+    const practice = await this.practiceService.create(createDto);
+    return instanceToPlain(practice);
   }
 
   // ✅ GET /practices?userId=4
