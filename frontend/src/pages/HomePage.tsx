@@ -108,7 +108,6 @@ const HomePage: React.FC = () => {
                 existingDialogs={[]}
                 onBack={handleBack}
                 practiceId={practiceId ?? 0}
-                setPracticeId={setPracticeId}
               />
             </div>
           )}
