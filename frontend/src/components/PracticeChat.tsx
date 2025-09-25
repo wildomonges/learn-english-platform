@@ -12,6 +12,7 @@ import {
 import DialogLineBubble from './DialogLineBubble';
 import { useAuth } from '../context/AuthContext';
 import type { DialogLine } from '../types/DialogLine';
+import { useNavigate } from 'react-router-dom';
 
 type Props = {
   topic: string;
@@ -19,7 +20,6 @@ type Props = {
   existingDialogs: DialogLine[];
   onBack: () => void;
   practiceId: number | undefined;
-  setPracticeId: React.Dispatch<React.SetStateAction<number | undefined>>;
 };
 
 const PracticeChat: React.FC<Props> = ({
@@ -28,8 +28,9 @@ const PracticeChat: React.FC<Props> = ({
   existingDialogs,
   onBack,
   practiceId,
-  setPracticeId,
 }) => {
+  const navigate = useNavigate();
+
   const { user } = useAuth();
   const [dialogs, setDialogs] = useState<DialogLine[]>(existingDialogs || []);
   const [loading, setLoading] = useState(false);
@@ -105,8 +106,7 @@ const PracticeChat: React.FC<Props> = ({
         })),
       });
 
-      setPracticeId(practice.id);
-      setDialogs(practice.dialogs);
+      navigate(`/practicas/${practice.id}`);
     } catch (error) {
       console.error(error);
       setError('Error al crear la práctica.');

@@ -64,7 +64,6 @@ const PracticeChatFromId = () => {
         existingDialogs={practice.dialogs}
         onBack={() => navigate('/')}
         practiceId={practiceId}
-        setPracticeId={setPracticeId}
       />
     </div>
   );

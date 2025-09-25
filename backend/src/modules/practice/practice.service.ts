@@ -5,7 +5,6 @@ import { Practice } from './entities/practice.entity';
 import { Dialog } from './entities/dialog.entity';
 import { CreatePracticeDto } from './dto/create-practice.dto';
 import { User } from 'src/modules/users/user.entity';
-import { instanceToPlain } from 'class-transformer';
 import { UpdateDialogDto } from './dto/update-dialog.dto';
 
 @Injectable()
@@ -22,13 +21,13 @@ export class PracticeService {
   ) {}
 
   async create(createDto: CreatePracticeDto): Promise<Practice> {
-    const user = await this.userRepo.findOneByOrFail({ id: createDto.userId });
+    await this.userRepo.findOneByOrFail({ id: createDto.userId });
     const practice = await this.practiceRepo.save(createDto);
 
     return practice;
   }
 
-  async findAll(): Promise<any[]> {
+  async findAll(): Promise<Practice[]> {
     const practices = await this.practiceRepo.find({
       relations: ['dialogs', 'user'],
       order: {
@@ -39,7 +38,7 @@ export class PracticeService {
       },
     });
 
-    return practices.map((p) => instanceToPlain(p));
+    return practices;
   }
 
   // ✅ OBTENER PRÁCTICAS DE UN USUARIO POR ID
@@ -55,12 +54,12 @@ export class PracticeService {
       },
     });
 
-    return practices.map((p) => instanceToPlain(p));
+    return practices;
   }
 
   // ✅ OBTENER UNA PRÁCTICA POR ID
-  async findOne(id: number): Promise<any> {
-    const practice = await this.practiceRepo.findOne({
+  async findOne(id: number): Promise<Practice | null> {
+    return await this.practiceRepo.findOne({
       where: { id },
       relations: ['dialogs', 'user'],
       order: {
@@ -69,8 +68,6 @@ export class PracticeService {
         },
       },
     });
-
-    return instanceToPlain(practice);
   }
 
   async updateDialog(
@@ -105,7 +102,7 @@ export class PracticeService {
     return updated;
   }
 
-  async markPracticeAsCompleted(practiceId: number): Promise<any> {
+  async markPracticeAsCompleted(practiceId: number): Promise<Practice> {
     const practice = await this.practiceRepo.findOne({
       where: { id: practiceId },
     });
@@ -116,6 +113,6 @@ export class PracticeService {
 
     practice.completed = true;
     const updated = await this.practiceRepo.save(practice);
-    return instanceToPlain(updated);
+    return updated;
   }
 }
