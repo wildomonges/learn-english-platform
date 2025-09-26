@@ -22,7 +22,7 @@ const HomePage: React.FC = () => {
     null
   );
   const { user } = useAuth();
-  const [practiceId, setPracticeId] = useState<number | undefined>(undefined);
+  const [practiceId] = useState<number | undefined>(undefined);
 
   useEffect(() => {
     const stored = localStorage.getItem('user');

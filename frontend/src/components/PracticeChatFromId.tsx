@@ -1,48 +1,36 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import PracticeChat from '../components/PracticeChat';
-import { useFetchWithAuth } from '../api/authFetch';
+import { fetchPracticeById } from '../api/practicesAPI';
+import type { Practice } from '../interfaces/Practice';
 
 const PracticeChatFromId = () => {
   const { id } = useParams();
-  const fetchWithAuth = useFetchWithAuth();
   const navigate = useNavigate();
 
-  const [practice, setPractice] = useState<any>(null);
-  const [practiceId, setPracticeId] = useState<number | undefined>(undefined);
-
+  const [practice, setPractice] = useState<Practice | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchPractice = async (practiceId: string) => {
-    try {
-      setLoading(true);
-      const res = await fetchWithAuth(
-        `${import.meta.env.VITE_API_URL}/practices/${practiceId}`
-      );
-
-      if (!res.ok) throw new Error(`Error: ${res.status}`);
-
-      const text = await res.text();
-      const data = text ? JSON.parse(text) : null;
-
-      if (!data) throw new Error('La respuesta está vacía');
-
-      console.log('fetch practice', data);
-      setPractice(data);
-      setPracticeId(data.id);
-    } catch (err) {
-      console.error('Error al cargar la práctica', err);
-      setError('No se pudo cargar la práctica. Intenta más tarde.');
-      navigate('/');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    if (id) fetchPractice(id);
-  }, [id]);
+    if (!id) return;
+
+    const loadPractice = async () => {
+      try {
+        setLoading(true);
+        const data = await fetchPracticeById(id);
+        setPractice(data);
+      } catch (err) {
+        console.error('Error al cargar la práctica', err);
+        setError('No se pudo cargar la práctica. Intenta más tarde.');
+        navigate('/');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadPractice();
+  }, [id, navigate]);
 
   if (error) return <div>⚠️ {error}</div>;
   if (loading) return <div>⏳ Cargando práctica...</div>;
@@ -63,7 +51,7 @@ const PracticeChatFromId = () => {
         interest={practice.interest}
         existingDialogs={practice.dialogs}
         onBack={() => navigate('/')}
-        practiceId={practiceId}
+        practiceId={practice.id}
       />
     </div>
   );
