@@ -95,3 +95,27 @@ export const fetchUserPractices = async (
     throw error;
   }
 };
+export const fetchPracticeById = async (
+  practiceId: string | number
+): Promise<Practice> => {
+  const token = localStorage.getItem('token');
+  const response = await fetch(`${BASE_URL}/practices/${practiceId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(
+      errorData.message || `Error al cargar la práctica ${practiceId}`
+    );
+  }
+
+  const data = await response.json();
+
+  return {
+    ...data,
+    id: Number(data.id ?? data._id),
+  };
+};
