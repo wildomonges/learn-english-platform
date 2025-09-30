@@ -17,8 +17,9 @@
   box-shadow: 0 4px 16px rgba(92, 138, 135, 0.2);
   width: 210%;
   max-width: 900px;
-  margin-top: 3rem;
+  margin-top: 6rem;
   text-align: center;
+  margin-right: 13%;
 }
 
 .button-group {

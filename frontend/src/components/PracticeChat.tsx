@@ -48,9 +48,14 @@ const PracticeChat: React.FC<Props> = ({
   const [recordingTime, setRecordingTime] = useState(0);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [canContinue, setCanContinue] = useState(false);
 
-  const totalPairs = Math.floor(dialogs.length / 2);
-  const currentStep = Math.floor(currentPairIndex / 2);
+  // Solo los Student cuentan para el progreso
+  const completedDialogs = dialogs.filter(
+    (d) => d.speaker === 'Student' && d.completed
+  ).length;
+
+  const totalDialogs = dialogs.filter((d) => d.speaker === 'Student').length;
 
   const handlePlayAudio = useCallback(
     async (text: string, index: number, rate: number = 1) => {
@@ -145,6 +150,7 @@ const PracticeChat: React.FC<Props> = ({
       }));
 
       setCurrentPairIndex((prev) => prev + 2);
+      setCanContinue(false);
     } catch {
       setError('Error al actualizar el diálogo.');
     }
@@ -156,7 +162,13 @@ const PracticeChat: React.FC<Props> = ({
     const correct = dialogs[index]?.textEnglish || '';
     const similarity = calculateSimilarity(userResponse, correct);
     const feedback = getSimilarityFeedback(similarity);
+
     setResponseFeedback((prev) => ({ ...prev, [index]: feedback }));
+
+    // Habilitar Guardar y continuar inmediatamente
+    if (userResponse.trim() !== '') {
+      setCanContinue(true);
+    }
   };
 
   const goToPreviousPair = () =>
@@ -213,6 +225,16 @@ const PracticeChat: React.FC<Props> = ({
       }
     };
   }, [topic, interest, existingDialogs, practiceId]);
+  useEffect(() => {
+    const lastDialog = dialogs[dialogs.length - 1];
+    if (lastDialog?.speaker === 'Teacher' && !lastDialog.completed) {
+      setDialogs((prev) =>
+        prev.map((d, i) =>
+          i === dialogs.length - 1 ? { ...d, completed: true } : d
+        )
+      );
+    }
+  }, [dialogs]);
 
   // Diálogo actual Teacher / Student
   const teacherLine = dialogs
@@ -224,7 +246,12 @@ const PracticeChat: React.FC<Props> = ({
     .find((d) => d.speaker === 'Student');
 
   const userResponse = userResponses[studentLine?.order || -1]?.trim();
-  const isLastPair = currentPairIndex + 2 >= dialogs.length;
+  const totalStudents = dialogs.filter((d) => d.speaker === 'Student').length;
+  const completedStudents = dialogs.filter(
+    (d) => d.speaker === 'Student' && d.completed
+  ).length;
+
+  const isLastPair = completedStudents >= totalStudents;
 
   return (
     <div className={`practice-chat ${loading ? 'loading-state' : ''}`}>
@@ -246,7 +273,7 @@ const PracticeChat: React.FC<Props> = ({
             Diálogo: {interest} / {topic}
           </h2>
 
-          <ProgressBar current={currentStep} total={totalPairs} />
+          <ProgressBar current={completedDialogs} total={totalDialogs} />
 
           {error && <p className='error'>{error}</p>}
 
@@ -319,13 +346,13 @@ const PracticeChat: React.FC<Props> = ({
                     Completa tu respuesta para avanzar
                   </p>
                 )}
-                <button onClick={updateDialog} disabled={!userResponse}>
+                <button onClick={updateDialog} disabled={!canContinue}>
                   💾 Guardar y continuar
                 </button>
               </div>
             )}
 
-            {isLastPair && studentLine && (
+            {isLastPair && (
               <div className='next-action'>
                 <button
                   onClick={() =>
