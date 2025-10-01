@@ -8,6 +8,7 @@ import {
   useMediaQuery,
   CircularProgress,
   Pagination,
+  Slide,
 } from '@mui/material';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import CloseIcon from '@mui/icons-material/Close';
@@ -25,10 +26,11 @@ const PracticeTree: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [showButton, setShowButton] = useState(true);
 
   const isMobile = useMediaQuery('(max-width:768px)');
 
-  if (!user) return;
+  if (!user) return null;
 
   const fetchPractices = async () => {
     setLoading(true);
@@ -41,9 +43,28 @@ const PracticeTree: React.FC = () => {
       setLoading(false);
     }
   };
+
   useEffect(() => {
     fetchPractices();
   }, [user]);
+
+  // Manejar scroll para ocultar/mostrar botón flotante con animación
+  useEffect(() => {
+    if (!isMobile) return;
+
+    let lastScrollY = window.scrollY;
+    const handleScroll = () => {
+      if (window.scrollY > lastScrollY + 10) {
+        setShowButton(false);
+      } else if (window.scrollY < lastScrollY - 10) {
+        setShowButton(true);
+      }
+      lastScrollY = window.scrollY;
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [isMobile]);
 
   const totalPages = Math.ceil(practices.length / ITEMS_PER_PAGE);
   const paginatedPractices = practices.slice(
@@ -76,36 +97,60 @@ const PracticeTree: React.FC = () => {
   return (
     <Box
       sx={{
-        mt: '10%',
+        mt: { xs: 2, sm: '10%' },
         width: '100%',
         maxWidth: 700,
         mx: 'auto',
         p: { xs: 1, sm: 2 },
+        position: 'relative',
       }}
     >
-      <Typography variant='h6' fontWeight='bold' mb={2} color='#9966cc'>
-        <ChatBubbleOutlineIcon sx={{ mr: 1 }} /> Tus Prácticas
-      </Typography>
+      {/* Título solo en escritorio */}
+      {!isMobile && (
+        <Typography variant='h6' fontWeight='bold' mb={2} color='#9966cc'>
+          <ChatBubbleOutlineIcon sx={{ mr: 1 }} /> Tus Prácticas
+        </Typography>
+      )}
 
       {isMobile ? (
         <>
-          {!drawerOpen && (
+          {/* Botón flotante con animación */}
+          <Slide
+            direction='up'
+            in={showButton && !drawerOpen}
+            mountOnEnter
+            unmountOnExit
+          >
             <Button
               variant='contained'
               onClick={() => setDrawerOpen(true)}
               sx={{
-                borderRadius: '50px',
+                position: 'fixed',
+                bottom: 20,
+                right: 20,
+                width: 60,
+                height: 60,
+                borderRadius: '50%',
                 backgroundColor: '#9966cc',
                 color: '#fff',
-                fontSize: '0.875rem',
+                fontSize: '1.5rem',
                 fontWeight: 'bold',
-                px: 3,
-                py: 1.5,
+                zIndex: 1000,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
+                transition: 'transform 0.2s, background-color 0.3s',
+                '&:hover': {
+                  backgroundColor: '#8844bb',
+                  transform: 'scale(1.1)',
+                },
               }}
             >
-              Mis Prácticas
+              +
             </Button>
-          )}
+          </Slide>
+
           <Drawer
             anchor='bottom'
             open={drawerOpen}
@@ -136,14 +181,28 @@ const PracticeTree: React.FC = () => {
                   <CloseIcon />
                 </IconButton>
               </Box>
+
               <PracticeList
                 practices={practices}
                 isMobile={true}
                 setDrawerOpen={setDrawerOpen}
               />
+
+              {/* Paginación en móvil dentro del drawer */}
+              {totalPages > 1 && (
+                <Box display='flex' justifyContent='center' mt={2} mb={2}>
+                  <Pagination
+                    count={totalPages}
+                    page={page}
+                    onChange={(_, value) => setPage(value)}
+                    size='medium'
+                    color='primary'
+                    shape='rounded'
+                  />
+                </Box>
+              )}
             </Box>
           </Drawer>
-          <Box sx={{ height: 80 }} />
         </>
       ) : (
         <>

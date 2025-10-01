@@ -43,8 +43,10 @@ const PracticeList: React.FC<PracticeListProps> = ({
   return (
     <>
       {practices.map((p) => {
-        const total = p.dialogs.length;
-        const done = p.dialogs.filter((d) => d.completed).length;
+        const studentDialogs = p.dialogs.filter((d) => d.speaker === 'Student');
+        const total = studentDialogs.length;
+        const done = studentDialogs.filter((d) => d.completed).length;
+
         const progress = total ? Math.round((done / total) * 100) : 0;
 
         return (
