@@ -4,7 +4,7 @@ test.describe('Audio desde lista de prácticas (mockeado)', () => {
   test('Debe abrir la práctica y cambiar la velocidad del audio', async ({
     page,
   }) => {
-    // --- 1️⃣ Mock de /practices (debe ir antes del goto) ---
+    // Mock de /practices
     await page.route(/.*practices.*/i, async (route) => {
       console.log('📡 Interceptado:', route.request().url());
       await route.fulfill({
@@ -31,17 +31,11 @@ test.describe('Audio desde lista de prácticas (mockeado)', () => {
     page.on('request', (req) => console.log('➡️', req.url()));
     page.on('response', (res) => console.log('⬅️', res.url(), res.status()));
 
-    // --- 3️⃣ Si hay que hacer clic en “Empezar” ---
-    const startBtn = page.getByRole('button', { name: /empezar/i });
-    if (await startBtn.isVisible()) {
-      await startBtn.click();
-    }
-
-    // --- 4️⃣ Esperar a que aparezca la práctica mockeada ---
+    //  Esperar a que aparezca la práctica mockeada
     const practiceCard = page.getByText(/practice on english for developer/i);
     await expect(practiceCard).toBeVisible({ timeout: 30000 });
 
-    // --- 5️⃣ Entrar en la práctica ---
+    //  Entrar en la práctica
     const continueBtn = page.getByRole('button', { name: /continuar/i });
     if (await continueBtn.isVisible()) {
       await continueBtn.click();
@@ -49,12 +43,12 @@ test.describe('Audio desde lista de prácticas (mockeado)', () => {
       await practiceCard.click();
     }
 
-    // --- 6️⃣ Esperar la carga del diálogo ---
+    // Esperar la carga del diálogo ---
     await expect(page.getByText(/hi! what do you do\?/i)).toBeVisible({
       timeout: 20000,
     });
 
-    // --- 7️⃣ Cambiar velocidad ---
+    // Cambiar velocidad ---
     const speedButton = page.getByRole('button', { name: /velocidad/i });
     await expect(speedButton).toBeVisible();
     await speedButton.click();
@@ -63,7 +57,7 @@ test.describe('Audio desde lista de prácticas (mockeado)', () => {
     await expect(speedOption).toBeVisible();
     await speedOption.click();
 
-    // --- 8️⃣ Verificar el cambio ---
+    //Verificar el cambio ---
     const label = page.getByText(/velocidad: 1.25x/i);
     await expect(label).toBeVisible();
 
