@@ -6,18 +6,18 @@ test.describe('PracticeList en HomePage (sin mocks)', () => {
   }) => {
     console.log('🚀 Iniciando test de PracticeList (sin mocks)');
 
-    // 💾 Simular usuario logueado
+    //Simulate logged in user
     await page.addInitScript(() => {
       localStorage.setItem('user', JSON.stringify({ id: 99, name: 'Tester' }));
       localStorage.setItem('token', 'mock-token');
-      // 👉 fuerza a que HomePage arranque en "topics"
+      // Force HomePage to start on "topics"
       localStorage.setItem('step', 'topics');
     });
 
     await page.goto('http://localhost:5173');
     await page.waitForLoadState('networkidle');
 
-    // 🕒 Esperar a que se carguen las prácticas
+    // Esperar a que se carguen las prácticas
     const firstPractice = page.locator('[data-testid="practice-card"]').first();
     await expect(firstPractice).toBeVisible({ timeout: 20000 });
 
