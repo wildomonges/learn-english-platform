@@ -46,12 +46,12 @@ const PracticeList: React.FC<PracticeListProps> = ({
         const studentDialogs = p.dialogs.filter((d) => d.speaker === 'Student');
         const total = studentDialogs.length;
         const done = studentDialogs.filter((d) => d.completed).length;
-
         const progress = total ? Math.round((done / total) * 100) : 0;
 
         return (
           <Accordion
             key={p.id}
+            data-testid='practice-card' // agregado para Playwright
             sx={{ mb: 1, borderRadius: 2, boxShadow: 1, px: 1, py: 0.5 }}
           >
             <AccordionSummary
@@ -83,6 +83,7 @@ const PracticeList: React.FC<PracticeListProps> = ({
                 />
               </Box>
             </AccordionSummary>
+
             <AccordionDetails sx={{ py: 1 }}>
               <Button
                 fullWidth
