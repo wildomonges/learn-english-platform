@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import '../styles/Navbar.css';
 import spainFlag from '../assets/flags/spain.png';
 import usaFlag from '../assets/flags/usa.png';
@@ -8,17 +8,26 @@ import { useAuth } from '../context/AuthContext';
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [language, setLanguage] = useState<'es' | 'en'>('es');
-  const { user, logout } = useAuth(); // use logout
-  const navigate = useNavigate(); //
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const toggleMenu = () => setIsOpen((prev) => !prev);
   const toggleLanguage = () =>
     setLanguage((prev) => (prev === 'es' ? 'en' : 'es'));
 
   const handleLogout = () => {
-    logout(); // we call the context method
-    navigate('/'); //  we redirect
+    logout();
+    navigate('/');
   };
+
+  const goToAdmin = () => navigate('/admin');
+
+  const showAdminButton =
+    user?.role === 'admin' && !location.pathname.startsWith('/admin');
+
+  console.log('Usuario actual:', user);
+  console.log('Ruta actual:', location.pathname);
 
   return (
     <nav className='navbar'>
@@ -29,7 +38,13 @@ const Navbar: React.FC = () => {
       </button>
 
       <div className={`navbar-menu ${isOpen ? 'open' : ''}`}>
-        <a href='/'>Inicio</a>
+        <Link to='/'>Inicio</Link>
+
+        {showAdminButton && (
+          <button className='admin-button' onClick={goToAdmin}>
+            🧑‍💼 Admin
+          </button>
+        )}
 
         {user ? (
           <>
