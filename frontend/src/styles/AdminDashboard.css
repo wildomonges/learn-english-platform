@@ -1,0 +1,222 @@
+/* === Layout principal === */
+.admin-layout {
+  display: flex;
+  flex-direction: row;
+  height: 100vh; /* ocupa toda la pantalla */
+  width: 100vw;
+  background: #0b1120; /* tono oscuro uniforme */
+  color: #f1f5f9;
+  overflow: hidden;
+}
+
+.admin-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+.dashboard-section {
+  margin-top: 15%;
+  width: 76%;
+  height: 90%;
+  max-width: 1200px;
+  background: rgba(30, 41, 59, 0.9);
+  border-radius: 16px;
+  padding: 3rem;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+.dashboard-section h2 {
+  color: #38bdf8;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.dashboard-section p {
+  color: #e2e8f0;
+  margin-bottom: 2rem;
+}
+
+/* === TARJETAS === */
+.cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.card {
+  background: #1e293b;
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+.card h3 {
+  color: #38bdf8;
+  margin-bottom: 0.5rem;
+}
+
+/* === TABLA DE DATOS === */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #1e293b;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.data-table th,
+.data-table td {
+  padding: 1rem;
+  text-align: left;
+}
+
+.data-table th {
+  background: #334155;
+  color: #38bdf8;
+  font-weight: 600;
+}
+
+.data-table tr:nth-child(even) {
+  background: #273449;
+}
+
+/* === SESIONES === */
+.session-list {
+  list-style: none;
+  padding: 0;
+  width: 100%;
+}
+
+.session-list li {
+  background: #1e293b;
+  margin-bottom: 0.75rem;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+/* === BARRAS DE PROGRESO === */
+.progress-bars {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.progress-item span {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.progress {
+  width: 100%;
+  height: 12px;
+  background: #334155;
+  border-radius: 8px;
+}
+
+.bar {
+  height: 100%;
+  border-radius: 8px;
+}
+
+.bar.speaking {
+  width: 85%;
+  background: #38bdf8;
+}
+
+.bar.listening {
+  width: 70%;
+  background: #22d3ee;
+}
+
+.bar.writing {
+  width: 60%;
+  background: #818cf8;
+}
+
+/* === CONFIGURACIÓN === */
+.settings-form {
+  display: flex;
+  flex-direction: column;
+  width: 60%;
+  gap: 1rem;
+}
+
+.settings-form input,
+.settings-form select {
+  background: #1e293b;
+  color: #fff;
+  border: 1px solid #334155;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+}
+
+.save-button {
+  margin-top: 1rem;
+  background: #38bdf8;
+  color: #0f172a;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+}
+
+.save-button:hover {
+  background: #22d3ee;
+}
+
+/* === ANIMACIÓN === */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* Bienvenida del Admin */
+.welcome-admin {
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+  border-radius: 16px;
+  padding: 2rem;
+  text-align: center;
+  margin-bottom: 2rem;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
+}
+
+.welcome-admin h2 {
+  color: #38bdf8;
+  margin-bottom: 1rem;
+}
+
+.welcome-admin p {
+  color: #cbd5e1;
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+}
+
+.welcome-logo {
+  width: 180px;
+  opacity: 0.9;
+  transition: transform 0.3s ease;
+}
+.welcome-logo:hover {
+  transform: scale(1.05);
+}
