@@ -13,6 +13,7 @@ import PracticeResult from './components/PracticeResult';
 import AdminDashboard from './pages/Admin/AdminDashboard';
 
 import './App.css';
+import AdminLogin from './pages/Admin/AdminLogin';
 
 const AppContent: React.FC = () => {
   return (
@@ -27,6 +28,7 @@ const AppContent: React.FC = () => {
 
         {/* Admin Dashboard con rutas hijas */}
         <Route path='/admin' element={<AdminDashboard />}></Route>
+        <Route path='/admin-login' element={<AdminLogin />} />
 
         {/* Ruta por defecto si no encuentra ninguna */}
         <Route path='*' element={<Navigate to='/' />} />

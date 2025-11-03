@@ -4,6 +4,7 @@ import '../styles/Navbar.css';
 import spainFlag from '../assets/flags/spain.png';
 import usaFlag from '../assets/flags/usa.png';
 import { useAuth } from '../context/AuthContext';
+import logo2 from '../assets/logo2.png';
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -21,17 +22,17 @@ const Navbar: React.FC = () => {
     navigate('/');
   };
 
-  const goToAdmin = () => navigate('/admin');
-
-  const showAdminButton =
-    user?.role === 'admin' && !location.pathname.startsWith('/admin');
-
-  console.log('Usuario actual:', user);
-  console.log('Ruta actual:', location.pathname);
+  const showAdminButton = !location.pathname.startsWith('/admin');
 
   return (
-    <nav className='navbar'>
-      <div className='logo'>🌍 Learn English</div>
+    <nav
+      className={`navbar ${
+        location.pathname.startsWith('/admin') ? 'admin-mode' : ''
+      }`}
+    >
+      <div className='logo'>
+        <img src={logo2} alt='Logo' />
+      </div>
 
       <button className='navbar-toggle' onClick={toggleMenu}>
         ☰
@@ -41,7 +42,10 @@ const Navbar: React.FC = () => {
         <Link to='/'>Inicio</Link>
 
         {showAdminButton && (
-          <button className='admin-button' onClick={goToAdmin}>
+          <button
+            className='admin-button'
+            onClick={() => navigate('/admin-login')}
+          >
             🧑‍💼 Admin
           </button>
         )}

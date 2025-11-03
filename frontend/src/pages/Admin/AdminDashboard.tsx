@@ -97,20 +97,32 @@ const AdminDashboard: React.FC = () => {
           <section className='dashboard-section'>
             <h2>💬 Prácticas</h2>
             <p>Últimas conversaciones y prácticas realizadas.</p>
-
-            <ul className='session-list'>
-              <li>
-                🗓️ Vero — Tema - “English for Marketing” Interes: "Meta
-                Business"
-              </li>
-              <li>
-                🗓️ Laura — Tema - “English for Developer” - Interes: "React
-                programing"{' '}
-              </li>
-              <li>
-                🗓️ Diego — Tema - “English for Developer” - Interes: "Vue.js"
-              </li>
-            </ul>
+            <table className='data-table'>
+              <thead>
+                <tr>
+                  <th>Alumno</th>
+                  <th>Temas practicados</th>
+                  <th>Interes</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Diego Morel</td>
+                  <td>English for Developer</td>
+                  <td>Vue.js</td>
+                </tr>
+                <tr>
+                  <td>Vero Ortiz</td>
+                  <td>English for Marketing</td>
+                  <td>Meta Business"</td>
+                </tr>
+                <tr>
+                  <td>Laura Gómez</td>
+                  <td>English for Developer</td>
+                  <td>React programing</td>
+                </tr>
+              </tbody>
+            </table>
           </section>
         );
 
