@@ -6,6 +6,7 @@ import {
   FiMessageSquare,
   FiBarChart2,
   FiSettings,
+  FiLogOut,
 } from 'react-icons/fi';
 import '../styles/Sidebar.css';
 import { useNavigate } from 'react-router-dom';
@@ -17,6 +18,7 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
   const navigate = useNavigate();
+
   const menuItems = [
     { id: 'home', label: 'Inicio', icon: <FiHome /> },
     { id: 'resumen', label: 'Resumen', icon: <FiBookOpen /> },
@@ -35,9 +37,15 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('admin');
+    navigate('/admin-login');
+  };
+
   return (
     <aside className='sidebar'>
       <h3 className='sidebar-logo'>Learn English</h3>
+
       <ul className='sidebar-menu'>
         {menuItems.map((item) => (
           <li
@@ -50,6 +58,13 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
           </li>
         ))}
       </ul>
+
+      {/* 🔻 Botón de cerrar sesión en la parte inferior */}
+      <div className='sidebar-footer'>
+        <button className='logout-btn' onClick={handleLogout}>
+          <FiLogOut /> <span>Cerrar sesión</span>
+        </button>
+      </div>
     </aside>
   );
 };
