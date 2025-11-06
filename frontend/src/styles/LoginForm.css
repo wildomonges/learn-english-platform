@@ -1,18 +1,35 @@
+/* Contenedor general */
+.container {
+  background-color: #e6f2f2;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(92, 138, 135, 0.2);
+  max-width: 900px;
+  margin: 6rem auto 2rem auto;
+  width: 90%; /* mejor que 210% */
+  text-align: center;
+  box-sizing: border-box;
+}
+
+/* Contenedor del login */
 .login-container {
   max-width: 400px;
-  margin: 3rem auto;
+  margin: 0 auto;
   padding: 2rem;
   border: 1px solid #ccc;
   border-radius: 12px;
   background-color: #f9f9f9;
+  box-sizing: border-box;
 }
 
+/* Título */
 .login-container h2 {
   text-align: center;
   margin-bottom: 1rem;
   color: #4b9e9e;
 }
 
+/* Inputs */
 .login-container input {
   width: 100%;
   padding: 0.75rem;
@@ -21,8 +38,10 @@
   border: 1px solid #ccc;
   background-color: #ffffff;
   color: #4b9e9e !important;
+  box-sizing: border-box;
 }
 
+/* Botón */
 .login-container button {
   width: 100%;
   padding: 0.75rem;
@@ -35,7 +54,20 @@
   cursor: pointer;
 }
 
+/* Mensaje de error */
 .login-container .error-text {
   color: red;
   font-size: 0.85rem;
+}
+
+/* Media Queries para móviles */
+@media (max-width: 480px) {
+  .container {
+    padding: 1rem;
+    margin: 3rem auto 1rem auto;
+  }
+
+  .login-container {
+    padding: 1.5rem;
+  }
 }

@@ -1,6 +1,7 @@
 import React from 'react';
+import { Container } from '@mui/material';
 import type { Topic } from '../types/Topic';
-import TopicCard from './TopicCard';
+import '../styles/TopicsAndInterests.css';
 
 interface TopicsProps {
   topics: Topic[];
@@ -10,22 +11,28 @@ interface TopicsProps {
 
 const Topics: React.FC<TopicsProps> = ({ topics, onSelect, onBack }) => {
   return (
-    <div className='container'>
-      <h2 className='subtitle'>¿Qué te interesa aprender?</h2>
-      <div className='button-group'>
-        {topics.map((topic) => (
-          <TopicCard
-            key={topic.id}
-            name={topic.name}
-            imgUrl={topic.imgUrl}
-            onClick={() => onSelect(topic)}
-          />
-        ))}
+    <Container maxWidth='sm' className='cards-container'>
+      <div className='cards-inner'>
+        <h2 className='subtitle'>¿Qué te interesa aprender?</h2>
+
+        <div className='cards-grid'>
+          {topics.map((topic: Topic) => (
+            <div
+              key={topic.id}
+              className='card'
+              onClick={() => onSelect(topic)}
+            >
+              <img src={topic.imgUrl} alt={topic.name} />
+              <span>{topic.name}</span>
+            </div>
+          ))}
+        </div>
+
+        <button className='button-back' onClick={onBack}>
+          ◀ Volver
+        </button>
       </div>
-      <button className='button-back' onClick={onBack}>
-        ◀ Volver
-      </button>
-    </div>
+    </Container>
   );
 };
 

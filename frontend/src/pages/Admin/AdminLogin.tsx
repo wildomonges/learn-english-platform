@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaUser, FaLock } from 'react-icons/fa';
+import { useAuth } from '../../context/AuthContext';
 import '../../styles/AdminLogin.css';
 
 const AdminLogin: React.FC = () => {
   const navigate = useNavigate();
+  const { adminCredentialsValid, loginAdmin } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -12,11 +14,8 @@ const AdminLogin: React.FC = () => {
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const adminEmail = 'admin@learn.com';
-    const adminPassword = 'admin123';
-
-    if (email === adminEmail && password === adminPassword) {
-      localStorage.setItem('admin', JSON.stringify({ email }));
+    if (adminCredentialsValid(email, password)) {
+      loginAdmin(email);
       navigate('/admin');
     } else {
       setError('Credenciales incorrectas. Intenta nuevamente.');

@@ -1,5 +1,6 @@
 .sidebar {
   width: 280px;
+  max-width: 100%;
   background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
   display: flex;
   flex-direction: column;
@@ -75,4 +76,62 @@
   background-color: rgba(248, 250, 252, 0.1);
   color: #f87171;
   transform: translateX(5px);
+}
+
+/* 🔹 MEDIA QUERIES para móviles: barra superior */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    flex-direction: row;
+    justify-content: space-around;
+    padding: 0.5rem 1rem;
+    border-radius: 0;
+    margin-top: 20%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    align-items: center;
+    z-index: 999;
+    font-size: 10%;
+  }
+
+  .sidebar-logo {
+    display: none; /* Ocultamos logo para más espacio */
+  }
+
+  @media (max-width: 768px) {
+    .sidebar-menu {
+      display: flex;
+      flex-direction: row;
+      gap: 0.5rem; /* Ajuste de espacio */
+      width: 100%;
+      overflow-x: auto; /* Scroll horizontal */
+      -webkit-overflow-scrolling: touch; /* Suavizado en iOS */
+      scrollbar-width: thin; /* Firefox */
+    }
+
+    .sidebar-menu::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    .sidebar-menu::-webkit-scrollbar-thumb {
+      background: rgba(56, 189, 248, 0.5);
+      border-radius: 3px;
+    }
+
+    .sidebar-menu li {
+      flex: 0 0 auto; /* Evita que se reduzcan automáticamente */
+      flex-direction: column;
+      align-items: center;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.75rem;
+    }
+  }
+
+  .logout-btn {
+    display: none; /* Se puede reemplazar con un icono si quieres */
+  }
 }
