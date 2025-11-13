@@ -6,7 +6,6 @@ import {
   FiMessageSquare,
   FiBarChart2,
   FiSettings,
-  FiLogOut,
 } from 'react-icons/fi';
 import '../styles/Sidebar.css';
 import { useNavigate } from 'react-router-dom';
@@ -61,9 +60,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
 
       {/* 🔻 Botón de cerrar sesión en la parte inferior */}
       <div className='sidebar-footer'>
-        <button className='logout-btn' onClick={handleLogout}>
-          <FiLogOut /> <span>Cerrar sesión</span>
-        </button>
+        <button className='logout-btn' onClick={handleLogout}></button>
       </div>
     </aside>
   );

@@ -16,6 +16,8 @@ interface AuthContextType {
   setUser: (user: User | null) => void;
   getUser: () => User | null;
   getToken: () => string | null;
+  loginAdmin: (email: string) => void;
+  adminCredentialsValid: (email: string, password: string) => boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -26,9 +28,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [user, setUser] = useState<User | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
 
+  // --- Funciones de admin ---
+  const adminCredentialsValid = (email: string, password: string) => {
+    const adminEmail = import.meta.env.VITE_ADMIN_EMAIL;
+    const adminPassword = import.meta.env.VITE_ADMIN_PASSWORD;
+
+    return email === adminEmail && password === adminPassword;
+  };
+
+  const loginAdmin = (email: string) => {
+    const adminUser: User = {
+      id: 'admin',
+      firstName: 'Admin',
+      lastName: '',
+      email,
+      role: 'admin',
+    };
+    localStorage.setItem('admin', JSON.stringify(adminUser));
+    setUser(adminUser);
+    setAccessToken('admin-token'); // Puedes usar un token fijo o generar uno
+  };
+  // --------------------------
+
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    const storedToken = localStorage.getItem('accessToken');
+    const storedUser =
+      localStorage.getItem('user') || localStorage.getItem('admin');
+    const storedToken =
+      localStorage.getItem('accessToken') ||
+      (storedUser ? 'admin-token' : null);
 
     if (storedUser && storedToken) {
       try {
@@ -41,6 +68,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       }
     }
   }, []);
+
   const login = (user: User, token: string) => {
     localStorage.setItem('user', JSON.stringify(user));
     localStorage.setItem('accessToken', token);
@@ -50,6 +78,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const logout = () => {
     localStorage.removeItem('user');
+    localStorage.removeItem('admin');
     localStorage.removeItem('accessToken');
     setUser(null);
     setAccessToken(null);
@@ -60,7 +89,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   return (
     <AuthContext.Provider
-      value={{ user, accessToken, login, logout, setUser, getUser, getToken }}
+      value={{
+        user,
+        accessToken,
+        login,
+        logout,
+        setUser,
+        getUser,
+        getToken,
+        loginAdmin,
+        adminCredentialsValid,
+      }}
     >
       {children}
     </AuthContext.Provider>

@@ -1,6 +1,8 @@
-/* ----------------- NAVBAR ----------------- */
+/* ----------------- NAVBAR COMPLETAMENTE RESPONSIVE ----------------- */
+
+/* Navbar general */
 .navbar {
-  background-color: #4b9e9e;
+  background-color: #4b9e9e; /* color de fondo fijo */
   color: white;
   padding: 0.6rem 1.5rem;
   display: flex;
@@ -15,7 +17,7 @@
   transition: background-color 0.4s ease, color 0.4s ease;
 }
 
-/* LOGO */
+/* Logo */
 .navbar .logo img {
   height: 48px;
   width: 48px;
@@ -29,14 +31,14 @@
   transform: scale(1.05);
 }
 
-/* MENU */
+/* Navbar menu y elementos */
 .navbar-menu {
   display: flex;
   align-items: center;
-  gap: 1.2rem;
-  transition: all 0.3s ease;
+  gap: 1rem;
 }
 
+/* Links */
 .navbar a {
   text-decoration: none;
   color: inherit;
@@ -49,7 +51,7 @@
   transform: translateY(-2px);
 }
 
-/* BOTONES */
+/* Botones */
 .admin-button,
 .logout-button {
   background-color: white;
@@ -75,11 +77,12 @@
   transform: translateY(-2px);
 }
 
-/* USUARIO Y BANDERA */
+/* Usuario e idioma */
 .navbar-user {
   font-weight: 500;
   color: white;
   white-space: nowrap;
+  margin-right: 0.5rem;
 }
 
 .navbar-language {
@@ -108,7 +111,7 @@
   border-radius: 50%;
 }
 
-/* TOGGLE (MENU HAMBURGUESA) */
+/* Toggle hamburguesa */
 .navbar-toggle {
   background: transparent;
   color: inherit;
@@ -123,9 +126,99 @@
   transform: scale(1.1);
 }
 
-/*MODO ADMIN (FONDO CLARO)*/
+/* ----------------- RESPONSIVE ----------------- */
+@media (max-width: 768px) {
+  /* Mostrar toggle */
+  .navbar-toggle {
+    display: block;
+  }
+
+  /* Menú inicial oculto */
+  .navbar-menu {
+    flex-direction: column;
+    position: absolute;
+    top: 100%; /* debajo del navbar */
+    right: 1rem;
+    background-color: #4b9e9e;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    gap: 0.5rem;
+    display: none;
+    min-width: 150px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 999;
+  }
+
+  /* Mostrar menú al activar toggle */
+  .navbar-menu.open {
+    display: flex;
+    animation: slideDown 0.3s ease;
+  }
+
+  /* Ajuste de botones e iconos */
+  .navbar a,
+  .admin-button,
+  .logout-button,
+  .navbar-language {
+    width: 100%;
+    max-width: 200px;
+    text-align: left;
+  }
+
+  .admin-button,
+  .logout-button {
+    font-size: 0.85rem;
+    padding: 0.5rem 0.8rem;
+  }
+
+  .navbar-language {
+    width: 28px;
+    height: 28px;
+  }
+
+  .navbar-user {
+    font-size: 0.9rem;
+  }
+
+  /* Logo más pequeño en móvil */
+  .navbar .logo img {
+    height: 40px;
+    width: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar .logo img {
+    height: 35px;
+    width: 35px;
+  }
+
+  .navbar-language {
+    width: 24px;
+    height: 24px;
+  }
+
+  .admin-button,
+  .logout-button {
+    font-size: 0.8rem;
+    padding: 0.45rem 0.7rem;
+  }
+}
+
+/* Animación del menú */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* ----------------- MODO ADMIN (FONDO CLARO) ----------------- */
 .navbar.admin-mode {
-  background-color: #355c7d;
+  background-color: #355c7d; /* fondo admin */
   color: #ffffff;
 }
 
@@ -135,7 +228,7 @@
 
 .navbar.admin-mode .admin-button,
 .navbar.admin-mode .logout-button {
-  background-color: #4b9e9e;
+  background-color: #355c7d;
   color: white;
 }
 
@@ -156,72 +249,15 @@
   color: #2c3e50;
 }
 
-/* ======== RESPONSIVE ======== */
+/* Modo admin responsive */
 @media (max-width: 768px) {
-  .navbar {
-    flex-wrap: wrap;
-    padding: 0.8rem 1rem;
-  }
-
-  .navbar-toggle {
-    display: block;
-  }
-
-  .navbar-menu {
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    display: none;
-    margin-top: 0.5rem;
-    gap: 0.8rem;
-    background-color: inherit;
-    padding: 1rem 0;
-    border-radius: 12px;
-  }
-
-  .navbar-menu.open {
-    display: flex;
-    animation: slideDown 0.3s ease;
-  }
-
-  .navbar a,
-  .admin-button,
-  .logout-button,
-  .navbar-language {
-    width: 80%;
-    max-width: 300px;
-    text-align: center;
-  }
-
-  .admin-button,
-  .logout-button {
-    font-size: 1rem;
-    padding: 0.7rem 1rem;
-  }
-
-  .navbar .logo img {
-    height: 45px;
-    width: 45px;
-  }
-
-  .navbar-user {
-    font-size: 0.95rem;
-  }
-
   .navbar.admin-mode .navbar-menu {
-    background-color: rgba(245, 246, 250, 0.95);
+    background-color: #355c7d; /* fondo admin en menú desplegable */
   }
 }
 
-/* ANIMACIÓN DEL MENÚ */
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+@media (max-width: 480px) {
+  .navbar.admin-mode .navbar-menu {
+    background-color: #355c7d;
   }
 }
