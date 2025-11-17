@@ -1,10 +1,101 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Sidebar from '../../components/Sidebar';
 import '../../styles/AdminDashboard.css';
 import logo from '../../assets/image1.png';
 
+interface UserPracticeAndDialogDTO {
+  id: number;
+  nombreCompleto: string;
+  totalPracticas: number;
+  totalDialogos: number;
+  ultimaFechaPractica: string | null;
+}
+
+interface PracticeDTO {
+  id: number;
+  name: string;
+  topic: string;
+  interest: string;
+  completed: boolean;
+  userId: number;
+  createdAt: string;
+}
+
 const AdminDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [users, setUsers] = useState<UserPracticeAndDialogDTO[]>([]);
+  const [practices, setPractices] = useState<PracticeDTO[]>([]);
+  const [topicStats, setTopicStats] = useState<any[]>([]);
+  const [interestStats, setInterestStats] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (activeTab === 'students') {
+      const fetchUsers = async () => {
+        try {
+          setLoading(true);
+          const res = await fetch(
+            'http://localhost:3000/api/v1/users/practice-dialog'
+          );
+          if (!res.ok) throw new Error('Error al obtener los usuarios');
+          const data = await res.json();
+          setUsers(data);
+        } catch (error) {
+          console.error('❌ Error cargando usuarios:', error);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchUsers();
+    }
+  }, [activeTab]);
+
+  // Cargar prácticas y generar estadísticas
+  useEffect(() => {
+    if (activeTab === 'sessions') {
+      const fetchPractices = async () => {
+        try {
+          setLoading(true);
+          const res = await fetch('http://localhost:3000/api/v1/practices');
+          if (!res.ok) throw new Error('Error al obtener las prácticas');
+          const data: PracticeDTO[] = await res.json();
+          setPractices(data);
+
+          // Agrupar por Topic
+          const topicMap: Record<string, number> = {};
+          data.forEach((p) => {
+            topicMap[p.topic] = (topicMap[p.topic] || 0) + 1;
+          });
+
+          // Agrupar por Interest
+          const interestMap: Record<string, number> = {};
+          data.forEach((p) => {
+            interestMap[p.interest] = (interestMap[p.interest] || 0) + 1;
+          });
+
+          setTopicStats(
+            Object.entries(topicMap).map(([topic, cantidad]) => ({
+              topic,
+              cantidad,
+            }))
+          );
+          setInterestStats(
+            Object.entries(interestMap).map(([interest, cantidad]) => ({
+              interest,
+              cantidad,
+            }))
+          );
+        } catch (error) {
+          console.error('❌ Error cargando prácticas:', error);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchPractices();
+    }
+  }, [activeTab]);
 
   const renderContent = () => {
     switch (activeTab) {
@@ -59,36 +150,43 @@ const AdminDashboard: React.FC = () => {
             <h2>👥 Usuarios</h2>
             <p>Progreso de los estudiantes registrados.</p>
 
-            <table className='data-table'>
-              <thead>
-                <tr>
-                  <th>Nombre</th>
-                  <th>Temas practicados</th>
-                  <th>Diálogos completados</th>
-                  <th>Última práctica</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Ana Torres</td>
-                  <td>10</td>
-                  <td>42</td>
-                  <td>26 Oct 2025</td>
-                </tr>
-                <tr>
-                  <td>Vero Ortiz</td>
-                  <td>7</td>
-                  <td>28</td>
-                  <td>27 Oct 2025</td>
-                </tr>
-                <tr>
-                  <td>Laura Gómez</td>
-                  <td>15</td>
-                  <td>67</td>
-                  <td>28 Oct 2025</td>
-                </tr>
-              </tbody>
-            </table>
+            {loading ? (
+              <p>Cargando usuarios...</p>
+            ) : users.length === 0 ? (
+              <p>No hay usuarios registrados.</p>
+            ) : (
+              <table className='data-table'>
+                <thead>
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Temas practicados</th>
+                    <th>Diálogos completados</th>
+                    <th>Última práctica</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {users.map((u) => (
+                    <tr key={u.id}>
+                      <td>{u.nombreCompleto}</td>
+                      <td>{u.totalPracticas}</td>
+                      <td>{u.totalDialogos}</td>
+                      <td>
+                        {u.ultimaFechaPractica
+                          ? new Date(u.ultimaFechaPractica).toLocaleDateString(
+                              'es-ES',
+                              {
+                                day: '2-digit',
+                                month: 'short',
+                                year: 'numeric',
+                              }
+                            )
+                          : '—'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </section>
         );
 
@@ -96,33 +194,51 @@ const AdminDashboard: React.FC = () => {
         return (
           <section className='dashboard-section'>
             <h2>💬 Prácticas</h2>
-            <p>Últimas conversaciones y prácticas realizadas.</p>
-            <table className='data-table'>
-              <thead>
-                <tr>
-                  <th>Alumno</th>
-                  <th>Temas practicados</th>
-                  <th>Interes</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Diego Morel</td>
-                  <td>English for Developer</td>
-                  <td>Vue.js</td>
-                </tr>
-                <tr>
-                  <td>Vero Ortiz</td>
-                  <td>English for Marketing</td>
-                  <td>Meta Business"</td>
-                </tr>
-                <tr>
-                  <td>Laura Gómez</td>
-                  <td>English for Developer</td>
-                  <td>React programing</td>
-                </tr>
-              </tbody>
-            </table>
+            <p>Estadísticas reales agrupadas por tema e interés.</p>
+
+            {loading ? (
+              <p>Cargando prácticas...</p>
+            ) : (
+              <table className='data-table'>
+                <thead>
+                  <tr>
+                    <th>Tema</th>
+                    <th>Interés</th>
+                    <th>Cantidad</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(() => {
+                    const map: Record<
+                      string,
+                      { topic: string; interest: string; cantidad: number }
+                    > = {};
+
+                    practices.forEach((p) => {
+                      const key = `${p.topic}||${p.interest}`;
+                      if (!map[key]) {
+                        map[key] = {
+                          topic: p.topic,
+                          interest: p.interest,
+                          cantidad: 0,
+                        };
+                      }
+                      map[key].cantidad += 1;
+                    });
+
+                    const rows = Object.values(map);
+
+                    return rows.map((row) => (
+                      <tr key={`${row.topic}-${row.interest}`}>
+                        <td>{row.topic}</td>
+                        <td>{row.interest}</td>
+                        <td>{row.cantidad}</td>
+                      </tr>
+                    ));
+                  })()}
+                </tbody>
+              </table>
+            )}
           </section>
         );
 
