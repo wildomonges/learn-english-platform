@@ -30,13 +30,12 @@ export class Practice {
   @Column({ nullable: false })
   userId: number;
 
-  @ManyToOne(() => User, (user) => user.practices, { eager: true })
+  @ManyToOne(() => User, (user) => user.practices)
   @JoinColumn({ name: 'userId' })
   user: User;
 
   @OneToMany(() => Dialog, (dialog) => dialog.practice, {
     cascade: true,
-    eager: true,
   })
   dialogs: Dialog[];
 

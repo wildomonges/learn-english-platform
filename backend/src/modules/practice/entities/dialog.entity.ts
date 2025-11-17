@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { Practice } from './practice.entity';
 
 @Entity()
@@ -22,11 +28,12 @@ export class Dialog {
   order: number;
 
   @Column()
-  score: number; // cuando es teacher no tiene score 0
+  score: number;
 
   @Column({ default: false })
   completed: boolean;
 
   @ManyToOne(() => Practice, (practice) => practice.dialogs)
+  @JoinColumn({ name: 'practiceId' })
   practice: Practice;
 }
