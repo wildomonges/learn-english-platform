@@ -3,6 +3,8 @@ import Sidebar from '../../components/Sidebar';
 import '../../styles/AdminDashboard.css';
 import logo from '../../assets/image1.png';
 
+const BASE_URL = import.meta.env.VITE_API_URL;
+
 interface UserPracticeAndDialogDTO {
   id: number;
   nombreCompleto: string;
@@ -25,8 +27,7 @@ const AdminDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [users, setUsers] = useState<UserPracticeAndDialogDTO[]>([]);
   const [practices, setPractices] = useState<PracticeDTO[]>([]);
-  const [topicStats, setTopicStats] = useState<any[]>([]);
-  const [interestStats, setInterestStats] = useState<any[]>([]);
+
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -34,9 +35,9 @@ const AdminDashboard: React.FC = () => {
       const fetchUsers = async () => {
         try {
           setLoading(true);
-          const res = await fetch(
-            'http://localhost:3000/api/v1/users/practice-dialog'
-          );
+
+          const res = await fetch(`${BASE_URL}/users/practice-dialog`);
+
           if (!res.ok) throw new Error('Error al obtener los usuarios');
           const data = await res.json();
           setUsers(data);
@@ -51,41 +52,25 @@ const AdminDashboard: React.FC = () => {
     }
   }, [activeTab]);
 
-  // Cargar prácticas y generar estadísticas
   useEffect(() => {
     if (activeTab === 'sessions') {
       const fetchPractices = async () => {
         try {
           setLoading(true);
-          const res = await fetch('http://localhost:3000/api/v1/practices');
+          const res = await fetch(`${BASE_URL}/practices`);
           if (!res.ok) throw new Error('Error al obtener las prácticas');
           const data: PracticeDTO[] = await res.json();
           setPractices(data);
 
-          // Agrupar por Topic
           const topicMap: Record<string, number> = {};
           data.forEach((p) => {
             topicMap[p.topic] = (topicMap[p.topic] || 0) + 1;
           });
 
-          // Agrupar por Interest
           const interestMap: Record<string, number> = {};
           data.forEach((p) => {
             interestMap[p.interest] = (interestMap[p.interest] || 0) + 1;
           });
-
-          setTopicStats(
-            Object.entries(topicMap).map(([topic, cantidad]) => ({
-              topic,
-              cantidad,
-            }))
-          );
-          setInterestStats(
-            Object.entries(interestMap).map(([interest, cantidad]) => ({
-              interest,
-              cantidad,
-            }))
-          );
         } catch (error) {
           console.error('❌ Error cargando prácticas:', error);
         } finally {
