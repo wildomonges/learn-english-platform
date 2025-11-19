@@ -9,9 +9,7 @@
   font-family: 'Inter', sans-serif;
   display: flex;
   flex-direction: row;
-
   width: 100vw;
-
   color: #f1f5f9;
   overflow: hidden;
 }
