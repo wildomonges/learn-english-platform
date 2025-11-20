@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Sidebar from '../../components/Sidebar';
 import '../../styles/AdminDashboard.css';
 import logo from '../../assets/image1.png';
+import { useNavigate } from 'react-router-dom';
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -29,6 +30,7 @@ const AdminDashboard: React.FC = () => {
   const [practices, setPractices] = useState<PracticeDTO[]>([]);
 
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (activeTab === 'students') {
@@ -151,7 +153,11 @@ const AdminDashboard: React.FC = () => {
                 </thead>
                 <tbody>
                   {users.map((u) => (
-                    <tr key={u.id}>
+                    <tr
+                      key={u.id}
+                      onClick={() => navigate(`/admin/users/${u.id}`)}
+                      style={{ cursor: 'pointer' }}
+                    >
                       <td>{u.nombreCompleto}</td>
                       <td>{u.totalPracticas}</td>
                       <td>{u.totalDialogos}</td>
