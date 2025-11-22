@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
@@ -11,6 +11,7 @@ export class UsersService {
     private readonly userRepository: Repository<User>,
   ) {}
 
+  // Obtain data for user LIST (statistics)
   async fetchUserPracticeAnDialog(): Promise<UserPracticeAnDialogDTO[]> {
     const result = await this.userRepository
       .createQueryBuilder('user')
@@ -38,5 +39,21 @@ export class UsersService {
         ? new Date(u.ultimaFechaPractica)
         : null,
     }));
+  }
+
+  //Get ONLY a user by their ID (avoids 404 error)
+  async fetchUserById(id: number) {
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user)
+      throw new NotFoundException(`Usuario con ID ${id} no encontrado`);
+    return user;
+  }
+
+  // Get full DETAILS (for UserDetailsPage)
+  async fetchUserDetails(userId: number) {
+    return this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['practices', 'practices.dialogs'],
+    });
   }
 }
