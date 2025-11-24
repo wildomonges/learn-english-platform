@@ -15,6 +15,7 @@
   justify-content: center;
   align-items: flex-start;
   padding: 3rem 2rem;
+  overflow-y: auto;
 }
 
 .user-details-box {
@@ -27,7 +28,6 @@
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
   max-height: 90vh;
   overflow-y: auto;
-  scrollbar-width: thin;
 }
 
 .section-title {
@@ -35,9 +35,13 @@
   color: #dcefff;
   margin-bottom: 2% !important;
 }
+
 .user-name {
   text-align: center;
-  color: #dcefff;
+  font-weight: 700;
+  font-size: 2rem;
+  color: #38bdf8;
+  margin-bottom: 0.3rem;
 }
 
 .user-header {
@@ -49,23 +53,9 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.user-name {
-  font-weight: 600;
-  font-size: 2rem;
-  color: #ffffff;
-  margin-bottom: 0.3rem;
-}
-
-.user-role {
-  color: #94a3b8;
-  font-size: 0.9rem;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-}
-
 .practice-card {
-  color: #f1f5f9;
-  background: rgba(255, 255, 255, 0.06);
+  color: #38bdf8 !important;
+  background: rgba(255, 255, 255, 0.06) !important;
   backdrop-filter: blur(6px);
   border-radius: 14px !important;
   padding: 1rem;
@@ -75,38 +65,47 @@
 }
 
 .practice-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
   background: rgba(255, 255, 255, 0.08);
 }
 
-.practice-card h6 {
-  font-weight: 600;
-  color: #f8fafc;
-  margin-bottom: 0.3rem;
+.practice-card.score-high {
+  background: rgba(72, 187, 120, 0.15);
+}
+.practice-card.score-medium {
+  background: rgba(255, 152, 0, 0.15);
+}
+.practice-card.score-low {
+  background: rgba(244, 67, 54, 0.15);
 }
 
-.practice-card p {
-  color: #cbd5e1;
-  font-size: 0.9rem;
-  margin-bottom: 0.6rem;
-}
-
-.practice-card .MuiLinearProgress-root {
-  background-color: rgba(255, 255, 255, 0.15);
-  border-radius: 5px;
+.practice-progress {
   height: 8px;
-}
-
-.practice-card .MuiLinearProgress-bar {
   border-radius: 5px;
+  background-color: rgba(255, 255, 255, 0.15);
 }
 
-.practice-card .MuiChip-root {
+.practice-progress .MuiLinearProgress-bar {
+  border-radius: 5px;
+  background-color: var(--progress-color, #4caf50);
+}
+
+.practice-chip {
   font-weight: 500;
   padding: 0 0.5rem;
   background-color: rgba(255, 255, 255, 0.08);
   color: #f1f5f9;
+}
+
+.practice-chip.success {
+  background-color: rgba(72, 187, 120, 0.15);
+  color: #4caf50 !important;
+}
+
+.practice-chip.warning {
+  background-color: rgba(255, 152, 0, 0.15);
+  color: #ff9800 !important;
 }
 
 .dialogs-accordion .MuiAccordion-root {
@@ -130,57 +129,6 @@
   color: #e2e8f0;
 }
 
-.back-button-container {
-  text-align: center;
-  margin-top: 3rem;
-}
-
-.back-button {
-  background: linear-gradient(90deg, #38bdf8 0%, #2563eb 100%);
-  color: white;
-  padding: 0.8rem 2rem;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  color: white;
-  font-weight: bold;
-  transition: 0.2s;
-}
-
-.back-button:hover {
-  background: linear-gradient(90deg, #38bdf8 0%, #2563eb 100%);
-  color: white;
-}
-
-/*RESPONSIVE*/
-@media (max-width: 950px) {
-  .user-header {
-    flex-direction: column;
-    align-items: center;
-  }
-}
-
-@media (max-width: 768px) {
-  .user-details-page-wrapper {
-    flex-direction: column;
-  }
-  .practice-card {
-    width: 100% !important;
-  }
-}
-/* Scroll */
-.user-details-page-container {
-  overflow-y: auto;
-}
-
-.practice-card {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-.practice-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
-}
-
 .circular-progress-wrapper {
   display: flex;
   flex-direction: column;
@@ -192,6 +140,8 @@
   backdrop-filter: blur(6px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   transition: all 0.25s ease;
+  justify-content: center;
+  margin-top: 10px;
 }
 
 .circular-progress-wrapper:hover {
@@ -199,70 +149,38 @@
   box-shadow: 0px 10px 26px rgba(0, 0, 0, 0.35);
 }
 
-.kpi-label {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  color: #94a3b8;
-  letter-spacing: 0.8px;
+.back-button-container {
+  text-align: center;
+  margin-top: 3rem;
+}
+.back-button {
+  background: linear-gradient(90deg, #38bdf8 0%, #2563eb 100%);
+  color: white;
+  padding: 0.8rem 2rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.2s;
 }
 
-.kpi-percentage {
-  font-weight: bold;
-  font-size: 1.6rem;
-  color: #f8fafc;
+.back-button:hover {
+  background: linear-gradient(90deg, #38bdf8 0%, #2563eb 100%);
+  color: white;
 }
-@media (max-width: 880px) {
+
+/* RESPONSIVE */
+@media (max-width: 950px) {
   .user-header {
     flex-direction: column;
-    text-align: center;
-  }
-
-  .circular-progress-wrapper {
-    margin-top: 1rem;
+    align-items: center;
   }
 }
-
-.theme-toggle {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  margin-bottom: 1rem;
-  gap: 0.6rem;
-  color: #cbd5e1;
-}
-
-.switch {
-  position: relative;
-  width: 48px;
-  height: 24px;
-}
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-.slider {
-  position: absolute;
-  cursor: pointer;
-  inset: 0;
-  background: #475569;
-  border-radius: 24px;
-  transition: 0.3s;
-}
-.slider:before {
-  content: '';
-  position: absolute;
-  height: 18px;
-  width: 18px;
-  left: 3px;
-  top: 3px;
-  background: white;
-  border-radius: 50%;
-  transition: 0.3s;
-}
-input:checked + .slider {
-  background: #2563eb;
-}
-input:checked + .slider:before {
-  transform: translateX(24px);
+@media (max-width: 768px) {
+  .user-details-page-wrapper {
+    flex-direction: column;
+  }
+  .practice-card {
+    width: 100% !important;
+  }
 }
