@@ -16,6 +16,7 @@ import { useAuth } from '../context/AuthContext';
 import type { Practice } from '../interfaces/Practice';
 import PracticeList from './mobile/PracticeList';
 import { fetchUserPractices } from '../api/practicesAPI';
+import '../styles/PracticeTree.css';
 
 const ITEMS_PER_PAGE = 3;
 
@@ -30,9 +31,9 @@ const PracticeTree: React.FC = () => {
 
   const isMobile = useMediaQuery('(max-width:768px)');
 
-  if (!user) return null;
-
   const fetchPractices = async () => {
+    if (!user) return;
+
     setLoading(true);
     try {
       const res = await fetchUserPractices(user.id);
@@ -45,10 +46,10 @@ const PracticeTree: React.FC = () => {
   };
 
   useEffect(() => {
+    if (!user) return;
     fetchPractices();
   }, [user]);
 
-  // Manejar scroll para ocultar/mostrar botón flotante con animación
   useEffect(() => {
     if (!isMobile) return;
 
@@ -66,6 +67,15 @@ const PracticeTree: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [isMobile]);
 
+  if (!user) {
+    return (
+      <Box p={4} textAlign='center'>
+        <CircularProgress />
+        <Typography mt={2}>Cargando usuario...</Typography>
+      </Box>
+    );
+  }
+
   const totalPages = Math.ceil(practices.length / ITEMS_PER_PAGE);
   const paginatedPractices = practices.slice(
     (page - 1) * ITEMS_PER_PAGE,
@@ -74,20 +84,32 @@ const PracticeTree: React.FC = () => {
 
   if (loading)
     return (
-      <Box p={4} textAlign='center'>
-        <CircularProgress />
+      <Box
+        p={4}
+        textAlign='center'
+        sx={{
+          color: 'var(--text)',
+          backgroundColor: 'var(--bg)',
+          minHeight: '50vh',
+        }}
+      >
+        <CircularProgress sx={{ color: 'var(--accent)' }} />
         <Typography mt={2}>Cargando tus prácticas...</Typography>
       </Box>
     );
 
   if (error)
     return (
-      <Box p={4} textAlign='center'>
+      <Box p={4} textAlign='center' sx={{ color: 'var(--text)' }}>
         <Typography color='error'>❌ {error}</Typography>
         <Button
-          variant='outlined'
-          sx={{ mt: 2 }}
+          variant='contained'
           onClick={() => window.location.reload()}
+          sx={{
+            mt: 2,
+            backgroundColor: 'var(--accent)',
+            '&:hover': { backgroundColor: 'rgba(56, 189, 248, 0.8)' },
+          }}
         >
           Reintentar
         </Button>
@@ -103,18 +125,23 @@ const PracticeTree: React.FC = () => {
         mx: 'auto',
         p: { xs: 1, sm: 2 },
         position: 'relative',
+        color: 'var(--text)',
+        backgroundColor: 'var(--bg)',
       }}
     >
-      {/* Título solo en escritorio */}
       {!isMobile && (
-        <Typography variant='h6' fontWeight='bold' mb={2} color='#9966cc'>
+        <Typography
+          variant='h6'
+          fontWeight='bold'
+          mb={2}
+          sx={{ color: 'var(--accent)' }}
+        >
           <ChatBubbleOutlineIcon sx={{ mr: 1 }} /> Tus Prácticas
         </Typography>
       )}
 
       {isMobile ? (
         <>
-          {/* Botón flotante con animación */}
           <Slide
             direction='up'
             in={showButton && !drawerOpen}
@@ -122,7 +149,6 @@ const PracticeTree: React.FC = () => {
             unmountOnExit
           >
             <Button
-              variant='contained'
               onClick={() => setDrawerOpen(true)}
               sx={{
                 position: 'fixed',
@@ -131,20 +157,11 @@ const PracticeTree: React.FC = () => {
                 width: 60,
                 height: 60,
                 borderRadius: '50%',
-                backgroundColor: '#9966cc',
-                color: '#fff',
+                backgroundColor: 'var(--accent)',
+                color: 'var(--text)',
                 fontSize: '1.5rem',
                 fontWeight: 'bold',
                 zIndex: 1000,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
-                transition: 'transform 0.2s, background-color 0.3s',
-                '&:hover': {
-                  backgroundColor: '#8844bb',
-                  transform: 'scale(1.1)',
-                },
               }}
             >
               +
@@ -161,6 +178,8 @@ const PracticeTree: React.FC = () => {
                 borderTopRightRadius: 16,
                 maxHeight: '85vh',
                 overflowY: 'auto',
+                backgroundColor: 'var(--bg)',
+                color: 'var(--text)',
               },
             }}
           >
@@ -171,12 +190,16 @@ const PracticeTree: React.FC = () => {
                 alignItems='center'
                 mb={2}
               >
-                <Typography variant='h6' fontWeight='bold'>
+                <Typography
+                  variant='h6'
+                  fontWeight='bold'
+                  sx={{ color: 'var(--accent)' }}
+                >
                   <ChatBubbleOutlineIcon sx={{ mr: 1 }} /> Tus Prácticas
                 </Typography>
                 <IconButton
-                  aria-label='Cerrar lista de prácticas'
                   onClick={() => setDrawerOpen(false)}
+                  sx={{ color: 'var(--text)' }}
                 >
                   <CloseIcon />
                 </IconButton>
@@ -188,7 +211,6 @@ const PracticeTree: React.FC = () => {
                 setDrawerOpen={setDrawerOpen}
               />
 
-              {/* Paginación en móvil dentro del drawer */}
               {totalPages > 1 && (
                 <Box display='flex' justifyContent='center' mt={2} mb={2}>
                   <Pagination
@@ -196,8 +218,13 @@ const PracticeTree: React.FC = () => {
                     page={page}
                     onChange={(_, value) => setPage(value)}
                     size='medium'
-                    color='primary'
-                    shape='rounded'
+                    sx={{
+                      '& .MuiPaginationItem-root': { color: 'var(--text)' },
+                      '& .Mui-selected': {
+                        backgroundColor: 'var(--accent)',
+                        color: 'var(--text)',
+                      },
+                    }}
                   />
                 </Box>
               )}
@@ -214,8 +241,13 @@ const PracticeTree: React.FC = () => {
                 page={page}
                 onChange={(_, value) => setPage(value)}
                 size='medium'
-                color='primary'
-                shape='rounded'
+                sx={{
+                  '& .MuiPaginationItem-root': { color: 'var(--text)' },
+                  '& .Mui-selected': {
+                    backgroundColor: 'var(--accent)',
+                    color: 'var(--text)',
+                  },
+                }}
               />
             </Box>
           )}

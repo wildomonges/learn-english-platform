@@ -34,8 +34,8 @@ const PracticeList: React.FC<PracticeListProps> = ({
 
   if (practices.length === 0) {
     return (
-      <Box p={2} textAlign='center'>
-        <Typography color='text.secondary'>No tienes prácticas aún.</Typography>
+      <Box p={2} textAlign='center' sx={{ color: 'var(--muted)' }}>
+        <Typography>No tienes prácticas aún.</Typography>
       </Box>
     );
   }
@@ -51,11 +51,21 @@ const PracticeList: React.FC<PracticeListProps> = ({
         return (
           <Accordion
             key={p.id}
-            data-testid='practice-card' // agregado para Playwright
-            sx={{ mb: 1, borderRadius: 2, boxShadow: 1, px: 1, py: 0.5 }}
+            data-testid='practice-card'
+            sx={{
+              mb: 1,
+              borderRadius: 2,
+              boxShadow: '0 4px 12px var(--border-soft)',
+              px: 1,
+              py: 0.5,
+              backgroundColor: 'var(--card-bg)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              color: 'var(--text)',
+              '&:before': { display: 'none' },
+            }}
           >
             <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
+              expandIcon={<ExpandMoreIcon sx={{ color: 'var(--accent)' }} />}
               sx={{ minHeight: '56px' }}
             >
               <Box sx={{ width: '100%' }}>
@@ -64,22 +74,28 @@ const PracticeList: React.FC<PracticeListProps> = ({
                 </Typography>
                 <Typography
                   variant='caption'
-                  color='text.secondary'
-                  sx={{ wordBreak: 'break-word' }}
+                  sx={{ color: 'var(--muted)', wordBreak: 'break-word' }}
                 >
                   Interés: {p.interest}
                 </Typography>
                 <Typography
                   variant='caption'
-                  color='text.secondary'
-                  sx={{ display: 'block', mt: 0.3 }}
+                  sx={{ display: 'block', mt: 0.3, color: 'var(--muted)' }}
                 >
                   {formatDate(p.createdAt)} • {done}/{total}
                 </Typography>
                 <LinearProgress
                   variant='determinate'
                   value={progress}
-                  sx={{ mt: 0.5, height: 4, borderRadius: 5 }}
+                  sx={{
+                    mt: 0.5,
+                    height: 4,
+                    borderRadius: 5,
+                    backgroundColor: 'rgba(241,245,249,0.1)',
+                    '& .MuiLinearProgress-bar': {
+                      backgroundColor: 'var(--accent)',
+                    },
+                  }}
                 />
               </Box>
             </AccordionSummary>
@@ -90,11 +106,13 @@ const PracticeList: React.FC<PracticeListProps> = ({
                 variant='contained'
                 size='small'
                 sx={{
-                  backgroundColor: '#9966cc',
-                  color: '#fff',
+                  backgroundColor: 'var(--accent)',
+                  color: 'var(--text)',
                   fontSize: '0.75rem',
                   py: 1,
-                  '&:hover': { backgroundColor: '#8e7cc3' },
+                  '&:hover': {
+                    backgroundColor: 'rgba(56, 189, 248, 0.8)',
+                  },
                 }}
                 onClick={() => {
                   if (isMobile && setDrawerOpen) setDrawerOpen(false);

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import '../styles/LoginForm.css';
-import { useAuth } from '../context/AuthContext';
+import { FaUser, FaLock } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import '../styles/AdminLogin.css';
 
 interface Props {
   onSuccess?: () => void;
@@ -13,14 +14,13 @@ const LoginForm: React.FC<Props> = ({ onSuccess, onSwitchToRegister }) => {
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [error, setError] = useState('');
 
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const validateEmail = (email: string) => {
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return regex.test(email);
-  };
+  const validateEmail = (email: string) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,18 +28,14 @@ const LoginForm: React.FC<Props> = ({ onSuccess, onSwitchToRegister }) => {
     let valid = true;
 
     if (!validateEmail(email)) {
-      setEmailError('El correo no es válido.');
+      setEmailError('Correo no válido.');
       valid = false;
-    } else {
-      setEmailError('');
-    }
+    } else setEmailError('');
 
     if (password.length < 6 || password.length > 20) {
-      setPasswordError('La contraseña debe tener entre 6 y 20 caracteres.');
+      setPasswordError('Contraseña debe tener 6-20 caracteres.');
       valid = false;
-    } else {
-      setPasswordError('');
-    }
+    } else setPasswordError('');
 
     if (!valid) return;
 
@@ -53,50 +49,70 @@ const LoginForm: React.FC<Props> = ({ onSuccess, onSwitchToRegister }) => {
       });
 
       const data = await res.json();
-      console.log('Respuesta del backend:', data);
 
       if (!res.ok || !data.access_token || !data.user) {
-        alert(data.message || 'No se pudo iniciar sesión.');
+        setError(data.message || 'No se pudo iniciar sesión.');
         return;
       }
 
-      // The context login is used
       login(data.user, data.access_token);
-
       onSuccess?.();
       navigate('/');
     } catch (err) {
-      console.error('Error al iniciar sesión:', err);
-      alert('Error al iniciar sesión. Verifica tus datos o intenta más tarde.');
+      setError('Error al iniciar sesión. Intenta más tarde.');
+      console.error(err);
     }
   };
 
   return (
-    <div className='login-container'>
-      <h2>Iniciar Sesión</h2>
-      <form onSubmit={handleLogin} noValidate>
-        <input
-          type='email'
-          placeholder='Correo electrónico'
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        {emailError && <span className='error-text'>{emailError}</span>}
+    <div className='admin-login-container'>
+      <form className='admin-login-form' onSubmit={handleLogin}>
+        <h2>Iniciar Sesión</h2>
+        <p>Ingresa tus credenciales para acceder a tu cuenta.</p>
 
-        <input
-          type='password'
-          placeholder='Contraseña'
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        {passwordError && <span className='error-text'>{passwordError}</span>}
+        {error && <div className='error-message'>{error}</div>}
 
-        <button type='submit'>Iniciar</button>
+        <div className='input-group'>
+          <input
+            type='email'
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder='Correo electrónico'
+            required
+          />
+          <FaUser className='input-icon' />
+        </div>
+        {emailError && <span className='error-message'>{emailError}</span>}
+
+        {/* Password */}
+        <div className='input-group'>
+          <input
+            type='password'
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder='Contraseña'
+            required
+          />
+          <FaLock className='input-icon' />
+        </div>
+        {passwordError && (
+          <span className='error-message'>{passwordError}</span>
+        )}
+
+        <button type='submit' className='login-button'>
+          Iniciar
+        </button>
+
+        {onSwitchToRegister && (
+          <button
+            type='button'
+            className='switch-auth'
+            onClick={onSwitchToRegister}
+          >
+            Crear cuenta
+          </button>
+        )}
       </form>
-      <p>¿No tienes una cuenta?</p>
-      <button onClick={onSwitchToRegister}>Crear cuenta</button>
     </div>
   );
 };

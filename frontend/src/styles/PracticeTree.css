@@ -1,7 +1,7 @@
 .practice-title {
   font-size: 1.4rem;
   font-weight: bold;
-  color: #9966cc;
+  color: var(--accent);
   text-align: center;
 }
 
@@ -20,9 +20,11 @@
   padding: 0.5rem;
   max-width: 900px;
   margin: 0 auto;
+  color: var(--text);
 }
 
 .practice-card-summary {
   font-size: 0.95rem;
   line-height: 1.2;
+  color: var(--muted);
 }
