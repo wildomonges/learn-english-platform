@@ -39,41 +39,61 @@ const RegisterForm: React.FC<Props> = ({ onSuccess, onSwitchToLogin }) => {
   };
 
   return (
-    <div className='auth-container'>
-      <h2>Registrarse</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          name='firstName'
-          placeholder='Nombre'
-          onChange={handleChange}
-          required
-        />
-        <input
-          name='lastName'
-          placeholder='Apellido'
-          onChange={handleChange}
-          required
-        />
-        <input
-          name='email'
-          type='email'
-          placeholder='Correo'
-          onChange={handleChange}
-          required
-        />
-        <input
-          name='password'
-          type='password'
-          placeholder='Contraseña'
-          onChange={handleChange}
-          required
-        />
-        <button type='submit'>Crear cuenta</button>
+    <div className='admin-login-container'>
+      <form className='admin-login-form' onSubmit={handleSubmit}>
+        <h2>Crear cuenta</h2>
+        <p>Completa tus datos para registrarte</p>
+
+        {/* Nombre */}
+        <div className='input-group'>
+          <input
+            name='firstName'
+            placeholder='Nombre'
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        {/* Apellido */}
+        <div className='input-group'>
+          <input
+            name='lastName'
+            placeholder='Apellido'
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        {/* Email */}
+        <div className='input-group'>
+          <input
+            name='email'
+            type='email'
+            placeholder='Correo electrónico'
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        <div className='input-group'>
+          <input
+            name='password'
+            type='password'
+            placeholder='Contraseña'
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        <button type='submit' className='login-button'>
+          Crear cuenta
+        </button>
+
+        <button type='button' className='switch-auth' onClick={onSwitchToLogin}>
+          ¿Ya tienes cuenta? Inicia sesión
+        </button>
+        {message && <p className='form-message'>{message}</p>}
       </form>
-      <p>{message}</p>
-      <button onClick={onSwitchToLogin}>
-        ¿Ya tienes cuenta? Inicia sesión
-      </button>
     </div>
   );
 };

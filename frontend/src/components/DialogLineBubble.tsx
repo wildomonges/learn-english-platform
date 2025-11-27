@@ -13,6 +13,7 @@ import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import MicIcon from '@mui/icons-material/Mic';
 import SendIcon from '@mui/icons-material/Send';
+import '../styles/DialogLineBubble.css';
 
 type Props = {
   speaker: 'Teacher' | 'Student';
@@ -67,16 +68,16 @@ const DialogLineBubble: React.FC<Props> = ({
     <Card
       sx={{
         mb: 2,
-        borderLeft: `6px solid ${
-          speaker === 'Teacher' ? '#1976d2' : '#4caf50'
-        }`,
+        borderLeft: `6px solid var(--accent)`,
         borderRadius: 2,
-        boxShadow: 2,
+        boxShadow: `0px 2px 6px var(--border-soft)`,
+        background: 'var(--card-bg)',
+        color: ' #38bdf8',
       }}
     >
       <CardContent>
         {/* Header */}
-        <Typography variant='subtitle2' color='text.secondary'>
+        <Typography variant='subtitle2' sx={{ color: 'var(--muted)' }}>
           {speaker}
         </Typography>
 
@@ -86,7 +87,7 @@ const DialogLineBubble: React.FC<Props> = ({
         </Typography>
 
         {/* Spanish */}
-        <Typography variant='body2' color='text.secondary'>
+        <Typography variant='body2' sx={{ color: 'var(--muted)' }}>
           ({textSpanish})
         </Typography>
 
@@ -95,6 +96,7 @@ const DialogLineBubble: React.FC<Props> = ({
           <IconButton
             onClick={() => onPlayAudio(textEnglish, order, preferredSpeed)}
             title={`Reproducir (${preferredSpeed}x)`}
+            sx={{ color: 'var(--accent)' }}
           >
             <VolumeUpIcon />
           </IconButton>
@@ -102,6 +104,7 @@ const DialogLineBubble: React.FC<Props> = ({
           <IconButton
             onClick={(e) => onOpenSpeedMenu(e, textEnglish, order)}
             title='Opciones de velocidad'
+            sx={{ color: 'var(--accent)' }}
           >
             <MoreVertIcon />
           </IconButton>
@@ -109,8 +112,7 @@ const DialogLineBubble: React.FC<Props> = ({
           {playingIndex === order && (
             <Typography
               variant='caption'
-              color='primary'
-              sx={{ ml: 1, fontWeight: 500 }}
+              sx={{ ml: 1, fontWeight: 500, color: 'var(--accent)' }}
             >
               🔊 Reproduciendo...
             </Typography>
@@ -134,12 +136,7 @@ const DialogLineBubble: React.FC<Props> = ({
         {isStudent && (
           <>
             <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'flex-start',
-                gap: 1,
-                mt: 2,
-              }}
+              sx={{ display: 'flex', alignItems: 'flex-start', gap: 1, mt: 2 }}
             >
               <TextField
                 fullWidth
@@ -149,20 +146,38 @@ const DialogLineBubble: React.FC<Props> = ({
                 placeholder='Tu respuesta...'
                 value={responseValue || ''}
                 onChange={(e) => onResponseChange?.(e.target.value)}
+                sx={{
+                  background: 'rgba(241, 245, 249, 0.65)',
+                  color: 'var(--text)',
+
+                  '& .MuiOutlinedInput-root': {
+                    '& fieldset': { borderColor: 'var(--border-soft)' },
+                    '&:hover fieldset': { borderColor: 'var(--accent)' },
+                  },
+                }}
               />
 
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                <IconButton onClick={onMicClick} color='primary'>
+                <IconButton
+                  onClick={onMicClick}
+                  sx={{ color: 'var(--accent)' }}
+                >
                   <MicIcon />
                 </IconButton>
-                <IconButton onClick={onSendClick} color='success'>
+                <IconButton
+                  onClick={onSendClick}
+                  sx={{ color: 'var(--accent)' }}
+                >
                   <SendIcon />
                 </IconButton>
               </Box>
             </Box>
 
             {isRecording && (
-              <Typography variant='body2' color='error' sx={{ mt: 1 }}>
+              <Typography
+                variant='body2'
+                sx={{ mt: 1, color: 'var(--accent)' }}
+              >
                 🎙 Grabando... {recordingTime}s
               </Typography>
             )}
@@ -170,8 +185,7 @@ const DialogLineBubble: React.FC<Props> = ({
             {responseFeedback && (
               <Typography
                 variant='body2'
-                color='primary'
-                sx={{ mt: 1, fontWeight: 500 }}
+                sx={{ mt: 1, fontWeight: 500, color: 'var(--accent)' }}
               >
                 {responseFeedback}
               </Typography>
