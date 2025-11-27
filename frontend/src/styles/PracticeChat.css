@@ -1,5 +1,6 @@
 .practice-chat {
   margin-top: 8%;
+  box-shadow: 0 8px 32px var(--border-soft);
   padding: 4rem;
   font-family: 'Segoe UI', sans-serif;
   background: var(--card-bg);
