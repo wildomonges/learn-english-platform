@@ -48,7 +48,7 @@ interface User {
 const getScoreClass = (score: number) =>
   score >= 80 ? 'high' : score >= 50 ? 'medium' : 'low';
 const getProgressColor = (score: number) =>
-  score >= 80 ? '#355c7d' : score >= 50 ? '#355c7d' : '#355c7d';
+  score >= 80 ? '#355c7d' : score >= 50 ? '#355c7d' : ' #38bdf8';
 
 const CircularProgressWithLabel: React.FC<{ value: number }> = ({ value }) => (
   <motion.div whileHover={{ scale: 1.1 }}>
