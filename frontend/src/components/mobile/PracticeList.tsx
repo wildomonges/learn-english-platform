@@ -58,7 +58,11 @@ const PracticeList: React.FC<PracticeListProps> = ({
               boxShadow: '0 4px 12px var(--border-soft)',
               px: 1,
               py: 0.5,
-              backgroundColor: 'var(--card-bg)',
+              backgroundColor: 'var(--card-bg, #0000)',
+              backdropFilter: 'blur(12px)',
+              position: 'relative',
+              zIndex: 2,
+
               border: '1px solid rgba(255, 255, 255, 0.1)',
               color: 'var(--text)',
               '&:before': { display: 'none' },
