@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container } from '@mui/material';
+
 import type { Topic } from '../types/Topic';
 import '../styles/TopicsAndInterests.css';
 
@@ -11,12 +11,12 @@ interface TopicsProps {
 
 const Topics: React.FC<TopicsProps> = ({ topics, onSelect, onBack }) => {
   return (
-    <Container maxWidth='sm' className='cards-container'>
-      <div className='cards-inner'>
+    <div className='cards-wrapper'>
+      <div className='cards-container'>
         <h2 className='subtitle'>¿Qué te interesa aprender?</h2>
 
         <div className='cards-grid'>
-          {topics.map((topic: Topic) => (
+          {topics.map((topic) => (
             <div
               key={topic.id}
               className='card'
@@ -32,8 +32,7 @@ const Topics: React.FC<TopicsProps> = ({ topics, onSelect, onBack }) => {
           ◀ Volver
         </button>
       </div>
-    </Container>
+    </div>
   );
 };
-
 export default Topics;

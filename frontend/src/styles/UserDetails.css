@@ -13,14 +13,14 @@
   --border-soft: rgba(0, 0, 0, 0.05);
 }
 
-/* CONTENT AREA*/
+/* CONTENT AREA */
 .user-details-page-container {
   flex: 1;
   display: flex;
   justify-content: center;
   align-items: flex-start;
   padding: 28px 20px;
-  overflow-y: auto;
+  overflow-y: auto; /* scroll solo vertical */
 }
 
 /*GLASS BOX */
@@ -156,55 +156,9 @@
   height: 6px;
   border-radius: 6px;
   background: rgba(255, 255, 255, 0.06);
-  transition: all 0.3s ease;
 }
 .practice-progress .MuiLinearProgress-bar {
   background: var(--accent) !important;
-  border-radius: 6px;
-  height: 6px !important;
-}
-
-.practice-chip {
-  padding: 12px 12px;
-  border-radius: 999px;
-  font-weight: 600;
-  font-size: 0.85rem;
-  color: var(--text);
-  background: rgba(255, 255, 255, 0.06);
-  margin-top: 10px;
-  text-align: center;
-  transition: transform 0.2s ease, background 0.2s ease;
-}
-.practice-chip:hover {
-  transform: scale(1.05);
-  background: rgba(56, 189, 248, 0.15);
-}
-
-.dialogs-accordion .MuiAccordionDetails-root {
-  max-height: 140px;
-  overflow-y: auto;
-  background: rgba(0, 0, 0, 0.06);
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.02);
-  padding: 10px;
-}
-.dialogs-accordion .MuiAccordionDetails-root::-webkit-scrollbar {
-  width: 6px;
-}
-.dialogs-accordion .MuiAccordionDetails-root::-webkit-scrollbar-thumb {
-  background: linear-gradient(
-    180deg,
-    rgba(56, 189, 248, 0.3),
-    rgba(56, 189, 248, 0.6)
-  );
-  border-radius: 4px;
-}
-.dialog-item {
-  padding: 4px 0;
-  border-bottom: 1px dashed rgba(255, 255, 255, 0.03);
-}
-.dialog-item:last-child {
-  border-bottom: none;
 }
 
 /*PAGINATION */
@@ -222,18 +176,17 @@
   color: var(--bg);
   font-weight: 700;
   cursor: pointer;
-  transition: transform 0.2s ease, filter 0.2s ease;
-}
-.pagination-container button:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-.pagination-container button:hover:not(:disabled) {
-  transform: translateY(-2px) scale(1.03);
-  filter: brightness(1.1);
 }
 
 /*BACK BUTTON */
+.back-button-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+  margin-bottom: 20px;
+}
+
 .back-button {
   padding: 10px 18px;
   border-radius: 12px;
@@ -248,50 +201,43 @@
 .back-button:hover {
   background: linear-gradient(90deg, #38bdf8 0%, #2563eb 100%);
   color: white;
-  box-shadow: 0 0 20px rgba(56, 189, 248, 0.5);
 }
 
-.user-details-page-wrapper.light,
-.user-details-page-wrapper.light * {
-  color: var(--text) !important;
-}
-
-.user-details-page-wrapper.light .practice-chip {
-  color: var(--text) !important;
-  background: rgba(0, 0, 0, 0.05);
-}
-
-.user-details-page-wrapper.light .MuiAccordionSummary-root,
-.user-details-page-wrapper.light .MuiAccordionDetails-root {
-  color: var(--text) !important;
-  background: rgba(0, 0, 0, 0.03);
-}
-
-.user-details-page-wrapper.light .back-button {
-  color: var(--accent) !important;
-  border-color: var(--accent) !important;
-}
-
-/*ANIMACIONES */
-@keyframes cardIn {
-  from {
-    opacity: 0;
-    transform: translateY(12px) scale(0.985);
+@media (max-width: 420px) {
+  .user-details-page-container {
+    align-items: center !important;
+    padding-top: 70px !important;
+    padding-bottom: 40px;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
 
-/* RESPONSIVe */
-@media (max-width: 820px) {
   .user-details-box {
-    width: 95%;
-    padding: 20px;
+    padding: 20px !important;
+    margin-top: 20% !important;
   }
-  .practice-card {
-    width: 100%;
-    min-height: 220px;
+
+  .user-name {
+    font-size: 1.1rem;
+  }
+
+  .circular-progress-wrapper {
+    width: 55px;
+    height: 55px;
+  }
+}
+
+@supports (padding-top: env(safe-area-inset-top)) {
+  .user-details-page-container {
+    padding-top: calc(env(safe-area-inset-top) + 60px) !important;
+  }
+}
+
+@media (max-height: 750px) {
+  .user-details-page-container {
+    margin-top: 100px !important;
+  }
+}
+@media (max-width: 480px) {
+  .user-details-page-container {
+    padding-top: 150px !important;
   }
 }

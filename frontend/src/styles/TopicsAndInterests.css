@@ -1,3 +1,16 @@
+/* PADRE: CENTRADO GENERAL */
+.cards-wrapper {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center; /* 👈 CENTRA HORIZONTAL */
+  align-items: center; /* 👈 CENTRA VERTICAL */
+  flex-direction: column; /* 👈 Mantiene estructura vertical */
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+/* CONTENEDOR DE TARJETAS */
 .cards-container {
   backdrop-filter: blur(14px);
   padding: 50px 40px;
@@ -11,30 +24,31 @@
   border: 1px solid var(--border-soft);
   margin-top: 5%;
   background: var(--card-bg);
+  overflow-y: auto;
 }
 
+/* SUBTÍTULO */
 .cards-container .subtitle {
-  font-size: clamp(1.3rem, 2vw, 1.8rem);
-  color: var(--accent);
-  margin-bottom: clamp(1.5rem, 3vw, 2rem);
+  font-size: clamp(1.2rem, 2vw, 1.8rem);
   font-weight: 600;
-  line-height: 1.3;
+  margin-bottom: clamp(1rem, 3vw, 2rem);
   text-align: center;
-  max-width: 800px;
+  color: var(--accent);
+  line-height: 1.3;
   word-wrap: break-word;
 }
 
+/* GRID DE TARJETAS */
 .cards-container .cards-grid {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  align-items: flex-start;
-  gap: clamp(1rem, 2vw, 1.5rem);
+  gap: 1rem;
   width: 100%;
   box-sizing: border-box;
-  flex-grow: 1;
 }
 
+/* TARJETAS */
 .cards-container .card {
   background-color: var(--card-bg);
   border-radius: 14px;
@@ -46,15 +60,15 @@
   align-items: center;
   text-align: center;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
-  flex: 1 1 clamp(120px, 25%, 200px);
+  flex: 1 1 120px;
   max-width: 200px;
-  min-width: 120px;
+  min-width: 100px;
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .cards-container .card img {
-  width: clamp(45px, 5vw, 65px);
-  height: clamp(45px, 5vw, 65px);
+  width: clamp(45px, 10vw, 65px);
+  height: clamp(45px, 10vw, 65px);
   object-fit: cover;
   border-radius: 10px;
   margin-bottom: 0.7rem;
@@ -65,7 +79,6 @@
   color: var(--accent);
   font-size: clamp(0.85rem, 1vw, 1rem);
   line-height: 1.3;
-  text-align: center;
 }
 
 .cards-container .card:hover {
@@ -84,10 +97,52 @@
   cursor: pointer;
   transition: all 0.3s ease;
   margin-top: 2rem;
-  align-self: center;
+  margin-left: 19%;
 }
 
 .cards-container .button-back:hover {
   background-color: var(--accent);
   color: var(--text);
+}
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
+  .cards-wrapper {
+    align-items: flex-start;
+    padding-top: 10vh;
+    padding: 3rem;
+  }
+
+  .cards-container {
+    width: 95%;
+    padding: 4rem;
+    max-height: 80vh;
+    margin-top: 10vh;
+  }
+
+  .cards-container .cards-grid {
+    gap: 0.8rem;
+  }
+
+  .cards-container .card {
+    flex: 1 1 100px;
+    max-width: 140px;
+    padding: 0.7rem;
+  }
+
+  .cards-container .card img {
+    width: 45px;
+    height: 45px;
+  }
+
+  .cards-container .subtitle {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+  }
+
+  .cards-container .button-back {
+    width: 70%;
+    margin-left: 12%;
+    padding: 3%;
+  }
 }
