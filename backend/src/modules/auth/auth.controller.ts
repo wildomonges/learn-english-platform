@@ -1,4 +1,4 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, BadRequestException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignupDto } from './dto/signup.dto';
 import { SigninDto } from './dto/login.dto';
@@ -10,12 +10,16 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('sign_up')
-  signUp(@Body() dto: SignupDto) {
+  async signUp(@Body() dto: SignupDto) {
+    if (!dto.captchaToken)
+      throw new BadRequestException('reCAPTCHA token requerido');
     return this.authService.signUp(dto);
   }
 
   @Post('sign_in')
-  signIn(@Body() dto: SigninDto) {
+  async signIn(@Body() dto: SigninDto) {
+    if (!dto.captchaToken)
+      throw new BadRequestException('reCAPTCHA token requerido');
     return this.authService.signIn(dto);
   }
 }

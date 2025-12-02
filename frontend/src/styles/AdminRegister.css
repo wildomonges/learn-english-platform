@@ -1,0 +1,174 @@
+.admin-register-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: radial-gradient(circle at top left, #0f172a, #1e293b);
+  padding: 1rem;
+  font-family: 'Inter', sans-serif;
+  flex-direction: row;
+  width: 100vw;
+  color: var(--text);
+  overflow: hidden;
+}
+
+.admin-register-card {
+  width: 90%;
+  max-width: 450px;
+  background: var(--card-bg);
+  backdrop-filter: blur(16px);
+  padding: 55px 45px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 40px var(--border-soft);
+  transition: all 0.3s ease;
+  animation: fadeSlideIn 0.45s ease;
+}
+
+.admin-register-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 45px rgba(255, 255, 255, 0.14);
+}
+
+.admin-register-card h2 {
+  text-align: center;
+  color: var(--accent);
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.admin-register-subtitle {
+  text-align: center;
+  font-size: 0.95rem;
+  color: var(--muted);
+  margin-bottom: 35px;
+}
+
+.register-input-group {
+  margin-bottom: 22px;
+  position: relative;
+}
+
+.register-input-group input {
+  width: 100%;
+  padding: 13px 45px 13px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border-soft);
+  background: rgba(255, 255, 255, 0.06);
+  font-size: 0.95rem;
+  color: var(--text);
+  transition: all 0.25s ease;
+}
+
+.register-input-group input::placeholder {
+  color: var(--muted);
+}
+
+.register-input-group input:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.3);
+}
+
+.register-input-group i {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.15rem;
+  color: var(--muted);
+}
+
+/* Botón principal */
+.register-button {
+  width: 100%;
+  background: var(--accent);
+  color: var(--text);
+  padding: 13px;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: all 0.3s ease;
+}
+
+.register-button:hover {
+  background: #38bdf8;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(56, 189, 248, 0.45);
+}
+
+/* Error */
+.register-error {
+  background: rgba(239, 68, 68, 0.17);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #fda4a4;
+  padding: 11px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  font-size: 0.9rem;
+  animation: fadeIn 0.3s ease;
+}
+
+/* Éxito */
+.register-success {
+  background: rgba(16, 185, 129, 0.18);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: #6ee7b7;
+  padding: 11px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  font-size: 0.9rem;
+  animation: fadeIn 0.3s ease;
+}
+
+/* Link inferior */
+.register-footer {
+  margin-top: 18px;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.register-footer a {
+  color: var(--accent);
+  font-weight: 600;
+  transition: 0.2s ease;
+}
+
+.register-footer a:hover {
+  color: #38bdf8;
+  text-decoration: underline;
+}
+
+/* Animaciones */
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-register-card {
+    padding: 38px 25px;
+  }
+}

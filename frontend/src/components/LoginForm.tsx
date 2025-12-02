@@ -3,6 +3,7 @@ import { FaUser, FaLock } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import '../styles/AdminLogin.css';
+import ReCAPTCHA from 'react-google-recaptcha';
 
 interface Props {
   onSuccess?: () => void;
@@ -16,6 +17,8 @@ const LoginForm: React.FC<Props> = ({ onSuccess, onSwitchToRegister }) => {
   const [passwordError, setPasswordError] = useState('');
   const [error, setError] = useState('');
 
+  const [captchaToken, setCaptchaToken] = useState('');
+
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -24,9 +27,9 @@ const LoginForm: React.FC<Props> = ({ onSuccess, onSwitchToRegister }) => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
 
     let valid = true;
-
     if (!validateEmail(email)) {
       setEmailError('Correo no válido.');
       valid = false;
@@ -39,13 +42,18 @@ const LoginForm: React.FC<Props> = ({ onSuccess, onSwitchToRegister }) => {
 
     if (!valid) return;
 
+    if (!captchaToken) {
+      setError('Por favor marca el reCAPTCHA.');
+      return;
+    }
+
     try {
       const API_URL = import.meta.env.VITE_API_URL;
 
       const res = await fetch(`${API_URL}/auth/sign_in`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, captchaToken }),
       });
 
       const data = await res.json();
@@ -102,7 +110,12 @@ const LoginForm: React.FC<Props> = ({ onSuccess, onSwitchToRegister }) => {
         <button type='submit' className='login-button'>
           Iniciar
         </button>
-
+        <div className='recaptcha-wrapper'>
+          <ReCAPTCHA
+            sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
+            onChange={(token: string | null) => setCaptchaToken(token ?? '')}
+          />
+        </div>
         {onSwitchToRegister && (
           <button
             type='button'

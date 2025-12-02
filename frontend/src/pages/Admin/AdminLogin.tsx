@@ -1,24 +1,49 @@
 import React, { useState } from 'react';
+import ReCAPTCHA from 'react-google-recaptcha';
+
 import { useNavigate } from 'react-router-dom';
-import { FaUser, FaLock } from 'react-icons/fa';
-import { useAuth } from '../../context/AuthContext';
 import '../../styles/AdminLogin.css';
+import { Link } from 'react-router-dom';
 
 const AdminLogin: React.FC = () => {
   const navigate = useNavigate();
-  const { adminCredentialsValid, loginAdmin } = useAuth();
+
+  const [captchaToken, setCaptchaToken] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
 
-    if (adminCredentialsValid(email, password)) {
-      loginAdmin(email);
+    if (!captchaToken) {
+      setError('Por favor marca el reCAPTCHA.');
+      return;
+    }
+
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/sign_in`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email,
+          password,
+          captchaToken,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || 'Error en el inicio de sesión');
+      }
+
+      localStorage.setItem('admin_token', data.access_token);
+
       navigate('/admin');
-    } else {
-      setError('Credenciales incorrectas. Intenta nuevamente.');
+    } catch (err: any) {
+      setError(err.message);
     }
   };
 
@@ -38,7 +63,6 @@ const AdminLogin: React.FC = () => {
             placeholder='Correo electrónico'
             required
           />
-          <FaUser className='input-icon' />
         </div>
 
         <div className='input-group'>
@@ -49,12 +73,25 @@ const AdminLogin: React.FC = () => {
             placeholder='Contraseña'
             required
           />
-          <FaLock className='input-icon' />
         </div>
 
         <button type='submit' className='login-button'>
           Ingresar
         </button>
+        {/* reCAPTCHA V2 */}
+        <div className='recaptcha-wrapper'>
+          <ReCAPTCHA
+            sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
+            onChange={(token: string | null) => setCaptchaToken(token ?? '')}
+          />
+        </div>
+
+        <Link
+          to='/admin-register'
+          className='block text-center mt-4 text-blue-600 font-semibold hover:underline'
+        >
+          Registrar administrador
+        </Link>
       </form>
     </div>
   );
