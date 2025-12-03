@@ -62,6 +62,7 @@ export class AuthService {
       lastName,
       email,
       password: hashed,
+      role: 'student',
     });
     await this.userRepository.save(user);
 
@@ -97,6 +98,7 @@ export class AuthService {
         firstName: user.firstName,
         lastName: user.lastName,
         email,
+        role: user.role,
       },
     };
   }

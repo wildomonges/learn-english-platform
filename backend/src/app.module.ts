@@ -21,6 +21,7 @@ import { PracticeModule } from './modules/practice/practice.module';
       database: process.env.DATABASE_NAME,
       autoLoadEntities: true,
       synchronize: true,
+      migrations: ['src/migrations/*.ts'],
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
     }),
     TopicsModule,

@@ -65,7 +65,12 @@ const LoginForm: React.FC<Props> = ({ onSuccess, onSwitchToRegister }) => {
 
       login(data.user, data.access_token);
       onSuccess?.();
-      navigate('/');
+
+      if (data.user.role === 'admin') {
+        navigate('/dashboard');
+      } else {
+        navigate('/');
+      }
     } catch (err) {
       setError('Error al iniciar sesión. Intenta más tarde.');
       console.error(err);
