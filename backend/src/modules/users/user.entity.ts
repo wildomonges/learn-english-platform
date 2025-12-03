@@ -1,5 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
-import { Practice } from 'src/modules/practice/entities/practice.entity';
+import { Practice } from '../../modules/practice/entities/practice.entity';
 import { Exclude } from 'class-transformer';
 
 @Entity('users')
@@ -15,6 +15,9 @@ export class User {
 
   @Column({ unique: true })
   email: string;
+
+  @Column()
+  role: string;
 
   @Exclude()
   @Column()

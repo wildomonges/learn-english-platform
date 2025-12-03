@@ -15,6 +15,7 @@ import AdminDashboard from './pages/Admin/AdminDashboard';
 import './App.css';
 import AdminLogin from './pages/Admin/AdminLogin';
 import UserDetailsPage from './pages/Admin/UserDetailsPage';
+import AdminRegister from './pages/Admin/AdminRegister';
 
 const AppContent: React.FC = () => {
   return (
@@ -34,6 +35,7 @@ const AppContent: React.FC = () => {
         {/* Ruta por defecto si no encuentra ninguna */}
         <Route path='*' element={<Navigate to='/' />} />
         <Route path='/admin/users/:userId' element={<UserDetailsPage />} />
+        <Route path='/admin-register' element={<AdminRegister />} />
       </Routes>
     </>
   );

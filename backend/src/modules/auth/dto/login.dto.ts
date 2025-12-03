@@ -1,9 +1,14 @@
-import { IsEmail, MinLength } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
 export class SigninDto {
   @IsEmail()
   email: string;
 
-  @MinLength(6)
+  @IsString()
+  @IsNotEmpty()
   password: string;
+
+  @IsString()
+  @IsNotEmpty()
+  captchaToken: string;
 }
