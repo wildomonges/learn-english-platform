@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FaUser, FaLock } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import '../styles/AdminLogin.css';
+import '../styles/LoginForm.css';
 import ReCAPTCHA from 'react-google-recaptcha';
 
 interface Props {
@@ -16,7 +16,6 @@ const LoginForm: React.FC<Props> = ({ onSuccess, onSwitchToRegister }) => {
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [error, setError] = useState('');
-
   const [captchaToken, setCaptchaToken] = useState('');
 
   const { login } = useAuth();
@@ -63,11 +62,13 @@ const LoginForm: React.FC<Props> = ({ onSuccess, onSwitchToRegister }) => {
         return;
       }
 
+      //We save user info
       login(data.user, data.access_token);
       onSuccess?.();
 
-      if (data.user.role === 'admin') {
-        navigate('/dashboard');
+      // Redirection role
+      if (data.user.role.toLowerCase() === 'admin') {
+        navigate('/admin');
       } else {
         navigate('/');
       }
@@ -78,8 +79,8 @@ const LoginForm: React.FC<Props> = ({ onSuccess, onSwitchToRegister }) => {
   };
 
   return (
-    <div className='admin-login-container'>
-      <form className='admin-login-form' onSubmit={handleLogin}>
+    <div className='login-container'>
+      <form className='login-form' onSubmit={handleLogin}>
         <h2>Iniciar Sesión</h2>
         <p>Ingresa tus credenciales para acceder a tu cuenta.</p>
 
@@ -97,7 +98,6 @@ const LoginForm: React.FC<Props> = ({ onSuccess, onSwitchToRegister }) => {
         </div>
         {emailError && <span className='error-message'>{emailError}</span>}
 
-        {/* Password */}
         <div className='input-group'>
           <input
             type='password'
@@ -112,15 +112,17 @@ const LoginForm: React.FC<Props> = ({ onSuccess, onSwitchToRegister }) => {
           <span className='error-message'>{passwordError}</span>
         )}
 
-        <button type='submit' className='login-button'>
-          Iniciar
-        </button>
         <div className='recaptcha-wrapper'>
           <ReCAPTCHA
             sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
             onChange={(token: string | null) => setCaptchaToken(token ?? '')}
           />
         </div>
+
+        <button type='submit' className='login-button'>
+          Iniciar
+        </button>
+
         {onSwitchToRegister && (
           <button
             type='button'

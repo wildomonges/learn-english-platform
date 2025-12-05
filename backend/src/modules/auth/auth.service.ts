@@ -3,7 +3,8 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from '../users/user.entity';
+
+import { User } from '../../modules/users/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -19,7 +20,7 @@ export class AuthService {
     this.recaptchaSecret = process.env.RECAPTCHA_SECRET_KEY;
   }
 
-  // Validar reCAPTCHA
+  // Validation reCAPTCHA
   private async validateRecaptcha(token: string): Promise<boolean> {
     const params = new URLSearchParams();
     params.append('secret', this.recaptchaSecret);
@@ -66,7 +67,14 @@ export class AuthService {
     });
     await this.userRepository.save(user);
 
-    return { message: 'User created', id: user.id, firstName, lastName, email };
+    return {
+      message: 'User created',
+      id: user.id,
+      firstName,
+      lastName,
+      email,
+      role: user.role,
+    };
   }
 
   // SIGNIN
@@ -89,6 +97,7 @@ export class AuthService {
     const access_token = this.jwtService.sign({
       email: user.email,
       sub: user.id,
+      role: user.role,
     });
 
     return {
@@ -97,7 +106,8 @@ export class AuthService {
         id: user.id,
         firstName: user.firstName,
         lastName: user.lastName,
-        email,
+        email: user.email,
+
         role: user.role,
       },
     };

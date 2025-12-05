@@ -1,16 +1,14 @@
-/* PADRE: CENTRADO GENERAL */
 .cards-wrapper {
   width: 100%;
   min-height: 100vh;
   display: flex;
-  justify-content: center; /* 👈 CENTRA HORIZONTAL */
-  align-items: center; /* 👈 CENTRA VERTICAL */
-  flex-direction: column; /* 👈 Mantiene estructura vertical */
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
   padding: 1rem;
   box-sizing: border-box;
 }
 
-/* CONTENEDOR DE TARJETAS */
 .cards-container {
   backdrop-filter: blur(14px);
   padding: 50px 40px;
@@ -22,12 +20,11 @@
   color: var(--text);
   transition: all 0.3s ease;
   border: 1px solid var(--border-soft);
-  margin-top: 5%;
+  margin-bottom: 20%;
   background: var(--card-bg);
   overflow-y: auto;
 }
 
-/* SUBTÍTULO */
 .cards-container .subtitle {
   font-size: clamp(1.2rem, 2vw, 1.8rem);
   font-weight: 600;
@@ -38,7 +35,6 @@
   word-wrap: break-word;
 }
 
-/* GRID DE TARJETAS */
 .cards-container .cards-grid {
   display: flex;
   flex-wrap: wrap;
@@ -48,7 +44,6 @@
   box-sizing: border-box;
 }
 
-/* TARJETAS */
 .cards-container .card {
   background-color: var(--card-bg);
   border-radius: 14px;

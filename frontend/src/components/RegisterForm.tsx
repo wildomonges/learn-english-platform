@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import '../styles/RegisterFrom.css';
 
 interface Props {
-  onSuccess: () => void;
-  onSwitchToLogin: () => void;
+  onSuccess?: () => void;
+  onSwitchToLogin?: () => void;
 }
 
 const RegisterForm: React.FC<Props> = ({ onSuccess, onSwitchToLogin }) => {
@@ -27,12 +27,12 @@ const RegisterForm: React.FC<Props> = ({ onSuccess, onSwitchToLogin }) => {
       const res = await fetch(`${API_URL}/auth/sign_up`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, role: 'student' }),
       });
 
       if (!res.ok) throw new Error('Error al registrar');
       setMessage('Registro exitoso, inicia sesión');
-      onSuccess();
+      onSuccess?.();
     } catch (err) {
       setMessage('Error al registrarse');
     }
@@ -44,7 +44,6 @@ const RegisterForm: React.FC<Props> = ({ onSuccess, onSwitchToLogin }) => {
         <h2>Crear cuenta</h2>
         <p>Completa tus datos para registrarte</p>
 
-        {/* Nombre */}
         <div className='input-group'>
           <input
             name='firstName'
@@ -54,7 +53,6 @@ const RegisterForm: React.FC<Props> = ({ onSuccess, onSwitchToLogin }) => {
           />
         </div>
 
-        {/* Apellido */}
         <div className='input-group'>
           <input
             name='lastName'
@@ -64,7 +62,6 @@ const RegisterForm: React.FC<Props> = ({ onSuccess, onSwitchToLogin }) => {
           />
         </div>
 
-        {/* Email */}
         <div className='input-group'>
           <input
             name='email'
