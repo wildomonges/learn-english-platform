@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { Practice } from './entities/practice.entity';
 import { Dialog } from './entities/dialog.entity';
 import { CreatePracticeDto } from './dto/create-practice.dto';
-import { User } from 'src/modules/users/user.entity';
+import { User } from '../users/user.entity';
 import { UpdateDialogDto } from './dto/update-dialog.dto';
 
 @Injectable()
@@ -41,7 +41,7 @@ export class PracticeService {
     return practices;
   }
 
-  // ✅ OBTENER PRÁCTICAS DE UN USUARIO POR ID
+  //OBTENER PRÁCTICAS DE UN USUARIO POR ID
   async findByUserId(userId: number): Promise<any[]> {
     const practices = await this.practiceRepo.find({
       where: { user: { id: userId } },
@@ -57,7 +57,7 @@ export class PracticeService {
     return practices;
   }
 
-  // ✅ OBTENER UNA PRÁCTICA POR ID
+  // OBTENER UNA PRÁCTICA POR ID
   async findOne(id: number): Promise<Practice | null> {
     return await this.practiceRepo.findOne({
       where: { id },
