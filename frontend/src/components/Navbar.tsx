@@ -22,8 +22,6 @@ const Navbar: React.FC = () => {
     navigate('/');
   };
 
-  const showAdminButton = !location.pathname.startsWith('/admin');
-
   return (
     <nav
       className={`navbar ${
@@ -40,15 +38,6 @@ const Navbar: React.FC = () => {
 
       <div className={`navbar-menu ${isOpen ? 'open' : ''}`}>
         <Link to='/'>Inicio</Link>
-
-        {showAdminButton && (
-          <button
-            className='admin-button'
-            onClick={() => navigate('/admin-login')}
-          >
-            🧑‍💼 Admin
-          </button>
-        )}
 
         {user ? (
           <>

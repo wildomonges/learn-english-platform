@@ -1,4 +1,11 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { jwtDecode } from 'jwt-decode';
+
+interface DecodedToken {
+  sub: string;
+  email: string;
+  role: 'admin' | 'student';
+}
 
 interface User {
   id: string;
@@ -13,11 +20,8 @@ interface AuthContextType {
   accessToken: string | null;
   login: (user: User, token: string) => void;
   logout: () => void;
-  setUser: (user: User | null) => void;
   getUser: () => User | null;
   getToken: () => string | null;
-  loginAdmin: (email: string) => void;
-  adminCredentialsValid: (email: string, password: string) => boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -28,43 +32,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [user, setUser] = useState<User | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
 
-  // --- Funciones de admin ---
-  const adminCredentialsValid = (email: string, password: string) => {
-    const adminEmail = import.meta.env.VITE_ADMIN_EMAIL;
-    const adminPassword = import.meta.env.VITE_ADMIN_PASSWORD;
-
-    return email === adminEmail && password === adminPassword;
-  };
-
-  const loginAdmin = (email: string) => {
-    const adminUser: User = {
-      id: 'admin',
-      firstName: 'Admin',
-      lastName: '',
-      email,
-      role: 'admin',
-    };
-    localStorage.setItem('admin', JSON.stringify(adminUser));
-    setUser(adminUser);
-    setAccessToken('admin-token'); // Puedes usar un token fijo o generar uno
-  };
-  // --------------------------
-
   useEffect(() => {
-    const storedUser =
-      localStorage.getItem('user') || localStorage.getItem('admin');
-    const storedToken =
-      localStorage.getItem('accessToken') ||
-      (storedUser ? 'admin-token' : null);
+    const storedToken = localStorage.getItem('accessToken');
+    const storedUser = localStorage.getItem('user');
 
-    if (storedUser && storedToken) {
+    if (storedToken) {
       try {
-        setUser(JSON.parse(storedUser));
+        const decoded = jwtDecode<DecodedToken>(storedToken);
+
+        if (!storedUser) {
+          setUser({
+            id: decoded.sub,
+            firstName: '',
+            lastName: '',
+            email: decoded.email,
+            role: decoded.role,
+          });
+        } else {
+          setUser(JSON.parse(storedUser));
+        }
+
         setAccessToken(storedToken);
       } catch (err) {
-        console.error('Error parsing user from localStorage:', err);
-        setUser(null);
-        setAccessToken(null);
+        console.error('Error decoding token', err);
+        logout();
       }
     }
   }, []);
@@ -78,14 +69,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const logout = () => {
     localStorage.removeItem('user');
-    localStorage.removeItem('admin');
     localStorage.removeItem('accessToken');
     setUser(null);
     setAccessToken(null);
   };
-
-  const getUser = () => user;
-  const getToken = () => accessToken;
 
   return (
     <AuthContext.Provider
@@ -94,11 +81,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         accessToken,
         login,
         logout,
-        setUser,
-        getUser,
-        getToken,
-        loginAdmin,
-        adminCredentialsValid,
+        getUser: () => user,
+        getToken: () => accessToken,
       }}
     >
       {children}
@@ -106,12 +90,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   );
 };
 
-// Hook
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
+  if (!context) throw new Error('useAuth must be used within an AuthProvider');
   return context;
 };
 
