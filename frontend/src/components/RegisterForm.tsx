@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import '../styles/RegisterFrom.css';
+import '../styles/RegisterForm.css';
 import ReCAPTCHA from 'react-google-recaptcha';
 
 interface Props {
