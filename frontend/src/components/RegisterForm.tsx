@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import '../styles/RegisterFrom.css';
+import '../styles/RegisterForm.css';
+import ReCAPTCHA from 'react-google-recaptcha';
 
 interface Props {
   onSuccess?: () => void;
@@ -14,6 +15,7 @@ const RegisterForm: React.FC<Props> = ({ onSuccess, onSwitchToLogin }) => {
     password: '',
   });
   const [message, setMessage] = useState('');
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -21,20 +23,43 @@ const RegisterForm: React.FC<Props> = ({ onSuccess, onSwitchToLogin }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setMessage('');
+
+    if (!captchaToken) {
+      setMessage('Por favor, completa el captcha');
+      return;
+    }
+
     try {
       const API_URL = import.meta.env.VITE_API_URL;
+      if (!API_URL) throw new Error('La URL de la API no está definida');
+
+      console.log('Registrando en:', API_URL);
+      console.log('Datos enviados:', form, 'Captcha:', captchaToken);
 
       const res = await fetch(`${API_URL}/auth/sign_up`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, role: 'student' }),
+        body: JSON.stringify({ ...form, role: 'student', captchaToken }),
       });
 
-      if (!res.ok) throw new Error('Error al registrar');
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(
+          data.message || `Error ${res.status}: ${res.statusText}`
+        );
+      }
+
+      console.log('Registro exitoso:', data);
       setMessage('Registro exitoso, inicia sesión');
       onSuccess?.();
     } catch (err) {
-      setMessage('Error al registrarse');
+      console.error('Error al registrar:', err);
+      setMessage(
+        'Error al registrarse: ' +
+          (err instanceof Error ? err.message : String(err))
+      );
     }
   };
 
@@ -79,6 +104,12 @@ const RegisterForm: React.FC<Props> = ({ onSuccess, onSwitchToLogin }) => {
             placeholder='Contraseña'
             onChange={handleChange}
             required
+          />
+        </div>
+        <div className='recaptcha-wrapper'>
+          <ReCAPTCHA
+            sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
+            onChange={(token) => setCaptchaToken(token)}
           />
         </div>
 

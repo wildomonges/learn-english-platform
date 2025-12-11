@@ -9,8 +9,8 @@ import PracticeChat from '../components/PracticeChat';
 import Welcome from '../components/Welcome';
 import Topics from '../components/Topics';
 import Interests from '../components/Interests';
-import LoginPage from './LoginPage';
-import RegisterPage from './RegisterPage';
+import LoginForm from '../components/LoginForm';
+import RegisterForm from '../components/RegisterForm';
 
 const HomePage: React.FC = () => {
   const [step, setStep] = useState<
@@ -113,12 +113,12 @@ const HomePage: React.FC = () => {
           )}
         </div>
       ) : step === 'login' ? (
-        <LoginPage
+        <LoginForm
           onSuccess={() => setStep('topics')}
           onSwitchToRegister={() => setStep('register')}
         />
       ) : step === 'register' ? (
-        <RegisterPage
+        <RegisterForm
           onSuccess={() => setStep('login')}
           onSwitchToLogin={() => setStep('login')}
         />
